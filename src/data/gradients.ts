@@ -238,23 +238,6 @@ export const gradients: Gradient[] = [
   { id: 'subtle-3', name: 'Cream', description: 'Warm cream tones', category: 'Subtle', gradient: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)', colors: ['#FFFBEB', '#FEF3C7'], tags: ['cream', 'warm', 'cozy'] },
   { id: 'subtle-4', name: 'Blush Hint', description: 'Hint of blush pink', category: 'Subtle', gradient: 'linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%)', colors: ['#FDF2F8', '#FCE7F3'], tags: ['blush', 'hint', 'delicate'] },
   { id: 'subtle-5', name: 'Sky Whisper', description: 'Faintest sky blue', category: 'Subtle', gradient: 'linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%)', colors: ['#F0F9FF', '#E0F2FE'], tags: ['sky', 'faint', 'airy'] },
-  { id: 'subtle-6', name: 'Mint Breath', description: 'Lightest mint green', category: 'Subtle', gradient: 'linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)', colors: ['#F0FDF4', '#DCFCE7'], tags: ['mint', 'light', 'fresh'] },
-  { id: 'subtle-7', name: 'Lavender Air', description: 'Subtle lavender', category: 'Subtle', gradient: 'linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%)', colors: ['#FAF5FF', '#F3E8FF'], tags: ['lavender', 'air', 'ethereal'] },
-  { id: 'subtle-8', name: 'Pearl', description: 'Iridescent pearl', category: 'Subtle', gradient: 'linear-gradient(135deg, #FEFEFE 0%, #F8F8F8 50%, #F5F5F5 100%)', colors: ['#FEFEFE', '#F8F8F8', '#F5F5F5'], tags: ['pearl', 'iridescent', 'elegant'] },
-  { id: 'subtle-9', name: 'Ivory', description: 'Classic ivory', category: 'Subtle', gradient: 'linear-gradient(135deg, #FEFCE8 0%, #FEF9C3 100%)', colors: ['#FEFCE8', '#FEF9C3'], tags: ['ivory', 'classic', 'timeless'] },
-  { id: 'subtle-10', name: 'Dove Gray', description: 'Soft dove gray', category: 'Subtle', gradient: 'linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%)', colors: ['#F3F4F6', '#E5E7EB'], tags: ['dove', 'soft', 'calm'] },
-
-  // Additional variety gradients (311-350)
-  { id: 'variety-1', name: 'Electric Lime', description: 'Vibrant electric lime', category: 'Green', gradient: 'linear-gradient(135deg, #A3E635 0%, #84CC16 100%)', colors: ['#A3E635', '#84CC16'], tags: ['electric', 'lime', 'vibrant'] },
-  { id: 'variety-2', name: 'Deep Space', description: 'Infinite deep space', category: 'Dark', gradient: 'linear-gradient(135deg, #0F172A 0%, #1E1B4B 50%, #312E81 100%)', colors: ['#0F172A', '#1E1B4B', '#312E81'], tags: ['space', 'infinite', 'dark'] },
-  { id: 'variety-3', name: 'Candy Floss', description: 'Sweet candy floss', category: 'Pink', gradient: 'linear-gradient(135deg, #F9A8D4 0%, #E879F9 100%)', colors: ['#F9A8D4', '#E879F9'], tags: ['candy', 'floss', 'sweet'] },
-  { id: 'variety-4', name: 'Lemon Drop', description: 'Tangy lemon drop', category: 'Yellow', gradient: 'linear-gradient(135deg, #FEF08A 0%, #FACC15 100%)', colors: ['#FEF08A', '#FACC15'], tags: ['lemon', 'tangy', 'citrus'] },
-  { id: 'variety-5', name: 'Berry Blast', description: 'Mixed berry explosion', category: 'Multi', gradient: 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 50%, #3B82F6 100%)', colors: ['#EC4899', '#8B5CF6', '#3B82F6'], tags: ['berry', 'blast', 'explosion'] },
-  { id: 'variety-6', name: 'Misty Morning', description: 'Peaceful misty morning', category: 'Neutral', gradient: 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 50%, #CBD5E1 100%)', colors: ['#F1F5F9', '#E2E8F0', '#CBD5E1'], tags: ['misty', 'morning', 'peaceful'] },
-  { id: 'variety-7', name: 'Aurora Green', description: 'Northern aurora green', category: 'Green', gradient: 'linear-gradient(135deg, #4ADE80 0%, #34D399 50%, #2DD4BF 100%)', colors: ['#4ADE80', '#34D399', '#2DD4BF'], tags: ['aurora', 'northern', 'lights', 'animated'] },
-  { id: 'variety-8', name: 'Velvet Night', description: 'Luxurious velvet night', category: 'Dark', gradient: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 100%)', colors: ['#1E1B4B', '#312E81'], tags: ['velvet', 'night', 'luxurious'] },
-  { id: 'variety-9', name: 'Summer Breeze', description: 'Light summer breeze', category: 'Pastel', gradient: 'linear-gradient(135deg, #CFFAFE 0%, #A5F3FC 50%, #67E8F9 100%)', colors: ['#CFFAFE', '#A5F3FC', '#67E8F9'], tags: ['summer', 'breeze', 'light'] },
-  { id: 'variety-10', name: 'Deep Rose', description: 'Rich deep rose', category: 'Pink', gradient: 'linear-gradient(135deg, #F43F5E 0%, #E11D48 100%)', colors: ['#F43F5E', '#E11D48'], tags: ['deep', 'rose', 'rich'] },
 ];
 
 export const gradientCategories: (GradientCategory | 'All' | 'Favorites' | 'Animated')[] = [

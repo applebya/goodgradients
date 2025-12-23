@@ -69,8 +69,8 @@ test.describe('OnlyGradients - Gradient Detail', () => {
     await page.locator('[data-testid="gradient-card"]').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
 
-    // Find heart button in the modal
-    const heartButton = page.getByRole('dialog').locator('button').filter({ has: page.locator('.lucide-heart') }).first();
+    // Find heart button in the modal (look for button with heart SVG path)
+    const heartButton = page.getByRole('dialog').locator('button').filter({ has: page.locator('svg path[d*="14c1.49"]') }).first();
     await expect(heartButton).toBeVisible();
 
     // Click it - should not throw error
@@ -93,8 +93,8 @@ test.describe('OnlyGradients - Gradient Detail', () => {
     await page.locator('[data-testid="gradient-card"]').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
 
-    // Click copy button in CSS tab (first copy button)
-    const copyButton = page.getByRole('dialog').locator('button').filter({ has: page.locator('.lucide-copy') }).first();
+    // Click copy button in CSS tab (look for button with copy SVG)
+    const copyButton = page.getByRole('dialog').locator('button').filter({ has: page.locator('svg rect[width="14"]') }).first();
     await copyButton.click();
 
     // Toast should appear
@@ -217,7 +217,7 @@ test.describe('OnlyGradients - Favorites', () => {
     const firstCard = page.locator('[data-testid="gradient-card"]').first();
     await firstCard.hover();
 
-    const heartButton = firstCard.locator('button').filter({ has: page.locator('.lucide-heart') });
+    const heartButton = firstCard.locator('button').filter({ has: page.locator('svg path[d*="14c1.49"]') });
     await expect(heartButton).toBeVisible();
 
     // Click should not throw

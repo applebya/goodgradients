@@ -1,5 +1,5 @@
 import { useCallback, useRef } from 'react';
-import { toast } from 'sonner';
+import { toast, useToastRegister } from './components/Toast';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { GradientGallery } from './components/GradientGallery';
@@ -13,6 +13,9 @@ import type { Gradient } from './types';
 export default function App() {
   const { state, favorites, actions } = useAppState();
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Register toast function
+  useToastRegister();
 
   // Set up keyboard shortcuts
   useKeyboard({

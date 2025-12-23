@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { toast } from 'sonner';
-import { Zap, X, Copy, Play, Pause, Check } from 'lucide-react';
+import { toast } from './Toast';
+import { Zap, X, Copy, Play, Pause, Check } from './icons';
 import { Dialog, DialogContent } from './ui/dialog';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';

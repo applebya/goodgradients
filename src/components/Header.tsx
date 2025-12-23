@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Search, Shuffle, Zap } from 'lucide-react';
+import { Search, Shuffle, Zap } from './icons';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
 import { gradientCategories } from '@/data/gradients';

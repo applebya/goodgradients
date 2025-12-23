@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Copy } from 'lucide-react';
-import { toast } from 'sonner';
+import { Heart, Copy } from './icons';
+import { toast } from './Toast';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { cn, copyToClipboard } from '@/lib/utils';

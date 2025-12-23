@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { toast } from 'sonner';
+import { toast } from './Toast';
 import {
   Copy,
   Heart,
@@ -14,7 +14,7 @@ import {
   Maximize2,
   Minus,
   Plus,
-} from 'lucide-react';
+} from './icons';
 import {
   Dialog,
   DialogContent,
