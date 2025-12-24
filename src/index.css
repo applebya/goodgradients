@@ -121,8 +121,55 @@
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
-/* Subtle shimmer effect on cards */
+/* Border shimmer effect - only on border, not over gradient */
 .gradient-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.15) 50%,
+    transparent 60%,
+    transparent 100%
+  );
+  background-size: 300% 300%;
+  background-position: 0% 0%;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.gradient-card:hover::before {
+  opacity: 1;
+  animation: border-shimmer 1.5s ease-in-out;
+}
+
+@keyframes border-shimmer {
+  0% {
+    background-position: 200% 200%;
+  }
+  100% {
+    background-position: -100% -100%;
+  }
+}
+
+/* Content area shimmer - only below gradient preview */
+.card-content-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-content-shimmer::before {
   content: '';
   position: absolute;
   top: 0;
@@ -132,16 +179,14 @@
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.03),
     transparent
   );
   transition: left 0.5s ease;
   pointer-events: none;
-  z-index: 1;
-  border-radius: inherit;
 }
 
-.gradient-card:hover::before {
+.gradient-card:hover .card-content-shimmer::before {
   left: 100%;
 }
 

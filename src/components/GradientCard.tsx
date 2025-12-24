@@ -103,7 +103,7 @@ export const GradientCard = memo(function GradientCard({
       </div>
 
       {/* Card Content */}
-      <div className="p-4">
+      <div className="p-4 card-content-shimmer">
         <div className="flex items-start justify-between mb-2">
           <h3 className="text-white font-medium">{gradient.name}</h3>
           <Badge variant="secondary">{gradient.category}</Badge>
