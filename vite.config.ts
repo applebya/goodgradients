@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react-swc';
 import { visualizer } from 'rollup-plugin-visualizer';
 import path from 'path';
 
-export default defineConfig(({ command }) => ({
+export default defineConfig({
   plugins: [
     react(),
     visualizer({
@@ -17,8 +17,8 @@ export default defineConfig(({ command }) => ({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  // Only use base path for build (GitHub Pages deployment)
-  base: command === 'build' ? '/goodgradients/' : '/',
+  // Use root path since we have a custom domain (goodgradients.com)
+  base: '/',
   build: {
     target: 'esnext',
     outDir: 'dist',
@@ -27,4 +27,4 @@ export default defineConfig(({ command }) => ({
     port: 3000,
     open: false,
   },
-}));
+});
