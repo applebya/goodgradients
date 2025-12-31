@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'onlygradients_favorites';
+const STORAGE_KEY = 'goodgradients_favorites';
 
 export interface FavoritesStore {
   gradientIds: string[];

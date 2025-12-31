@@ -34,10 +34,10 @@ export function Header({
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">OG</span>
+              <span className="text-white font-bold text-sm">GG</span>
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-white">OnlyGradients</h1>
+              <h1 className="text-lg font-semibold text-white">GoodGradients</h1>
               <p className="text-xs text-neutral-500">CSS gradients for developers</p>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('OnlyGradients - Gallery', () => {
+test.describe('GoodGradients - Gallery', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     // Wait for the app to fully load
@@ -8,7 +8,7 @@ test.describe('OnlyGradients - Gallery', () => {
   });
 
   test('should display the header with branding', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: 'OnlyGradients' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'GoodGradients' })).toBeVisible();
     await expect(page.getByText('CSS gradients for developers')).toBeVisible();
   });
 
@@ -52,7 +52,7 @@ test.describe('OnlyGradients - Gallery', () => {
   });
 });
 
-test.describe('OnlyGradients - Gradient Detail', () => {
+test.describe('GoodGradients - Gradient Detail', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.waitForSelector('[data-testid="gradient-card"]', { timeout: 15000 });
@@ -110,7 +110,7 @@ test.describe('OnlyGradients - Gradient Detail', () => {
   });
 });
 
-test.describe('OnlyGradients - Animation Studio', () => {
+test.describe('GoodGradients - Animation Studio', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.waitForSelector('[data-testid="gradient-card"]', { timeout: 15000 });
@@ -140,7 +140,7 @@ test.describe('OnlyGradients - Animation Studio', () => {
   });
 });
 
-test.describe('OnlyGradients - URL State', () => {
+test.describe('GoodGradients - URL State', () => {
   test('should open modal when gradient ID is in URL', async ({ page }) => {
     // Navigate with URL parameters for a known gradient
     await page.goto('/?g=purple-1');
@@ -169,7 +169,7 @@ test.describe('OnlyGradients - URL State', () => {
   });
 });
 
-test.describe('OnlyGradients - Export Formats', () => {
+test.describe('GoodGradients - Export Formats', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.waitForSelector('[data-testid="gradient-card"]', { timeout: 15000 });
@@ -208,7 +208,7 @@ test.describe('OnlyGradients - Export Formats', () => {
   });
 });
 
-test.describe('OnlyGradients - Favorites', () => {
+test.describe('GoodGradients - Favorites', () => {
   test('should have heart button on cards', async ({ page }) => {
     await page.goto('/');
     await page.waitForSelector('[data-testid="gradient-card"]', { timeout: 15000 });
@@ -234,7 +234,7 @@ test.describe('OnlyGradients - Favorites', () => {
   });
 });
 
-test.describe('OnlyGradients - Keyboard Shortcuts', () => {
+test.describe('GoodGradients - Keyboard Shortcuts', () => {
   test('should show keyboard shortcuts in footer', async ({ page }) => {
     await page.goto('/');
     await page.waitForSelector('[data-testid="gradient-card"]', { timeout: 15000 });
