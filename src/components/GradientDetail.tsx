@@ -130,208 +130,218 @@ export function GradientDetail({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-5xl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            {gradient.name}
-            <Badge variant="secondary" className="ml-2">
-              {gradient.category}
-            </Badge>
-          </DialogTitle>
-          <DialogDescription>{gradient.description}</DialogDescription>
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+        {/* Sticky Header */}
+        <DialogHeader className="flex-shrink-0 pb-3 border-b border-neutral-800">
+          <div className="flex items-center justify-between">
+            <DialogTitle className="flex items-center gap-2">
+              {gradient.name}
+              <Badge variant="secondary" className="ml-2">
+                {gradient.category}
+              </Badge>
+            </DialogTitle>
+            <div className="flex gap-2">
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                className={cn('text-neutral-400 hover:text-white', isFavorite && 'text-red-400')}
+                onClick={onToggleFavorite}
+              >
+                <Heart className={cn('w-4 h-4', isFavorite && 'fill-current')} />
+              </Button>
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                className="text-neutral-400 hover:text-white"
+                onClick={handleShare}
+              >
+                <Share2 className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+          <DialogDescription className="text-sm">{gradient.description}</DialogDescription>
         </DialogHeader>
 
-        {/* Preview */}
-        <div
-          className={cn(
-            'rounded-xl relative overflow-hidden transition-all duration-300',
-            isFullscreen ? 'fixed inset-4 z-50 h-auto' : 'h-48'
-          )}
-          style={{
-            background: displayGradient,
-            ...getAnimationStyle(),
-          }}
-        >
-          {/* Controls overlay */}
-          <div className="absolute top-3 right-3 flex gap-2">
-            <Button
-              size="icon-sm"
-              variant="ghost"
-              className="bg-black/40 text-white hover:bg-black/60"
-              onClick={onToggleAnimating}
-            >
-              {isAnimating ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-            </Button>
-            <Button
-              size="icon-sm"
-              variant="ghost"
-              className={cn('bg-black/40 hover:bg-black/60', isFavorite ? 'text-red-400' : 'text-white')}
-              onClick={onToggleFavorite}
-            >
-              <Heart className={cn('w-4 h-4', isFavorite && 'fill-current')} />
-            </Button>
-            <Button
-              size="icon-sm"
-              variant="ghost"
-              className="bg-black/40 text-white hover:bg-black/60"
-              onClick={handleShare}
-            >
-              <Share2 className="w-4 h-4" />
-            </Button>
-            <Button
-              size="icon-sm"
-              variant="ghost"
-              className="bg-black/40 text-white hover:bg-black/60"
-              onClick={() => setIsFullscreen(!isFullscreen)}
-            >
-              <Maximize2 className="w-4 h-4" />
-            </Button>
-          </div>
-
-          {/* Animation badge and speed controls */}
-          <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-            {animation && (
-              <Badge className="bg-black/60 text-white border-0">
-                {animation.name}
-              </Badge>
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto space-y-4 pt-4">
+          {/* Compact Preview */}
+          <div
+            className={cn(
+              'rounded-xl relative overflow-hidden transition-all duration-300',
+              isFullscreen ? 'fixed inset-4 z-50 h-auto' : 'h-32'
             )}
-            {animation && (
-              <div className="flex items-center gap-2 bg-black/60 rounded-full px-2 py-1">
-                <Button
-                  size="icon-xs"
-                  variant="ghost"
-                  className="text-white h-5 w-5"
-                  onClick={() => setAnimationSpeed(Math.max(0.25, animationSpeed - 0.25))}
-                >
-                  <Minus className="w-3 h-3" />
-                </Button>
-                <span className="text-xs text-white min-w-[3ch] text-center">{animationSpeed}x</span>
-                <Button
-                  size="icon-xs"
-                  variant="ghost"
-                  className="text-white h-5 w-5"
-                  onClick={() => setAnimationSpeed(Math.min(3, animationSpeed + 0.25))}
-                >
-                  <Plus className="w-3 h-3" />
-                </Button>
+            style={{
+              background: displayGradient,
+              ...getAnimationStyle(),
+            }}
+          >
+            {/* Preview controls overlay */}
+            <div className="absolute top-2 right-2 flex gap-1">
+              <Button
+                size="icon-xs"
+                variant="ghost"
+                className="bg-black/40 text-white hover:bg-black/60 h-7 w-7"
+                onClick={onToggleAnimating}
+              >
+                {isAnimating ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+              </Button>
+              <Button
+                size="icon-xs"
+                variant="ghost"
+                className="bg-black/40 text-white hover:bg-black/60 h-7 w-7"
+                onClick={() => setIsFullscreen(!isFullscreen)}
+              >
+                <Maximize2 className="w-3.5 h-3.5" />
+              </Button>
+            </div>
+
+            {/* Animation info and speed */}
+            <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
+              {animation && (
+                <Badge className="bg-black/60 text-white border-0 text-xs py-0.5">
+                  {animation.name}
+                </Badge>
+              )}
+              {animation && (
+                <div className="flex items-center gap-1.5 bg-black/60 rounded-full px-2 py-0.5">
+                  <Button
+                    size="icon-xs"
+                    variant="ghost"
+                    className="text-white h-4 w-4 p-0"
+                    onClick={() => setAnimationSpeed(Math.max(0.25, animationSpeed - 0.25))}
+                  >
+                    <Minus className="w-2.5 h-2.5" />
+                  </Button>
+                  <span className="text-[10px] text-white min-w-[2.5ch] text-center">{animationSpeed}x</span>
+                  <Button
+                    size="icon-xs"
+                    variant="ghost"
+                    className="text-white h-4 w-4 p-0"
+                    onClick={() => setAnimationSpeed(Math.min(3, animationSpeed + 0.25))}
+                  >
+                    <Plus className="w-2.5 h-2.5" />
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {/* Fullscreen close hint */}
+            {isFullscreen && (
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2">
+                <Badge className="bg-black/60 text-white border-0">
+                  Press Escape to exit
+                </Badge>
               </div>
             )}
           </div>
 
-          {/* Fullscreen close hint */}
+          {/* Fullscreen backdrop */}
           {isFullscreen && (
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2">
-              <Badge className="bg-black/60 text-white border-0">
-                Click Maximize or press Escape to exit
-              </Badge>
+            <div
+              className="fixed inset-0 bg-black/80 z-40"
+              onClick={() => setIsFullscreen(false)}
+            />
+          )}
+
+          {/* Gradient Controls */}
+          <div className="grid grid-cols-3 gap-2">
+            <Button
+              variant={gradientType === 'linear' ? 'default' : 'outline'}
+              onClick={() => onGradientTypeChange('linear')}
+              className="flex items-center gap-2"
+              size="sm"
+            >
+              <Layers className="w-4 h-4" />
+              Linear
+            </Button>
+            <Button
+              variant={gradientType === 'radial' ? 'default' : 'outline'}
+              onClick={() => onGradientTypeChange('radial')}
+              className="flex items-center gap-2"
+              size="sm"
+            >
+              <Circle className="w-4 h-4" />
+              Radial
+            </Button>
+            <Button
+              variant={gradientType === 'conic' ? 'default' : 'outline'}
+              onClick={() => onGradientTypeChange('conic')}
+              className="flex items-center gap-2"
+              size="sm"
+            >
+              <RotateCw className="w-4 h-4" />
+              Conic
+            </Button>
+          </div>
+
+          {/* Angle slider for linear/conic */}
+          {(gradientType === 'linear' || gradientType === 'conic') && (
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-neutral-400">Angle</span>
+                <span className="text-white">{gradientAngle}°</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="360"
+                value={gradientAngle}
+                onChange={(e) => onAngleChange(Number(e.target.value))}
+                className="w-full h-2 bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:cursor-pointer"
+              />
+              <div className="flex gap-1">
+                {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => (
+                  <button
+                    key={angle}
+                    onClick={() => onAngleChange(angle)}
+                    className={cn(
+                      'flex-1 text-xs py-1 rounded border transition-all',
+                      gradientAngle === angle
+                        ? 'border-white bg-neutral-800 text-white'
+                        : 'border-neutral-700 text-neutral-400 hover:border-neutral-600 hover:text-white'
+                    )}
+                  >
+                    {angle}°
+                  </button>
+                ))}
+              </div>
             </div>
           )}
-        </div>
 
-        {/* Fullscreen backdrop */}
-        {isFullscreen && (
-          <div
-            className="fixed inset-0 bg-black/80 z-40"
-            onClick={() => setIsFullscreen(false)}
-          />
-        )}
-
-        {/* Gradient Controls */}
-        <div className="grid grid-cols-3 gap-2">
-          <Button
-            variant={gradientType === 'linear' ? 'default' : 'outline'}
-            onClick={() => onGradientTypeChange('linear')}
-            className="flex items-center gap-2"
-          >
-            <Layers className="w-4 h-4" />
-            Linear
-          </Button>
-          <Button
-            variant={gradientType === 'radial' ? 'default' : 'outline'}
-            onClick={() => onGradientTypeChange('radial')}
-            className="flex items-center gap-2"
-          >
-            <Circle className="w-4 h-4" />
-            Radial
-          </Button>
-          <Button
-            variant={gradientType === 'conic' ? 'default' : 'outline'}
-            onClick={() => onGradientTypeChange('conic')}
-            className="flex items-center gap-2"
-          >
-            <RotateCw className="w-4 h-4" />
-            Conic
-          </Button>
-        </div>
-
-        {/* Angle slider for linear/conic */}
-        {(gradientType === 'linear' || gradientType === 'conic') && (
+          {/* Animation Selection */}
           <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-neutral-400">Angle</span>
-              <span className="text-white">{gradientAngle}°</span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="360"
-              value={gradientAngle}
-              onChange={(e) => onAngleChange(Number(e.target.value))}
-              className="w-full h-2 bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:cursor-pointer"
-            />
-            <div className="flex gap-1">
-              {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => (
-                <button
-                  key={angle}
-                  onClick={() => onAngleChange(angle)}
-                  className={cn(
-                    'flex-1 text-xs py-1 rounded border transition-all',
-                    gradientAngle === angle
-                      ? 'border-white bg-neutral-800 text-white'
-                      : 'border-neutral-700 text-neutral-400 hover:border-neutral-600 hover:text-white'
-                  )}
-                >
-                  {angle}°
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Animation Selection */}
-        <div className="space-y-2">
-          <label className="text-sm text-neutral-400">Animation</label>
-          <div className="grid grid-cols-4 gap-2">
-            <button
-              onClick={() => onAnimationChange(null)}
-              className={cn(
-                'text-xs py-2 px-3 rounded border transition-all',
-                !selectedAnimationId
-                  ? 'border-white bg-neutral-800 text-white'
-                  : 'border-neutral-700 text-neutral-400 hover:border-neutral-600 hover:text-white'
-              )}
-            >
-              None
-            </button>
-            {animations.slice(0, 7).map((anim) => (
+            <label className="text-sm text-neutral-400">Animation</label>
+            <div className="grid grid-cols-4 gap-2">
               <button
-                key={anim.id}
-                onClick={() => onAnimationChange(anim.id)}
+                onClick={() => onAnimationChange(null)}
                 className={cn(
-                  'text-xs py-2 px-3 rounded border transition-all truncate',
-                  selectedAnimationId === anim.id
+                  'text-xs py-2 px-3 rounded border transition-all',
+                  !selectedAnimationId
                     ? 'border-white bg-neutral-800 text-white'
                     : 'border-neutral-700 text-neutral-400 hover:border-neutral-600 hover:text-white'
                 )}
               >
-                {anim.name}
+                None
               </button>
-            ))}
+              {animations.slice(0, 7).map((anim) => (
+                <button
+                  key={anim.id}
+                  onClick={() => onAnimationChange(anim.id)}
+                  className={cn(
+                    'text-xs py-2 px-3 rounded border transition-all truncate',
+                    selectedAnimationId === anim.id
+                      ? 'border-white bg-neutral-800 text-white'
+                      : 'border-neutral-700 text-neutral-400 hover:border-neutral-600 hover:text-white'
+                  )}
+                >
+                  {anim.name}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Export Tabs */}
-        <Tabs defaultValue="usecases" className="w-full">
+          {/* Export Tabs */}
+          <Tabs defaultValue="usecases" className="w-full">
           <TabsList className="w-full grid grid-cols-5">
             <TabsTrigger value="usecases">Use Cases</TabsTrigger>
             <TabsTrigger value="css">CSS</TabsTrigger>
@@ -560,23 +570,24 @@ export function GradientDetail({
           </TabsContent>
         </Tabs>
 
-        {/* Colors */}
-        <div className="flex gap-2 flex-wrap">
-          {gradient.colors.map((color, i) => (
-            <button
-              key={i}
-              onClick={() => handleCopy(color, `color-${i}`)}
-              className="flex items-center gap-2 px-3 py-2 bg-neutral-800/50 border border-neutral-700 rounded-lg hover:border-neutral-600 transition-colors"
-            >
-              <div className="w-5 h-5 rounded" style={{ background: color }} />
-              <span className="text-sm font-mono text-neutral-300">{color}</span>
-              {copiedId === `color-${i}` ? (
-                <Check className="w-3 h-3 text-green-500" />
-              ) : (
-                <Copy className="w-3 h-3 text-neutral-500" />
-              )}
-            </button>
-          ))}
+          {/* Colors */}
+          <div className="flex gap-2 flex-wrap pb-2">
+            {gradient.colors.map((color, i) => (
+              <button
+                key={i}
+                onClick={() => handleCopy(color, `color-${i}`)}
+                className="flex items-center gap-2 px-3 py-2 bg-neutral-800/50 border border-neutral-700 rounded-lg hover:border-neutral-600 transition-colors"
+              >
+                <div className="w-5 h-5 rounded" style={{ background: color }} />
+                <span className="text-sm font-mono text-neutral-300">{color}</span>
+                {copiedId === `color-${i}` ? (
+                  <Check className="w-3 h-3 text-green-500" />
+                ) : (
+                  <Copy className="w-3 h-3 text-neutral-500" />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       </DialogContent>
 

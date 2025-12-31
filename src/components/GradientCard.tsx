@@ -53,9 +53,14 @@ export const GradientCard = memo(function GradientCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
       transition={{
-        duration: 0.15,
-        delay: Math.min(index * 0.015, 0.3),
+        duration: 0.2,
+        delay: Math.min(index * 0.02, 0.4),
         ease: [0.22, 1, 0.36, 1],
+        layout: {
+          type: 'spring',
+          stiffness: 400,
+          damping: 30,
+        },
       }}
       data-testid="gradient-card"
       className={cn(

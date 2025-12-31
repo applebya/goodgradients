@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import type { AppState, GradientType, GradientCategory } from '@/types';
 import { getInitialState, updateURL, getMinimalShareState, getShareableURL } from '@/lib/state';
 import { getFavoriteIds, toggleFavorite as toggleFavoriteStorage } from '@/lib/favorites';
@@ -14,14 +14,31 @@ const DEFAULT_STATE: AppState = {
   isAnimating: true,
 };
 
+const URL_DEBOUNCE_MS = 150;
+
 export function useAppState() {
   const [state, setState] = useState<AppState>(() => getInitialState());
   const [favorites, setFavorites] = useState<string[]>(() => getFavoriteIds());
+  const urlUpdateTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Sync URL on state changes
+  // Sync URL on state changes with debouncing
   useEffect(() => {
-    const minimalState = getMinimalShareState(state);
-    updateURL(minimalState);
+    // Clear any pending URL update
+    if (urlUpdateTimer.current) {
+      clearTimeout(urlUpdateTimer.current);
+    }
+
+    // Debounce URL updates to prevent lag during rapid state changes
+    urlUpdateTimer.current = setTimeout(() => {
+      const minimalState = getMinimalShareState(state);
+      updateURL(minimalState);
+    }, URL_DEBOUNCE_MS);
+
+    return () => {
+      if (urlUpdateTimer.current) {
+        clearTimeout(urlUpdateTimer.current);
+      }
+    };
   }, [state]);
 
   // Actions
