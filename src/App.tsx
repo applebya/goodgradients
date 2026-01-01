@@ -4,7 +4,6 @@ import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { GradientGallery } from './components/GradientGallery';
 import { GradientDetail } from './components/GradientDetail';
-import { AnimationStudio } from './components/AnimationStudio';
 import { DiscoveryWizard } from './components/discovery-wizard';
 import { useAppState } from './hooks/useAppState';
 import { useKeyboard } from './hooks/useKeyboard';
@@ -28,8 +27,6 @@ export default function App() {
     onEscape: () => {
       if (state.selectedGradientId) {
         actions.selectGradient(null);
-      } else if (state.view === 'studio') {
-        actions.closeModal();
       } else {
         actions.setSearchQuery('');
       }
@@ -77,15 +74,6 @@ export default function App() {
     return actions.getShareURL();
   }, [actions]);
 
-  // Handle animation studio combination selection
-  const handleStudioCombination = useCallback(
-    (gradientId: string, animationId: string) => {
-      actions.selectGradient(gradientId);
-      actions.selectAnimation(animationId);
-    },
-    [actions]
-  );
-
   // Get selected gradient object
   const selectedGradient = state.selectedGradientId
     ? getGradientById(state.selectedGradientId)
@@ -99,7 +87,6 @@ export default function App() {
         onCategoryChange={actions.setCategory}
         onSearchChange={actions.setSearchQuery}
         onRandomGradient={handleRandomGradient}
-        onOpenStudio={actions.openStudio}
         searchInputRef={searchInputRef}
         onOpenWizard={wizard.openWizard}
         hasActiveFilters={wizard.hasActiveFilters}
@@ -141,13 +128,6 @@ export default function App() {
         onShare={handleShare}
       />
 
-      {/* Animation Studio Modal */}
-      <AnimationStudio
-        isOpen={state.view === 'studio'}
-        onClose={actions.closeModal}
-        onSelectCombination={handleStudioCombination}
-      />
-
       {/* Discovery Wizard Modal */}
       <DiscoveryWizard
         isOpen={wizard.isOpen}
@@ -158,14 +138,11 @@ export default function App() {
         canGoBack={wizard.canGoBack}
         isLastStep={wizard.isLastStep}
         onClose={wizard.closeWizard}
-        onSkip={wizard.skipWizard}
         onNext={wizard.nextStep}
         onBack={wizard.prevStep}
         onApply={wizard.applyFilters}
         onSetVibe={wizard.setVibe}
-        onToggleColorTemp={wizard.toggleColorTemp}
-        onSetUseCase={wizard.setUseCase}
-        onSetAnimationPref={wizard.setAnimationPref}
+        onToggleColor={wizard.toggleColor}
       />
     </div>
   );

@@ -5,31 +5,24 @@ import {
   Heart,
   Share2,
   Check,
-  X,
-  Play,
-  Pause,
   Layers,
   Circle,
   RotateCw,
   Maximize2,
-  Minus,
-  Plus,
+  ChevronRight,
 } from './icons';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from './ui/dialog';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { cn, copyToClipboard } from '@/lib/utils';
 import { transformGradient } from '@/lib/gradient';
-import { exportVanillaCSS, exportTailwind, exportAIDescription } from '@/lib/export';
+import { exportVanillaCSS, exportTailwind } from '@/lib/export';
 import { getGradientAverageColor, getContrastInfoForBackground, formatContrastRatio } from '@/lib/contrast';
-import { animations, getAnimationById } from '@/data/animations';
 import type { Gradient, GradientType } from '@/types';
 
 interface GradientDetailProps {
@@ -55,48 +48,16 @@ export function GradientDetail({
   onClose,
   gradientType,
   gradientAngle,
-  selectedAnimationId,
-  isAnimating,
   isFavorite,
   onGradientTypeChange,
   onAngleChange,
-  onAnimationChange,
-  onToggleAnimating,
   onToggleFavorite,
   onShare,
 }: GradientDetailProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [animationSpeed, setAnimationSpeed] = useState(1); // 1 = normal, 0.5 = slow, 2 = fast
   const [isFullscreen, setIsFullscreen] = useState(false);
-
-  const animation = selectedAnimationId ? getAnimationById(selectedAnimationId) : undefined;
-
-  // Parse animation properties
-  const getAnimationStyle = useCallback(() => {
-    if (!animation || !isAnimating) return {};
-
-    // Extract animation name and timing from property string
-    const animMatch = animation.property.match(/animation:\s*([^;]+)/);
-    const bgSizeMatch = animation.property.match(/background-size:\s*([^;]+)/);
-
-    if (animMatch && animMatch[1]) {
-      // Parse the animation value and adjust speed
-      const animParts = animMatch[1].trim().split(/\s+/);
-      const name = animParts[0];
-      const duration = animParts[1] || '3s';
-      const timing = animParts[2] || 'ease';
-      const iteration = animParts[3] || 'infinite';
-
-      // Adjust duration based on speed
-      const durationMs = parseFloat(duration) * 1000 / animationSpeed;
-
-      return {
-        backgroundSize: bgSizeMatch ? bgSizeMatch[1] : undefined,
-        animation: `${name} ${durationMs}ms ${timing} ${iteration}`,
-      };
-    }
-    return {};
-  }, [animation, isAnimating, animationSpeed]);
+  const [showCode, setShowCode] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const handleCopy = useCallback(
     async (text: string, id: string) => {
@@ -114,7 +75,7 @@ export function GradientDetail({
     const url = onShare();
     const success = await copyToClipboard(url);
     if (success) {
-      toast.success('Share URL copied to clipboard');
+      toast.success('Share URL copied');
     }
   }, [onShare]);
 
@@ -124,27 +85,101 @@ export function GradientDetail({
   const avgColor = getGradientAverageColor(gradient.colors);
   const contrastInfo = getContrastInfoForBackground(avgColor);
 
-  const cssExport = exportVanillaCSS(gradient, gradientType, gradientAngle, animation);
-  const tailwindExport = exportTailwind(gradient, gradientType, gradientAngle, animation);
-  const aiExport = exportAIDescription(gradient, gradientType, gradientAngle, animation);
+  // Get best text colors
+  const bestTextColors = contrastInfo
+    .filter(c => c.meetsAA)
+    .sort((a, b) => b.ratio - a.ratio)
+    .slice(0, 2);
+
+  const cssExport = exportVanillaCSS(gradient, gradientType, gradientAngle);
+  const tailwindExport = exportTailwind(gradient, gradientType, gradientAngle);
+
+  // Fullscreen preview
+  if (isFullscreen) {
+    return (
+      <div className="fixed inset-0 z-[100]" onClick={() => setIsFullscreen(false)}>
+        <div
+          className="w-full h-full flex flex-col items-center justify-center p-8"
+          style={{ background: displayGradient }}
+        >
+          {/* Sample content */}
+          <h1
+            className="text-5xl font-bold mb-4 drop-shadow-lg"
+            style={{ color: bestTextColors[0]?.color || '#ffffff' }}
+          >
+            Your Headline Here
+          </h1>
+          <p
+            className="text-xl opacity-80 mb-8 max-w-md text-center drop-shadow"
+            style={{ color: bestTextColors[0]?.color || '#ffffff' }}
+          >
+            This is how your content looks on this gradient background.
+          </p>
+          <div className="flex gap-4">
+            <button
+              className="px-6 py-3 rounded-lg font-medium shadow-lg"
+              style={{
+                background: bestTextColors[0]?.color || '#ffffff',
+                color: avgColor
+              }}
+            >
+              Primary Button
+            </button>
+            <button
+              className="px-6 py-3 rounded-lg font-medium border-2"
+              style={{
+                borderColor: bestTextColors[0]?.color || '#ffffff',
+                color: bestTextColors[0]?.color || '#ffffff'
+              }}
+            >
+              Secondary
+            </button>
+          </div>
+
+          {/* Text color suggestions */}
+          <div className="absolute bottom-6 left-6 flex gap-2">
+            <span className="text-xs opacity-60" style={{ color: bestTextColors[0]?.color || '#fff' }}>
+              Recommended text:
+            </span>
+            {bestTextColors.map((tc, i) => (
+              <button
+                key={i}
+                onClick={(e) => { e.stopPropagation(); handleCopy(tc.color, `text-${i}`); }}
+                className="flex items-center gap-1 px-2 py-1 rounded bg-black/30 backdrop-blur-sm"
+              >
+                <div className="w-3 h-3 rounded-full border border-white/30" style={{ background: tc.color }} />
+                <span className="text-xs font-mono" style={{ color: tc.color }}>{tc.color}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="absolute bottom-6 right-6">
+            <Badge className="bg-black/50 backdrop-blur-sm text-white border-0">
+              Click anywhere to close
+            </Badge>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
-        {/* Sticky Header */}
-        <DialogHeader className="flex-shrink-0 pb-3 border-b border-neutral-800">
+      <DialogContent className="max-w-2xl p-4 gap-3">
+        {/* Header */}
+        <DialogHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-base">
               {gradient.name}
-              <Badge variant="secondary" className="ml-2">
+              <Badge variant="secondary" className="text-xs">
                 {gradient.category}
               </Badge>
             </DialogTitle>
-            <div className="flex gap-2">
+            <div className="flex gap-1">
               <Button
                 size="icon-sm"
                 variant="ghost"
-                className={cn('text-neutral-400 hover:text-white', isFavorite && 'text-red-400')}
+                className={cn('h-8 w-8', isFavorite && 'text-red-400')}
                 onClick={onToggleFavorite}
               >
                 <Heart className={cn('w-4 h-4', isFavorite && 'fill-current')} />
@@ -152,449 +187,210 @@ export function GradientDetail({
               <Button
                 size="icon-sm"
                 variant="ghost"
-                className="text-neutral-400 hover:text-white"
+                className="h-8 w-8"
                 onClick={handleShare}
               >
                 <Share2 className="w-4 h-4" />
               </Button>
             </div>
           </div>
-          <DialogDescription className="text-sm">{gradient.description}</DialogDescription>
         </DialogHeader>
 
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto space-y-4 pt-4">
-          {/* Compact Preview */}
-          <div
-            className={cn(
-              'rounded-xl relative overflow-hidden transition-all duration-300',
-              isFullscreen ? 'fixed inset-4 z-50 h-auto' : 'h-32'
-            )}
-            style={{
-              background: displayGradient,
-              ...getAnimationStyle(),
-            }}
+        {/* Preview with fullscreen option */}
+        <div
+          className="rounded-xl relative overflow-hidden h-28 cursor-pointer group"
+          style={{ background: displayGradient }}
+          onClick={() => setIsFullscreen(true)}
+        >
+          {/* Text preview */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span
+              className="text-lg font-semibold drop-shadow-md opacity-80 group-hover:opacity-100 transition-opacity"
+              style={{ color: bestTextColors[0]?.color || '#ffffff' }}
+            >
+              Click to preview fullscreen
+            </span>
+          </div>
+
+          {/* Expand button */}
+          <Button
+            size="icon-xs"
+            variant="ghost"
+            className="absolute top-2 right-2 bg-black/40 text-white hover:bg-black/60 h-7 w-7"
+            onClick={(e) => { e.stopPropagation(); setIsFullscreen(true); }}
           >
-            {/* Preview controls overlay */}
-            <div className="absolute top-2 right-2 flex gap-1">
-              <Button
-                size="icon-xs"
-                variant="ghost"
-                className="bg-black/40 text-white hover:bg-black/60 h-7 w-7"
-                onClick={onToggleAnimating}
-              >
-                {isAnimating ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-              </Button>
-              <Button
-                size="icon-xs"
-                variant="ghost"
-                className="bg-black/40 text-white hover:bg-black/60 h-7 w-7"
-                onClick={() => setIsFullscreen(!isFullscreen)}
-              >
-                <Maximize2 className="w-3.5 h-3.5" />
-              </Button>
-            </div>
+            <Maximize2 className="w-3.5 h-3.5" />
+          </Button>
 
-            {/* Animation info and speed */}
-            <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
-              {animation && (
-                <Badge className="bg-black/60 text-white border-0 text-xs py-0.5">
-                  {animation.name}
-                </Badge>
-              )}
-              {animation && (
-                <div className="flex items-center gap-1.5 bg-black/60 rounded-full px-2 py-0.5">
-                  <Button
-                    size="icon-xs"
-                    variant="ghost"
-                    className="text-white h-4 w-4 p-0"
-                    onClick={() => setAnimationSpeed(Math.max(0.25, animationSpeed - 0.25))}
-                  >
-                    <Minus className="w-2.5 h-2.5" />
-                  </Button>
-                  <span className="text-[10px] text-white min-w-[2.5ch] text-center">{animationSpeed}x</span>
-                  <Button
-                    size="icon-xs"
-                    variant="ghost"
-                    className="text-white h-4 w-4 p-0"
-                    onClick={() => setAnimationSpeed(Math.min(3, animationSpeed + 0.25))}
-                  >
-                    <Plus className="w-2.5 h-2.5" />
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            {/* Fullscreen close hint */}
-            {isFullscreen && (
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2">
-                <Badge className="bg-black/60 text-white border-0">
-                  Press Escape to exit
-                </Badge>
-              </div>
-            )}
-          </div>
-
-          {/* Fullscreen backdrop */}
-          {isFullscreen && (
-            <div
-              className="fixed inset-0 bg-black/80 z-40"
-              onClick={() => setIsFullscreen(false)}
-            />
-          )}
-
-          {/* Gradient Controls */}
-          <div className="grid grid-cols-3 gap-2">
-            <Button
-              variant={gradientType === 'linear' ? 'default' : 'outline'}
-              onClick={() => onGradientTypeChange('linear')}
-              className="flex items-center gap-2"
-              size="sm"
-            >
-              <Layers className="w-4 h-4" />
-              Linear
-            </Button>
-            <Button
-              variant={gradientType === 'radial' ? 'default' : 'outline'}
-              onClick={() => onGradientTypeChange('radial')}
-              className="flex items-center gap-2"
-              size="sm"
-            >
-              <Circle className="w-4 h-4" />
-              Radial
-            </Button>
-            <Button
-              variant={gradientType === 'conic' ? 'default' : 'outline'}
-              onClick={() => onGradientTypeChange('conic')}
-              className="flex items-center gap-2"
-              size="sm"
-            >
-              <RotateCw className="w-4 h-4" />
-              Conic
-            </Button>
-          </div>
-
-          {/* Angle slider for linear/conic */}
-          {(gradientType === 'linear' || gradientType === 'conic') && (
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-neutral-400">Angle</span>
-                <span className="text-white">{gradientAngle}°</span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="360"
-                value={gradientAngle}
-                onChange={(e) => onAngleChange(Number(e.target.value))}
-                className="w-full h-2 bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:cursor-pointer"
-              />
-              <div className="flex gap-1">
-                {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => (
-                  <button
-                    key={angle}
-                    onClick={() => onAngleChange(angle)}
-                    className={cn(
-                      'flex-1 text-xs py-1 rounded border transition-all',
-                      gradientAngle === angle
-                        ? 'border-white bg-neutral-800 text-white'
-                        : 'border-neutral-700 text-neutral-400 hover:border-neutral-600 hover:text-white'
-                    )}
-                  >
-                    {angle}°
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Animation Selection */}
-          <div className="space-y-2">
-            <label className="text-sm text-neutral-400">Animation</label>
-            <div className="grid grid-cols-4 gap-2">
-              <button
-                onClick={() => onAnimationChange(null)}
-                className={cn(
-                  'text-xs py-2 px-3 rounded border transition-all',
-                  !selectedAnimationId
-                    ? 'border-white bg-neutral-800 text-white'
-                    : 'border-neutral-700 text-neutral-400 hover:border-neutral-600 hover:text-white'
-                )}
-              >
-                None
-              </button>
-              {animations.slice(0, 7).map((anim) => (
-                <button
-                  key={anim.id}
-                  onClick={() => onAnimationChange(anim.id)}
-                  className={cn(
-                    'text-xs py-2 px-3 rounded border transition-all truncate',
-                    selectedAnimationId === anim.id
-                      ? 'border-white bg-neutral-800 text-white'
-                      : 'border-neutral-700 text-neutral-400 hover:border-neutral-600 hover:text-white'
-                  )}
-                >
-                  {anim.name}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Export Tabs */}
-          <Tabs defaultValue="usecases" className="w-full">
-          <TabsList className="w-full grid grid-cols-5">
-            <TabsTrigger value="usecases">Use Cases</TabsTrigger>
-            <TabsTrigger value="css">CSS</TabsTrigger>
-            <TabsTrigger value="tailwind">Tailwind</TabsTrigger>
-            <TabsTrigger value="ai">AI Desc</TabsTrigger>
-            <TabsTrigger value="wcag">WCAG</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="usecases" className="mt-4">
-            <div className="grid grid-cols-2 gap-4">
-              {/* Background Example */}
-              <div className="space-y-2">
-                <p className="text-xs text-neutral-400 font-medium">Background</p>
-                <div
-                  className="rounded-xl p-6 flex flex-col items-center justify-center min-h-[120px]"
-                  style={{ background: displayGradient, ...getAnimationStyle() }}
-                >
-                  <p className="text-white font-semibold text-lg drop-shadow-md">Hero Section</p>
-                  <p className="text-white/80 text-sm drop-shadow">Beautiful gradient background</p>
-                </div>
-              </div>
-
-              {/* Card Example */}
-              <div className="space-y-2">
-                <p className="text-xs text-neutral-400 font-medium">Card</p>
-                <div className="bg-neutral-900 rounded-xl p-4 border border-neutral-700">
-                  <div
-                    className="h-16 rounded-lg mb-3"
-                    style={{ background: displayGradient, ...getAnimationStyle() }}
-                  />
-                  <h4 className="text-white font-medium">Card Title</h4>
-                  <p className="text-neutral-400 text-sm">Content with gradient accent</p>
-                </div>
-              </div>
-
-              {/* Button Examples */}
-              <div className="space-y-2">
-                <p className="text-xs text-neutral-400 font-medium">Buttons</p>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    className="px-4 py-2 rounded-lg text-white font-medium text-sm shadow-lg"
-                    style={{ background: displayGradient }}
-                  >
-                    Primary Action
-                  </button>
-                  <button
-                    className="px-4 py-2 rounded-lg text-transparent font-medium text-sm bg-clip-text"
-                    style={{ backgroundImage: displayGradient }}
-                  >
-                    Gradient Text
-                  </button>
-                </div>
-              </div>
-
-              {/* Text Example */}
-              <div className="space-y-2">
-                <p className="text-xs text-neutral-400 font-medium">Text & Border</p>
-                <div className="space-y-3">
-                  <h3
-                    className="text-2xl font-bold bg-clip-text text-transparent"
-                    style={{ backgroundImage: displayGradient }}
-                  >
-                    Gradient Heading
-                  </h3>
-                  <div
-                    className="p-3 rounded-lg border-2"
-                    style={{ borderImage: `${displayGradient} 1` }}
-                  >
-                    <p className="text-neutral-300 text-sm">Border gradient example</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Badge/Tag Examples */}
-              <div className="space-y-2">
-                <p className="text-xs text-neutral-400 font-medium">Badges & Tags</p>
-                <div className="flex flex-wrap gap-2">
-                  <span
-                    className="px-3 py-1 rounded-full text-white text-xs font-medium"
-                    style={{ background: displayGradient }}
-                  >
-                    Featured
-                  </span>
-                  <span
-                    className="px-3 py-1 rounded-full text-white text-xs font-medium"
-                    style={{ background: displayGradient }}
-                  >
-                    New
-                  </span>
-                  <span
-                    className="px-3 py-1 rounded-full text-white text-xs font-medium"
-                    style={{ background: displayGradient }}
-                  >
-                    Pro
-                  </span>
-                </div>
-              </div>
-
-              {/* Avatar/Icon Example */}
-              <div className="space-y-2">
-                <p className="text-xs text-neutral-400 font-medium">Avatar & Icons</p>
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
-                    style={{ background: displayGradient }}
-                  >
-                    JD
-                  </div>
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center"
-                    style={{ background: displayGradient }}
-                  >
-                    <Heart className="w-5 h-5 text-white" />
-                  </div>
-                  <div
-                    className="w-8 h-8 rounded-md flex items-center justify-center"
-                    style={{ background: displayGradient }}
-                  >
-                    <Check className="w-4 h-4 text-white" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="css">
-            <div className="relative">
-              <pre className="bg-black/50 border border-neutral-700 rounded-lg p-4 overflow-x-auto text-sm text-neutral-300">
-                <code>{cssExport.code}</code>
-              </pre>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="absolute top-2 right-2 text-white"
-                onClick={() => handleCopy(cssExport.code, 'css')}
-              >
-                {copiedId === 'css' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              </Button>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="tailwind">
-            <div className="relative">
-              <pre className="bg-black/50 border border-neutral-700 rounded-lg p-4 overflow-x-auto text-sm text-neutral-300">
-                <code>{tailwindExport.code}</code>
-              </pre>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="absolute top-2 right-2 text-white"
-                onClick={() => handleCopy(tailwindExport.code, 'tailwind')}
-              >
-                {copiedId === 'tailwind' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              </Button>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="ai">
-            <div className="relative">
-              <pre className="bg-black/50 border border-neutral-700 rounded-lg p-4 overflow-x-auto text-sm text-neutral-300 whitespace-pre-wrap">
-                <code>{aiExport.code}</code>
-              </pre>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="absolute top-2 right-2 text-white"
-                onClick={() => handleCopy(aiExport.code, 'ai')}
-              >
-                {copiedId === 'ai' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              </Button>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="wcag">
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 p-3 bg-neutral-800/50 rounded-lg">
-                <div className="w-12 h-12 rounded-lg" style={{ background: avgColor }} />
-                <div>
-                  <p className="text-xs text-neutral-400">Average Color</p>
-                  <p className="text-sm text-white font-mono">{avgColor}</p>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                {contrastInfo.map((info) => (
-                  <div
-                    key={info.color}
-                    className="flex items-center justify-between p-3 bg-neutral-800/30 border border-neutral-700 rounded-lg"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-10 h-10 rounded flex items-center justify-center text-sm font-medium"
-                        style={{ background: displayGradient, color: info.color }}
-                      >
-                        Aa
-                      </div>
-                      <div>
-                        <p className="text-sm text-white">{info.name}</p>
-                        <p className="text-xs text-neutral-500">
-                          {info.color} · {formatContrastRatio(info.ratio)}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      {[
-                        { label: 'AA', pass: info.meetsAA },
-                        { label: 'AA+', pass: info.meetsAALarge },
-                        { label: 'AAA', pass: info.meetsAAA },
-                      ].map(({ label, pass }) => (
-                        <div key={label} className="flex items-center gap-1">
-                          {pass ? (
-                            <Check className="w-3 h-3 text-green-500" />
-                          ) : (
-                            <X className="w-3 h-3 text-neutral-600" />
-                          )}
-                          <span className={cn('text-xs', pass ? 'text-green-500' : 'text-neutral-600')}>
-                            {label}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
-
-          {/* Colors */}
-          <div className="flex gap-2 flex-wrap pb-2">
-            {gradient.colors.map((color, i) => (
+          {/* Recommended text colors */}
+          <div className="absolute bottom-2 left-2 flex gap-1.5">
+            {bestTextColors.map((tc, i) => (
               <button
                 key={i}
-                onClick={() => handleCopy(color, `color-${i}`)}
-                className="flex items-center gap-2 px-3 py-2 bg-neutral-800/50 border border-neutral-700 rounded-lg hover:border-neutral-600 transition-colors"
+                onClick={(e) => { e.stopPropagation(); handleCopy(tc.color, `text-${i}`); }}
+                className="flex items-center gap-1 px-2 py-0.5 rounded bg-black/40 backdrop-blur-sm text-xs"
+                title={`${tc.name}: ${formatContrastRatio(tc.ratio)} contrast`}
               >
-                <div className="w-5 h-5 rounded" style={{ background: color }} />
-                <span className="text-sm font-mono text-neutral-300">{color}</span>
-                {copiedId === `color-${i}` ? (
-                  <Check className="w-3 h-3 text-green-500" />
-                ) : (
-                  <Copy className="w-3 h-3 text-neutral-500" />
-                )}
+                <div className="w-2.5 h-2.5 rounded-full" style={{ background: tc.color }} />
+                <span className="font-mono" style={{ color: tc.color }}>{tc.color}</span>
+                {tc.meetsAAA && <Check className="w-2.5 h-2.5 text-green-400" />}
               </button>
             ))}
           </div>
         </div>
-      </DialogContent>
 
-      {/* Inject keyframes */}
-      {animation && (
-        <style dangerouslySetInnerHTML={{ __html: animation.keyframes }} />
-      )}
+        {/* Use Cases - Most Prominent */}
+        <div className="grid grid-cols-4 gap-2">
+          {/* Background */}
+          <div
+            className="rounded-lg p-3 flex flex-col items-center justify-center min-h-[70px] cursor-pointer hover:scale-[1.02] transition-transform"
+            style={{ background: displayGradient }}
+            onClick={() => setIsFullscreen(true)}
+          >
+            <span className="text-xs font-medium drop-shadow" style={{ color: bestTextColors[0]?.color || '#fff' }}>
+              Background
+            </span>
+          </div>
+
+          {/* Button */}
+          <div className="flex items-center justify-center bg-neutral-800 rounded-lg p-2">
+            <button
+              className="px-3 py-1.5 rounded text-xs font-medium text-white"
+              style={{ background: displayGradient }}
+            >
+              Button
+            </button>
+          </div>
+
+          {/* Text */}
+          <div className="flex items-center justify-center bg-neutral-800 rounded-lg p-2">
+            <span
+              className="text-lg font-bold bg-clip-text text-transparent"
+              style={{ backgroundImage: displayGradient }}
+            >
+              Text
+            </span>
+          </div>
+
+          {/* Badge */}
+          <div className="flex items-center justify-center bg-neutral-800 rounded-lg p-2">
+            <span
+              className="px-2 py-0.5 rounded-full text-[10px] text-white font-medium"
+              style={{ background: displayGradient }}
+            >
+              Badge
+            </span>
+          </div>
+        </div>
+
+        {/* Color chips - quick copy */}
+        <div className="flex gap-1.5 flex-wrap">
+          {gradient.colors.map((color, i) => (
+            <button
+              key={i}
+              onClick={() => handleCopy(color, `color-${i}`)}
+              className="flex items-center gap-1.5 px-2 py-1 bg-neutral-800/50 border border-neutral-700 rounded hover:border-neutral-500 transition-colors"
+            >
+              <div className="w-4 h-4 rounded" style={{ background: color }} />
+              <span className="text-xs font-mono text-neutral-300">{color}</span>
+              {copiedId === `color-${i}` && <Check className="w-3 h-3 text-green-500" />}
+            </button>
+          ))}
+        </div>
+
+        {/* Collapsible: Gradient Settings */}
+        <button
+          onClick={() => setShowSettings(!showSettings)}
+          className="flex items-center justify-between w-full py-2 text-sm text-neutral-400 hover:text-white transition-colors"
+        >
+          <span>Gradient Settings</span>
+          <ChevronRight className={cn('w-4 h-4 transition-transform', showSettings && 'rotate-90')} />
+        </button>
+        {showSettings && (
+          <div className="space-y-3 pb-2">
+            <div className="grid grid-cols-3 gap-2">
+              <Button
+                variant={gradientType === 'linear' ? 'default' : 'outline'}
+                onClick={() => onGradientTypeChange('linear')}
+                size="sm"
+              >
+                <Layers className="w-3 h-3 mr-1" /> Linear
+              </Button>
+              <Button
+                variant={gradientType === 'radial' ? 'default' : 'outline'}
+                onClick={() => onGradientTypeChange('radial')}
+                size="sm"
+              >
+                <Circle className="w-3 h-3 mr-1" /> Radial
+              </Button>
+              <Button
+                variant={gradientType === 'conic' ? 'default' : 'outline'}
+                onClick={() => onGradientTypeChange('conic')}
+                size="sm"
+              >
+                <RotateCw className="w-3 h-3 mr-1" /> Conic
+              </Button>
+            </div>
+            {(gradientType === 'linear' || gradientType === 'conic') && (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-neutral-400 w-12">Angle</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="360"
+                  value={gradientAngle}
+                  onChange={(e) => onAngleChange(Number(e.target.value))}
+                  className="flex-1 h-1.5 bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
+                />
+                <span className="text-xs text-white w-8 text-right">{gradientAngle}°</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Collapsible: Code Export */}
+        <button
+          onClick={() => setShowCode(!showCode)}
+          className="flex items-center justify-between w-full py-2 text-sm text-neutral-400 hover:text-white transition-colors border-t border-neutral-800 pt-3"
+        >
+          <span>Copy Code</span>
+          <ChevronRight className={cn('w-4 h-4 transition-transform', showCode && 'rotate-90')} />
+        </button>
+        {showCode && (
+          <div className="grid grid-cols-2 gap-2 pb-2">
+            <button
+              onClick={() => handleCopy(cssExport.code, 'css')}
+              className="flex items-center justify-between px-3 py-2 bg-neutral-800 rounded-lg hover:bg-neutral-700 transition-colors"
+            >
+              <span className="text-sm text-white">CSS</span>
+              {copiedId === 'css' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-neutral-400" />}
+            </button>
+            <button
+              onClick={() => handleCopy(tailwindExport.code, 'tailwind')}
+              className="flex items-center justify-between px-3 py-2 bg-neutral-800 rounded-lg hover:bg-neutral-700 transition-colors"
+            >
+              <span className="text-sm text-white">Tailwind</span>
+              {copiedId === 'tailwind' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-neutral-400" />}
+            </button>
+          </div>
+        )}
+
+        {/* Accessibility - Compact */}
+        <div className="flex items-center gap-2 pt-2 border-t border-neutral-800">
+          <span className="text-xs text-neutral-500">Accessibility:</span>
+          {contrastInfo.slice(0, 2).map((info) => (
+            <div
+              key={info.color}
+              className="flex items-center gap-1 px-2 py-1 bg-neutral-800/50 rounded text-xs"
+            >
+              <div className="w-3 h-3 rounded" style={{ background: info.color }} />
+              <span className={cn(info.meetsAA ? 'text-green-400' : 'text-neutral-500')}>
+                {info.meetsAAA ? 'AAA' : info.meetsAA ? 'AA' : 'Fail'}
+              </span>
+            </div>
+          ))}
+        </div>
+      </DialogContent>
     </Dialog>
   );
 }

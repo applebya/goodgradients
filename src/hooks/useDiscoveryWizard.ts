@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
-import type { Gradient, WizardVibe, WizardColorTemp, WizardUseCase, WizardAnimationPref, WizardSelections } from '@/types';
+import type { Gradient, WizardVibe, WizardColor, WizardSelections } from '@/types';
 import {
   hasCompletedWizard,
   setWizardCompleted,
@@ -11,33 +11,25 @@ import {
   countMatchingGradients,
 } from '@/lib/wizard';
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 2; // Vibe → Colors
 
 export interface UseDiscoveryWizardReturn {
-  // Wizard state
   isOpen: boolean;
   currentStep: number;
   selections: WizardSelections;
   hasActiveFilters: boolean;
-
-  // Computed values
   filteredGradients: Gradient[];
   matchCount: number;
   totalSteps: number;
   canGoBack: boolean;
-  canGoNext: boolean;
   isLastStep: boolean;
 
-  // Actions
   openWizard: () => void;
   closeWizard: () => void;
-  skipWizard: () => void;
   nextStep: () => void;
   prevStep: () => void;
   setVibe: (vibe: WizardVibe | null) => void;
-  toggleColorTemp: (colorTemp: WizardColorTemp) => void;
-  setUseCase: (useCase: WizardUseCase | null) => void;
-  setAnimationPref: (pref: WizardAnimationPref | null) => void;
+  toggleColor: (color: WizardColor) => void;
   applyFilters: () => void;
   clearFilters: () => void;
 }
@@ -52,11 +44,9 @@ export function useDiscoveryWizard(allGradients: Gradient[]): UseDiscoveryWizard
   useEffect(() => {
     const completed = hasCompletedWizard();
     if (!completed) {
-      // Small delay to let the page render first
-      const timer = setTimeout(() => setIsOpen(true), 500);
+      const timer = setTimeout(() => setIsOpen(true), 300);
       return () => clearTimeout(timer);
     } else {
-      // Load saved preferences if they exist
       const saved = loadWizardPrefs();
       if (saved) {
         setAppliedSelections(saved);
@@ -65,7 +55,6 @@ export function useDiscoveryWizard(allGradients: Gradient[]): UseDiscoveryWizard
     }
   }, []);
 
-  // Computed values
   const filteredGradients = useMemo(() => {
     if (!appliedSelections) return allGradients;
     return filterGradientsBySelections(allGradients, appliedSelections);
@@ -78,36 +67,23 @@ export function useDiscoveryWizard(allGradients: Gradient[]): UseDiscoveryWizard
   const hasActiveFilters = useMemo(() => {
     return appliedSelections !== null && (
       appliedSelections.vibe !== null ||
-      appliedSelections.colorTemps.length > 0 ||
-      appliedSelections.useCase !== null ||
-      appliedSelections.animationPref !== null
+      appliedSelections.colors.length > 0
     );
   }, [appliedSelections]);
 
   const canGoBack = currentStep > 0;
-  const canGoNext = currentStep < TOTAL_STEPS - 1;
   const isLastStep = currentStep === TOTAL_STEPS - 1;
 
-  // Actions
   const openWizard = useCallback(() => {
     setCurrentStep(0);
-    // Reset to applied selections or default
     setSelections(appliedSelections ?? getDefaultSelections());
     setIsOpen(true);
   }, [appliedSelections]);
 
   const closeWizard = useCallback(() => {
-    setIsOpen(false);
-    setCurrentStep(0);
-  }, []);
-
-  const skipWizard = useCallback(() => {
     setWizardCompleted();
     setIsOpen(false);
     setCurrentStep(0);
-    // Don't apply any filters
-    setAppliedSelections(null);
-    clearWizardPrefs();
   }, []);
 
   const nextStep = useCallback(() => {
@@ -126,24 +102,16 @@ export function useDiscoveryWizard(allGradients: Gradient[]): UseDiscoveryWizard
     setSelections(prev => ({ ...prev, vibe }));
   }, []);
 
-  const toggleColorTemp = useCallback((colorTemp: WizardColorTemp) => {
+  const toggleColor = useCallback((color: WizardColor) => {
     setSelections(prev => {
-      const exists = prev.colorTemps.includes(colorTemp);
+      const exists = prev.colors.includes(color);
       return {
         ...prev,
-        colorTemps: exists
-          ? prev.colorTemps.filter(c => c !== colorTemp)
-          : [...prev.colorTemps, colorTemp],
+        colors: exists
+          ? prev.colors.filter(c => c !== color)
+          : [...prev.colors, color],
       };
     });
-  }, []);
-
-  const setUseCase = useCallback((useCase: WizardUseCase | null) => {
-    setSelections(prev => ({ ...prev, useCase }));
-  }, []);
-
-  const setAnimationPref = useCallback((animationPref: WizardAnimationPref | null) => {
-    setSelections(prev => ({ ...prev, animationPref }));
   }, []);
 
   const applyFilters = useCallback(() => {
@@ -161,30 +129,21 @@ export function useDiscoveryWizard(allGradients: Gradient[]): UseDiscoveryWizard
   }, []);
 
   return {
-    // Wizard state
     isOpen,
     currentStep,
     selections,
     hasActiveFilters,
-
-    // Computed values
     filteredGradients,
     matchCount,
     totalSteps: TOTAL_STEPS,
     canGoBack,
-    canGoNext,
     isLastStep,
-
-    // Actions
     openWizard,
     closeWizard,
-    skipWizard,
     nextStep,
     prevStep,
     setVibe,
-    toggleColorTemp,
-    setUseCase,
-    setAnimationPref,
+    toggleColor,
     applyFilters,
     clearFilters,
   };

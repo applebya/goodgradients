@@ -86,9 +86,36 @@ test.describe('GoodGradients - Gradient Detail', () => {
     await heartButton.click();
   });
 
-  test('should change gradient type between linear/radial/conic', async ({ page }) => {
+  test('should show use case previews', async ({ page }) => {
     await page.locator('[data-testid="gradient-card"]').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
+
+    // Should show use case labels
+    await expect(page.getByRole('dialog').getByText('Background')).toBeVisible();
+    await expect(page.getByRole('dialog').getByText('Button')).toBeVisible();
+    await expect(page.getByRole('dialog').getByText('Text')).toBeVisible();
+    await expect(page.getByRole('dialog').getByText('Badge')).toBeVisible();
+  });
+
+  test('should show collapsible gradient settings', async ({ page }) => {
+    await page.locator('[data-testid="gradient-card"]').first().click();
+    await expect(page.getByRole('dialog')).toBeVisible();
+
+    // Click to expand gradient settings
+    await page.getByRole('dialog').getByText('Gradient Settings').click();
+
+    // Should show gradient type buttons
+    await expect(page.getByRole('dialog').getByRole('button', { name: /Linear/i })).toBeVisible();
+    await expect(page.getByRole('dialog').getByRole('button', { name: /Radial/i })).toBeVisible();
+    await expect(page.getByRole('dialog').getByRole('button', { name: /Conic/i })).toBeVisible();
+  });
+
+  test('should change gradient type in settings', async ({ page }) => {
+    await page.locator('[data-testid="gradient-card"]').first().click();
+    await expect(page.getByRole('dialog')).toBeVisible();
+
+    // Expand settings
+    await page.getByRole('dialog').getByText('Gradient Settings').click();
 
     // Click radial button
     await page.getByRole('dialog').getByRole('button', { name: /Radial/i }).click();
@@ -98,16 +125,38 @@ test.describe('GoodGradients - Gradient Detail', () => {
     await expect(radialButton).toHaveClass(/bg-white|bg-primary/);
   });
 
+  test('should show collapsible code export', async ({ page }) => {
+    await page.locator('[data-testid="gradient-card"]').first().click();
+    await expect(page.getByRole('dialog')).toBeVisible();
+
+    // Click to expand code section
+    await page.getByRole('dialog').getByText('Copy Code').click();
+
+    // Should show CSS and Tailwind buttons
+    await expect(page.getByRole('dialog').getByText('CSS')).toBeVisible();
+    await expect(page.getByRole('dialog').getByText('Tailwind')).toBeVisible();
+  });
+
   test('should copy CSS code', async ({ page }) => {
     await page.locator('[data-testid="gradient-card"]').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
 
-    // Click copy button in CSS tab (look for button with copy SVG)
-    const copyButton = page.getByRole('dialog').locator('button').filter({ has: page.locator('svg rect[width="14"]') }).first();
-    await copyButton.click();
+    // Expand code section
+    await page.getByRole('dialog').getByText('Copy Code').click();
+
+    // Click CSS copy button
+    await page.getByRole('dialog').locator('button').filter({ hasText: 'CSS' }).click();
 
     // Toast should appear
     await expect(page.getByText('Copied to clipboard')).toBeVisible({ timeout: 3000 });
+  });
+
+  test('should show accessibility info', async ({ page }) => {
+    await page.locator('[data-testid="gradient-card"]').first().click();
+    await expect(page.getByRole('dialog')).toBeVisible();
+
+    // Should show accessibility label
+    await expect(page.getByRole('dialog').getByText('Accessibility:')).toBeVisible();
   });
 
   test('should close modal with Escape key', async ({ page }) => {
@@ -117,36 +166,17 @@ test.describe('GoodGradients - Gradient Detail', () => {
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog')).not.toBeVisible();
   });
-});
 
-test.describe('GoodGradients - Animation Studio', () => {
-  test.beforeEach(async ({ page }) => {
-    await skipWizard(page);
-    await page.goto('/');
-    await page.waitForSelector('[data-testid="gradient-card"]', { timeout: 15000 });
-  });
-
-  test('should open animation studio', async ({ page }) => {
-    // Click the Animation Studio button in header
-    await page.getByRole('button', { name: /Animation Studio/i }).click();
-
-    // Dialog should be visible
+  test('should open fullscreen preview', async ({ page }) => {
+    await page.locator('[data-testid="gradient-card"]').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
 
-    // Should have the Animation Studio heading
-    await expect(page.getByRole('heading', { name: 'Animation Studio' })).toBeVisible();
-  });
+    // Click on the preview area that says "Click to preview fullscreen"
+    await page.getByText('Click to preview fullscreen').click();
 
-  test('should show animation category filters', async ({ page }) => {
-    await page.getByRole('button', { name: /Animation Studio/i }).click();
-    await expect(page.getByRole('dialog')).toBeVisible();
-
-    // Should show "All" category button (use exact match)
-    await expect(page.getByRole('dialog').getByRole('button', { name: 'All', exact: true })).toBeVisible();
-
-    // Should show animation cards
-    const animationText = page.getByRole('dialog').locator('text=Shift');
-    await expect(animationText.first()).toBeVisible();
+    // Fullscreen should show sample content
+    await expect(page.getByText('Your Headline Here')).toBeVisible();
+    await expect(page.getByText('Click anywhere to close')).toBeVisible();
   });
 });
 
@@ -172,52 +202,15 @@ test.describe('GoodGradients - URL State', () => {
     await page.locator('[data-testid="gradient-card"]').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
 
+    // Expand settings
+    await page.getByRole('dialog').getByText('Gradient Settings').click();
+
     // Change to conic type
     const conicButton = page.getByRole('dialog').getByRole('button', { name: /Conic/i });
     await conicButton.click();
 
     // Conic button should be active
     await expect(conicButton).toHaveClass(/bg-white|bg-primary/);
-  });
-});
-
-test.describe('GoodGradients - Export Formats', () => {
-  test.beforeEach(async ({ page }) => {
-    await skipWizard(page);
-    await page.goto('/');
-    await page.waitForSelector('[data-testid="gradient-card"]', { timeout: 15000 });
-    await page.locator('[data-testid="gradient-card"]').first().click();
-    await expect(page.getByRole('dialog')).toBeVisible();
-  });
-
-  test('should show CSS export tab', async ({ page }) => {
-    // Click CSS tab (Use Cases is now default)
-    await page.getByRole('tab', { name: 'CSS' }).click();
-
-    // Should show CSS code with .gradient class
-    await expect(page.getByRole('dialog').locator('code')).toContainText('.gradient');
-  });
-
-  test('should show Tailwind export tab', async ({ page }) => {
-    await page.getByRole('tab', { name: 'Tailwind' }).click();
-
-    // Should show Tailwind classes
-    await expect(page.getByRole('dialog').locator('code')).toContainText('bg-');
-  });
-
-  test('should show AI Description export tab', async ({ page }) => {
-    await page.getByRole('tab', { name: 'AI Desc' }).click();
-
-    // Should show natural language description
-    const preElement = page.getByRole('dialog').locator('pre');
-    await expect(preElement).toBeVisible();
-  });
-
-  test('should show WCAG contrast info', async ({ page }) => {
-    await page.getByRole('tab', { name: 'WCAG' }).click();
-
-    // Should show contrast information
-    await expect(page.getByRole('dialog').getByText('Average Color')).toBeVisible();
   });
 });
 
@@ -259,26 +252,6 @@ test.describe('GoodGradients - Keyboard Shortcuts', () => {
     await expect(page.getByText('Focus search')).toBeVisible();
   });
 
-  test('should toggle animation with space key in detail modal', async ({ page }) => {
-    await skipWizard(page);
-    await page.goto('/');
-    await page.waitForSelector('[data-testid="gradient-card"]', { timeout: 15000 });
-    await page.locator('[data-testid="gradient-card"]').first().click();
-    await expect(page.getByRole('dialog')).toBeVisible();
-
-    // Select an animation first
-    const animationButton = page.getByRole('dialog').locator('button').filter({ hasText: /Shift|Pulse/i }).first();
-    if (await animationButton.count() > 0) {
-      await animationButton.click();
-    }
-
-    // Press space to toggle animation - should not throw error
-    await page.keyboard.press(' ');
-
-    // The test passes if no error is thrown
-    await expect(page.getByRole('dialog')).toBeVisible();
-  });
-
   test('should close modal with escape key', async ({ page }) => {
     await skipWizard(page);
     await page.goto('/');
@@ -294,7 +267,7 @@ test.describe('GoodGradients - Keyboard Shortcuts', () => {
   });
 });
 
-// Discovery Wizard Tests
+// Discovery Wizard Tests - 2-step wizard (Vibe → Colors)
 test.describe('GoodGradients - Discovery Wizard', () => {
   test('should auto-open wizard on first visit', async ({ page }) => {
     // Don't skip wizard for this test
@@ -302,15 +275,15 @@ test.describe('GoodGradients - Discovery Wizard', () => {
 
     // Wait for wizard to auto-open (500ms delay + render time)
     await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
-    await expect(page.getByText('Find Your Perfect Gradient')).toBeVisible();
+    await expect(page.getByText('Find Your Gradient')).toBeVisible();
   });
 
-  test('should allow skipping the wizard', async ({ page }) => {
+  test('should close wizard by clicking outside (dialog dismiss)', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
 
-    // Click skip button
-    await page.getByRole('button', { name: /Skip wizard/i }).click();
+    // Press Escape to close (standard dialog dismiss)
+    await page.keyboard.press('Escape');
 
     // Dialog should close
     await expect(page.getByRole('dialog')).not.toBeVisible();
@@ -319,37 +292,52 @@ test.describe('GoodGradients - Discovery Wizard', () => {
     await expect(page.locator('[data-testid="gradient-card"]').first()).toBeVisible();
   });
 
-  test('should navigate through wizard steps', async ({ page }) => {
+  test('should navigate through 2-step wizard', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
 
     // Step 1: Vibe - select "Playful"
-    await expect(page.getByText('What vibe are you going for?')).toBeVisible();
-    await page.getByRole('button', { name: /Playful.*Fun, energetic/i }).click();
+    await page.getByRole('button', { name: /Playful/i }).click();
 
     // Click Next
     await page.getByRole('button', { name: 'Next' }).click();
 
-    // Step 2: Colors
-    await expect(page.getByText('What colors fit your brand?')).toBeVisible();
-    await page.getByRole('button', { name: /Warm.*Reds, oranges/i }).click();
-    await page.getByRole('button', { name: 'Next' }).click();
-
-    // Step 3: Use Case
-    await expect(page.getByText('Where will you use this?')).toBeVisible();
-    await page.getByRole('button', { name: /Hero Section.*Large, impactful/i }).click();
-    await page.getByRole('button', { name: 'Next' }).click();
-
-    // Step 4: Animation
-    await expect(page.getByText('Do you want animation?')).toBeVisible();
-    await page.getByRole('button', { name: /Dynamic Effects.*Eye-catching/i }).click();
+    // Step 2: Colors - select actual color categories
+    await page.getByRole('button', { name: /Purple/i }).click();
+    await page.getByRole('button', { name: /Pink/i }).click();
 
     // Apply filters
-    await page.getByRole('button', { name: /Show.*Gradients/i }).click();
+    await page.getByRole('button', { name: /Show Gradients/i }).click();
 
     // Dialog should close and gallery should show filtered results
     await expect(page.getByRole('dialog')).not.toBeVisible();
     await expect(page.locator('[data-testid="gradient-card"]').first()).toBeVisible();
+  });
+
+  test('should show wizard progress with 2 steps', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
+
+    // Should show step labels (exact match to avoid footer text)
+    await expect(page.getByText('Vibe', { exact: true })).toBeVisible();
+    await expect(page.getByText('Colors', { exact: true })).toBeVisible();
+  });
+
+  test('should allow multi-select for colors', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
+
+    // Go to step 2
+    await page.getByRole('button', { name: 'Next' }).click();
+
+    // Select multiple colors
+    await page.getByRole('button', { name: /Blue/i }).click();
+    await page.getByRole('button', { name: /Green/i }).click();
+    await page.getByRole('button', { name: /Teal/i }).click();
+
+    // All should be selected (have active styling with border-white)
+    const blueButton = page.getByRole('button', { name: /Blue/i });
+    await expect(blueButton).toHaveClass(/border-white/);
   });
 
   test('should show Find My Gradient button in header', async ({ page }) => {
@@ -371,6 +359,31 @@ test.describe('GoodGradients - Discovery Wizard', () => {
 
     // Wizard should open
     await expect(page.getByRole('dialog')).toBeVisible();
-    await expect(page.getByText('Find Your Perfect Gradient')).toBeVisible();
+    await expect(page.getByText('Find Your Gradient')).toBeVisible();
+  });
+
+  test('should show match count as filters change', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
+
+    // Should show matches text
+    await expect(page.getByText(/matches$/)).toBeVisible();
+  });
+
+  test('should allow going back in wizard', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
+
+    // Go to step 2
+    await page.getByRole('button', { name: 'Next' }).click();
+
+    // Back button should appear
+    await expect(page.getByRole('button', { name: 'Back' })).toBeVisible();
+
+    // Click back
+    await page.getByRole('button', { name: 'Back' }).click();
+
+    // Should be back on step 1 (Vibe options visible)
+    await expect(page.getByRole('button', { name: /Playful/i })).toBeVisible();
   });
 });

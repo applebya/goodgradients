@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Search, Shuffle, Zap, Sparkles, X } from './icons';
+import { Search, Shuffle, Sparkles, X } from './icons';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
 import { gradientCategories } from '@/data/gradients';
@@ -11,7 +11,6 @@ interface HeaderProps {
   onCategoryChange: (category: GradientCategory | 'All' | 'Favorites' | 'Animated') => void;
   onSearchChange: (query: string) => void;
   onRandomGradient: () => void;
-  onOpenStudio: () => void;
   searchInputRef?: React.RefObject<HTMLInputElement>;
   onOpenWizard?: () => void;
   hasActiveFilters?: boolean;
@@ -25,7 +24,6 @@ export function Header({
   onCategoryChange,
   onSearchChange,
   onRandomGradient,
-  onOpenStudio,
   searchInputRef,
   onOpenWizard,
   hasActiveFilters,
@@ -71,15 +69,6 @@ export function Header({
             >
               <Shuffle className="w-4 h-4 mr-1" />
               Random
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={onOpenStudio}
-              className="btn-shine"
-            >
-              <Zap className="w-4 h-4 mr-1" />
-              Animation Studio
             </Button>
           </div>
         </div>

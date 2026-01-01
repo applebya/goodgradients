@@ -5,23 +5,23 @@ interface WizardProgressProps {
   totalSteps: number;
 }
 
-const STEP_LABELS = ['Vibe', 'Colors', 'Use Case', 'Animation'];
+const STEP_LABELS = ['Vibe', 'Colors'];
 
 export function WizardProgress({ currentStep, totalSteps }: WizardProgressProps) {
   const progress = ((currentStep + 1) / totalSteps) * 100;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {/* Progress bar */}
-      <div className="relative h-1.5 bg-neutral-700 rounded-full overflow-hidden">
+      <div className="relative h-1 bg-neutral-700 rounded-full overflow-hidden">
         <div
-          className="absolute left-0 top-0 h-full bg-gradient-to-r from-violet-500 to-pink-500 transition-all duration-300 ease-out"
+          className="absolute left-0 top-0 h-full bg-gradient-to-r from-violet-500 to-pink-500 transition-all duration-300"
           style={{ width: `${progress}%` }}
         />
       </div>
 
       {/* Step indicators */}
-      <div className="flex justify-between">
+      <div className="flex justify-center gap-6">
         {STEP_LABELS.slice(0, totalSteps).map((label, index) => (
           <div
             key={label}
@@ -32,7 +32,7 @@ export function WizardProgress({ currentStep, totalSteps }: WizardProgressProps)
           >
             <div
               className={cn(
-                'w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-medium transition-colors',
+                'w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-medium',
                 index < currentStep
                   ? 'bg-gradient-to-br from-violet-500 to-pink-500 text-white'
                   : index === currentStep
@@ -48,7 +48,7 @@ export function WizardProgress({ currentStep, totalSteps }: WizardProgressProps)
                 index + 1
               )}
             </div>
-            <span className="hidden sm:inline">{label}</span>
+            <span>{label}</span>
           </div>
         ))}
       </div>
