@@ -20,22 +20,19 @@ import {
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { cn, copyToClipboard } from '@/lib/utils';
-import { transformGradient } from '@/lib/gradient';
-import { exportVanillaCSS, exportTailwind } from '@/lib/export';
 import { getGradientAverageColor, getContrastInfoForBackground, formatContrastRatio } from '@/lib/contrast';
-import type { Gradient, GradientType } from '@/types';
+import { encodeGradient, gradientToCSS, getGradientColors } from '@/lib/gradient-url';
+import type { GradientDefinition, GradientType } from '@/lib/gradient-url';
 
 interface GradientDetailProps {
-  gradient: Gradient | null;
+  gradientDef: GradientDefinition | null;
+  encodedGradient: string | null;
   isOpen: boolean;
   onClose: () => void;
-  gradientType: GradientType;
-  gradientAngle: number;
   selectedAnimationId: string | null;
   isAnimating: boolean;
   isFavorite: boolean;
-  onGradientTypeChange: (type: GradientType) => void;
-  onAngleChange: (angle: number) => void;
+  onGradientChange: (encoded: string) => void;
   onAnimationChange: (id: string | null) => void;
   onToggleAnimating: () => void;
   onToggleFavorite: () => void;
@@ -43,14 +40,11 @@ interface GradientDetailProps {
 }
 
 export function GradientDetail({
-  gradient,
+  gradientDef,
   isOpen,
   onClose,
-  gradientType,
-  gradientAngle,
   isFavorite,
-  onGradientTypeChange,
-  onAngleChange,
+  onGradientChange,
   onToggleFavorite,
   onShare,
 }: GradientDetailProps) {
@@ -79,10 +73,23 @@ export function GradientDetail({
     }
   }, [onShare]);
 
-  if (!gradient) return null;
+  const handleTypeChange = useCallback((type: GradientType) => {
+    if (!gradientDef) return;
+    const newDef = { ...gradientDef, type };
+    onGradientChange(encodeGradient(newDef));
+  }, [gradientDef, onGradientChange]);
 
-  const displayGradient = transformGradient(gradient.gradient, gradientType, gradientAngle);
-  const avgColor = getGradientAverageColor(gradient.colors);
+  const handleAngleChange = useCallback((angle: number) => {
+    if (!gradientDef) return;
+    const newDef = { ...gradientDef, angle };
+    onGradientChange(encodeGradient(newDef));
+  }, [gradientDef, onGradientChange]);
+
+  if (!gradientDef) return null;
+
+  const displayGradient = gradientToCSS(gradientDef);
+  const colors = getGradientColors(gradientDef);
+  const avgColor = getGradientAverageColor(colors);
   const contrastInfo = getContrastInfoForBackground(avgColor);
 
   // Get best text colors
@@ -91,8 +98,9 @@ export function GradientDetail({
     .sort((a, b) => b.ratio - a.ratio)
     .slice(0, 2);
 
-  const cssExport = exportVanillaCSS(gradient, gradientType, gradientAngle);
-  const tailwindExport = exportTailwind(gradient, gradientType, gradientAngle);
+  // Generate export code
+  const cssCode = `background: ${displayGradient};`;
+  const tailwindCode = `bg-[${displayGradient.replace(/\s+/g, '_')}]`;
 
   // Fullscreen preview
   if (isFullscreen) {
@@ -170,9 +178,9 @@ export function GradientDetail({
         <DialogHeader className="pb-2">
           <div className="flex items-center justify-between">
             <DialogTitle className="flex items-center gap-2 text-base">
-              {gradient.name}
+              Gradient
               <Badge variant="secondary" className="text-xs">
-                {gradient.category}
+                {gradientDef.type}
               </Badge>
             </DialogTitle>
             <div className="flex gap-1">
@@ -285,7 +293,7 @@ export function GradientDetail({
 
         {/* Color chips - quick copy */}
         <div className="flex gap-1.5 flex-wrap">
-          {gradient.colors.map((color, i) => (
+          {colors.map((color, i) => (
             <button
               key={i}
               onClick={() => handleCopy(color, `color-${i}`)}
@@ -310,39 +318,39 @@ export function GradientDetail({
           <div className="space-y-3 pb-2">
             <div className="grid grid-cols-3 gap-2">
               <Button
-                variant={gradientType === 'linear' ? 'default' : 'outline'}
-                onClick={() => onGradientTypeChange('linear')}
+                variant={gradientDef.type === 'linear' ? 'default' : 'outline'}
+                onClick={() => handleTypeChange('linear')}
                 size="sm"
               >
                 <Layers className="w-3 h-3 mr-1" /> Linear
               </Button>
               <Button
-                variant={gradientType === 'radial' ? 'default' : 'outline'}
-                onClick={() => onGradientTypeChange('radial')}
+                variant={gradientDef.type === 'radial' ? 'default' : 'outline'}
+                onClick={() => handleTypeChange('radial')}
                 size="sm"
               >
                 <Circle className="w-3 h-3 mr-1" /> Radial
               </Button>
               <Button
-                variant={gradientType === 'conic' ? 'default' : 'outline'}
-                onClick={() => onGradientTypeChange('conic')}
+                variant={gradientDef.type === 'conic' ? 'default' : 'outline'}
+                onClick={() => handleTypeChange('conic')}
                 size="sm"
               >
                 <RotateCw className="w-3 h-3 mr-1" /> Conic
               </Button>
             </div>
-            {(gradientType === 'linear' || gradientType === 'conic') && (
+            {(gradientDef.type === 'linear' || gradientDef.type === 'conic') && (
               <div className="flex items-center gap-2">
                 <span className="text-xs text-neutral-400 w-12">Angle</span>
                 <input
                   type="range"
                   min="0"
                   max="360"
-                  value={gradientAngle}
-                  onChange={(e) => onAngleChange(Number(e.target.value))}
+                  value={gradientDef.angle}
+                  onChange={(e) => handleAngleChange(Number(e.target.value))}
                   className="flex-1 h-1.5 bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
                 />
-                <span className="text-xs text-white w-8 text-right">{gradientAngle}°</span>
+                <span className="text-xs text-white w-8 text-right">{gradientDef.angle}°</span>
               </div>
             )}
           </div>
@@ -359,14 +367,14 @@ export function GradientDetail({
         {showCode && (
           <div className="grid grid-cols-2 gap-2 pb-2">
             <button
-              onClick={() => handleCopy(cssExport.code, 'css')}
+              onClick={() => handleCopy(cssCode, 'css')}
               className="flex items-center justify-between px-3 py-2 bg-neutral-800 rounded-lg hover:bg-neutral-700 transition-colors"
             >
               <span className="text-sm text-white">CSS</span>
               {copiedId === 'css' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-neutral-400" />}
             </button>
             <button
-              onClick={() => handleCopy(tailwindExport.code, 'tailwind')}
+              onClick={() => handleCopy(tailwindCode, 'tailwind')}
               className="flex items-center justify-between px-3 py-2 bg-neutral-800 rounded-lg hover:bg-neutral-700 transition-colors"
             >
               <span className="text-sm text-white">Tailwind</span>

@@ -5,18 +5,15 @@ import { toast } from './Toast';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { cn, copyToClipboard } from '@/lib/utils';
-import { transformGradient } from '@/lib/gradient';
 import { getBestTextColor, getGradientAverageColor } from '@/lib/contrast';
-import type { Gradient, GradientType } from '@/types';
+import type { GradientPreset } from '@/types';
 
 interface GradientCardProps {
-  gradient: Gradient;
+  gradient: GradientPreset;
   isFavorite: boolean;
-  onToggleFavorite: (id: string) => void;
-  onSelect: (gradient: Gradient) => void;
+  onToggleFavorite: () => void;
+  onSelect: (gradient: GradientPreset) => void;
   index?: number;
-  gradientType?: GradientType;
-  gradientAngle?: number;
 }
 
 export const GradientCard = memo(function GradientCard({
@@ -25,10 +22,9 @@ export const GradientCard = memo(function GradientCard({
   onToggleFavorite,
   onSelect,
   index = 0,
-  gradientType = 'linear',
-  gradientAngle = 135,
 }: GradientCardProps) {
-  const displayGradient = transformGradient(gradient.gradient, gradientType, gradientAngle);
+  // Use the gradient CSS as-is from the preset
+  const displayGradient = gradient.gradient;
   const avgColor = getGradientAverageColor(gradient.colors);
   const textColor = getBestTextColor(avgColor);
   const buttonBg = textColor === '#ffffff' ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.9)';
@@ -43,7 +39,7 @@ export const GradientCard = memo(function GradientCard({
 
   const handleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onToggleFavorite(gradient.id);
+    onToggleFavorite();
   };
 
   return (
@@ -64,8 +60,8 @@ export const GradientCard = memo(function GradientCard({
       }}
       data-testid="gradient-card"
       className={cn(
-        'group bg-neutral-900/50 border border-neutral-800 rounded-2xl overflow-hidden',
-        'hover:border-neutral-600 transition-all cursor-pointer gradient-card glow-border'
+        'group bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden',
+        'hover:border-neutral-600 transition-colors cursor-pointer'
       )}
       onClick={() => onSelect(gradient)}
     >
@@ -108,7 +104,7 @@ export const GradientCard = memo(function GradientCard({
       </div>
 
       {/* Card Content */}
-      <div className="p-4 card-content-shimmer">
+      <div className="p-4">
         <div className="flex items-start justify-between mb-2">
           <h3 className="text-white font-medium">{gradient.name}</h3>
           <Badge variant="secondary">{gradient.category}</Badge>

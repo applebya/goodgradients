@@ -3,22 +3,15 @@ import {
   DialogContent,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { WizardProgress } from './WizardProgress';
-import { VibeStep } from './steps/VibeStep';
-import { ColorsStep } from './steps/ColorsStep';
+import { cn } from '@/lib/utils';
+import { VIBE_OPTIONS, COLOR_OPTIONS } from '@/lib/wizard';
 import type { WizardVibe, WizardColor, WizardSelections } from '@/types';
 
 interface DiscoveryWizardProps {
   isOpen: boolean;
-  currentStep: number;
-  totalSteps: number;
   selections: WizardSelections;
   matchCount: number;
-  canGoBack: boolean;
-  isLastStep: boolean;
   onClose: () => void;
-  onNext: () => void;
-  onBack: () => void;
   onApply: () => void;
   onSetVibe: (vibe: WizardVibe | null) => void;
   onToggleColor: (color: WizardColor) => void;
@@ -26,72 +19,114 @@ interface DiscoveryWizardProps {
 
 export function DiscoveryWizard({
   isOpen,
-  currentStep,
-  totalSteps,
   selections,
   matchCount,
-  canGoBack,
-  isLastStep,
   onClose,
-  onNext,
-  onBack,
   onApply,
   onSetVibe,
   onToggleColor,
 }: DiscoveryWizardProps) {
+  const hasSelections = selections.vibe !== null || selections.colors.length > 0;
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-lg p-4 gap-3">
+      <DialogContent className="max-w-md p-5 gap-0">
         {/* Header */}
-        <div className="text-center pt-1">
-          <h2 className="text-lg font-semibold bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">
-            Find Your Gradient
-          </h2>
+        <div className="mb-5">
+          <h2 className="text-lg font-medium text-white">Find your gradient</h2>
+          <p className="text-sm text-neutral-400 mt-0.5">Pick a mood and colors to narrow down results</p>
         </div>
 
-        {/* Progress */}
-        <WizardProgress currentStep={currentStep} totalSteps={totalSteps} />
-
-        {/* Step content */}
-        <div className="py-2">
-          {currentStep === 0 && (
-            <VibeStep selected={selections.vibe} onSelect={onSetVibe} />
-          )}
-          {currentStep === 1 && (
-            <ColorsStep selected={selections.colors} onToggle={onToggleColor} />
-          )}
+        {/* Vibe section */}
+        <div className="mb-5">
+          <p className="text-xs font-medium text-neutral-500 uppercase tracking-wide mb-2">Mood</p>
+          <div className="grid grid-cols-3 gap-1.5">
+            {VIBE_OPTIONS.map((option) => {
+              const isSelected = selections.vibe === option.value;
+              return (
+                <button
+                  key={option.value}
+                  onClick={() => onSetVibe(isSelected ? null : option.value)}
+                  className={cn(
+                    'rounded-md p-2 text-left transition-colors',
+                    'border',
+                    isSelected
+                      ? 'border-white/40 bg-white/10'
+                      : 'border-transparent hover:bg-white/5'
+                  )}
+                >
+                  <div
+                    className="w-full h-6 rounded-sm mb-1.5"
+                    style={{ background: option.previewGradient }}
+                  />
+                  <span className={cn(
+                    'text-xs',
+                    isSelected ? 'text-white' : 'text-neutral-400'
+                  )}>
+                    {option.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Match counter & Navigation */}
-        <div className="flex items-center justify-between pt-2 border-t border-neutral-800">
-          <span className="text-xs text-neutral-400">
-            <span className="text-white font-medium">{matchCount}</span> matches
+        {/* Colors section */}
+        <div className="mb-5">
+          <p className="text-xs font-medium text-neutral-500 uppercase tracking-wide mb-2">Colors</p>
+          <div className="grid grid-cols-4 gap-1.5">
+            {COLOR_OPTIONS.map((option) => {
+              const isSelected = selections.colors.includes(option.value);
+              return (
+                <button
+                  key={option.value}
+                  onClick={() => onToggleColor(option.value)}
+                  className={cn(
+                    'rounded-md p-1.5 transition-colors',
+                    'border',
+                    isSelected
+                      ? 'border-white/40 bg-white/10'
+                      : 'border-transparent hover:bg-white/5'
+                  )}
+                >
+                  <div
+                    className="w-full h-8 rounded-sm mb-1"
+                    style={{ background: option.previewGradient }}
+                  />
+                  <span className={cn(
+                    'text-[10px]',
+                    isSelected ? 'text-white' : 'text-neutral-400'
+                  )}>
+                    {option.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between pt-4 border-t border-neutral-800">
+          <span className="text-xs text-neutral-500">
+            {matchCount} {matchCount === 1 ? 'match' : 'matches'}
           </span>
-
-          <div className="flex items-center gap-2">
-            {canGoBack && (
-              <Button variant="ghost" size="sm" onClick={onBack}>
-                Back
-              </Button>
-            )}
-
-            {isLastStep ? (
-              <Button
-                size="sm"
-                onClick={onApply}
-                className="bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white border-0"
-              >
-                Show Gradients
-              </Button>
-            ) : (
-              <Button
-                size="sm"
-                onClick={onNext}
-                className="bg-white text-neutral-900 hover:bg-neutral-200"
-              >
-                Next
-              </Button>
-            )}
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="text-neutral-400 hover:text-white"
+            >
+              {hasSelections ? 'Skip' : 'Close'}
+            </Button>
+            <Button
+              size="sm"
+              onClick={onApply}
+              disabled={!hasSelections}
+              className="bg-white text-black hover:bg-neutral-200 disabled:opacity-40"
+            >
+              Show results
+            </Button>
           </div>
         </div>
       </DialogContent>

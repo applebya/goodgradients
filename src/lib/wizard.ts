@@ -1,4 +1,4 @@
-import type { Gradient, WizardVibe, WizardColor, WizardSelections } from '@/types';
+import type { GradientPreset, WizardVibe, WizardColor, WizardSelections, GradientCategory } from '@/types';
 
 // Wizard step options with display info
 export interface WizardOption<T extends string> {
@@ -38,20 +38,20 @@ const VIBE_TAGS: Record<WizardVibe, string[]> = {
   cool: ['cool', 'ice', 'cold', 'ocean', 'sea', 'water', 'frost', 'arctic', 'refreshing', 'calm', 'serene'],
 };
 
-// Map wizard colors to gradient categories
-const COLOR_TO_CATEGORIES: Record<WizardColor, string[]> = {
-  Purple: ['Purple', 'Abstract'],
-  Blue: ['Blue', 'Ocean', 'Cool'],
-  Green: ['Green', 'Nature', 'Teal'],
-  Pink: ['Pink', 'Pastel'],
-  Orange: ['Orange', 'Yellow', 'Warm', 'Sunset'],
-  Teal: ['Teal', 'Ocean'],
-  Neutral: ['Neutral', 'Subtle', 'Dark'],
-  Multi: ['Multi', 'Abstract'],
+// Map wizard colors to gradient categories (exact matches only)
+const COLOR_TO_CATEGORIES: Record<WizardColor, GradientCategory[]> = {
+  Purple: ['Purple', 'Cool'],
+  Blue: ['Blue', 'Cool'],
+  Green: ['Green', 'Teal'],
+  Pink: ['Pink', 'Warm'],
+  Orange: ['Orange', 'Warm'],
+  Teal: ['Teal', 'Cool'],
+  Neutral: ['Neutral'],
+  Multi: ['Multi'],
 };
 
 // Scoring function
-export function scoreGradient(gradient: Gradient, selections: WizardSelections): number {
+export function scoreGradient(gradient: GradientPreset, selections: WizardSelections): number {
   let score = 0;
   const tags = gradient.tags.map(t => t.toLowerCase());
   const category = gradient.category;
@@ -78,14 +78,14 @@ export function scoreGradient(gradient: Gradient, selections: WizardSelections):
 }
 
 // Filter and sort gradients
-export function filterGradientsBySelections(gradients: Gradient[], selections: WizardSelections): Gradient[] {
+export function filterGradientsBySelections(gradients: GradientPreset[], selections: WizardSelections): GradientPreset[] {
   if (!selections.vibe && selections.colors.length === 0) {
     return gradients;
   }
 
   // If only colors selected, filter by category directly
   if (!selections.vibe && selections.colors.length > 0) {
-    const allowedCategories = new Set<string>();
+    const allowedCategories = new Set<GradientCategory>();
     for (const color of selections.colors) {
       for (const cat of COLOR_TO_CATEGORIES[color]) {
         allowedCategories.add(cat);
@@ -112,7 +112,7 @@ export function filterGradientsBySelections(gradients: Gradient[], selections: W
 }
 
 // Count matching gradients
-export function countMatchingGradients(gradients: Gradient[], selections: WizardSelections): number {
+export function countMatchingGradients(gradients: GradientPreset[], selections: WizardSelections): number {
   if (!selections.vibe && selections.colors.length === 0) {
     return gradients.length;
   }

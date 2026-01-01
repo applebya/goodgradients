@@ -2,26 +2,31 @@ import { useMemo } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { GradientCard } from './GradientCard';
 import { gradients } from '@/data/gradients';
-import type { Gradient, GradientType, GradientCategory } from '@/types';
+import { encodeGradient, parseGradientCSS } from '@/lib/gradient-url';
+import type { GradientPreset, GradientCategory } from '@/types';
 
 interface GradientGalleryProps {
-  category: GradientCategory | 'All' | 'Favorites' | 'Animated';
+  category: GradientCategory | 'All' | 'Favorites';
   searchQuery: string;
-  favorites: string[];
-  gradientType: GradientType;
-  gradientAngle: number;
-  onSelectGradient: (gradient: Gradient) => void;
-  onToggleFavorite: (id: string) => void;
-  isFavorite: (id: string) => boolean;
-  wizardFilteredGradients?: Gradient[]; // Optional: wizard-filtered gradients take priority
+  favorites: string[]; // Encoded gradient definitions
+  onSelectGradient: (gradient: GradientPreset) => void;
+  onToggleFavorite: (encodedGradient: string) => void;
+  isFavorite: (encodedGradient: string) => boolean;
+  wizardFilteredGradients?: GradientPreset[]; // Optional: wizard-filtered gradients take priority
+}
+
+/**
+ * Get encoded gradient string from a preset for favorites comparison
+ */
+function getEncodedGradient(preset: GradientPreset): string | null {
+  const def = parseGradientCSS(preset.gradient);
+  return def ? encodeGradient(def) : null;
 }
 
 export function GradientGallery({
   category,
   searchQuery,
   favorites,
-  gradientType,
-  gradientAngle,
   onSelectGradient,
   onToggleFavorite,
   isFavorite,
@@ -30,13 +35,15 @@ export function GradientGallery({
   const filteredGradients = useMemo(() => {
     // Start with wizard-filtered gradients if provided, otherwise use all gradients
     let baseGradients = wizardFilteredGradients ?? gradients;
-    let result: Gradient[];
+    let result: GradientPreset[];
 
     // Apply category filter first
     if (category === 'Favorites') {
-      result = baseGradients.filter((g) => favorites.includes(g.id));
-    } else if (category === 'Animated') {
-      result = baseGradients.filter((g) => g.tags.includes('animated'));
+      // Filter by encoded gradient definitions in favorites
+      result = baseGradients.filter((g) => {
+        const encoded = getEncodedGradient(g);
+        return encoded && favorites.includes(encoded);
+      });
     } else if (category === 'All') {
       result = baseGradients;
     } else {
@@ -80,18 +87,19 @@ export function GradientGallery({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       <AnimatePresence mode="popLayout">
-        {filteredGradients.map((gradient, index) => (
-          <GradientCard
-            key={gradient.id}
-            gradient={gradient}
-            index={index}
-            isFavorite={isFavorite(gradient.id)}
-            onToggleFavorite={onToggleFavorite}
-            onSelect={onSelectGradient}
-            gradientType={gradientType}
-            gradientAngle={gradientAngle}
-          />
-        ))}
+        {filteredGradients.map((gradient, index) => {
+          const encoded = getEncodedGradient(gradient);
+          return (
+            <GradientCard
+              key={gradient.id}
+              gradient={gradient}
+              index={index}
+              isFavorite={encoded ? isFavorite(encoded) : false}
+              onToggleFavorite={() => encoded && onToggleFavorite(encoded)}
+              onSelect={onSelectGradient}
+            />
+          );
+        })}
       </AnimatePresence>
     </div>
   );

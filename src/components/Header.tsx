@@ -1,21 +1,25 @@
 import { useRef } from 'react';
-import { Search, Shuffle, Sparkles, X } from './icons';
+import { Search, Shuffle, Sparkles } from './icons';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
 import { gradientCategories } from '@/data/gradients';
-import type { GradientCategory } from '@/types';
+import { VIBE_OPTIONS } from '@/lib/wizard';
+import type { GradientCategory, WizardSelections, WizardColor } from '@/types';
 
 interface HeaderProps {
-  category: GradientCategory | 'All' | 'Favorites' | 'Animated';
+  category: GradientCategory | 'All' | 'Favorites';
   searchQuery: string;
-  onCategoryChange: (category: GradientCategory | 'All' | 'Favorites' | 'Animated') => void;
+  onCategoryChange: (category: GradientCategory | 'All' | 'Favorites') => void;
   onSearchChange: (query: string) => void;
   onRandomGradient: () => void;
   searchInputRef?: React.RefObject<HTMLInputElement>;
   onOpenWizard?: () => void;
   hasActiveFilters?: boolean;
   wizardMatchCount?: number;
+  wizardSelections?: WizardSelections;
   onClearFilters?: () => void;
+  onRemoveWizardVibe?: () => void;
+  onRemoveWizardColor?: (color: WizardColor) => void;
 }
 
 export function Header({
@@ -28,112 +32,116 @@ export function Header({
   onOpenWizard,
   hasActiveFilters,
   wizardMatchCount,
+  wizardSelections,
   onClearFilters,
+  onRemoveWizardVibe,
+  onRemoveWizardColor,
 }: HeaderProps) {
   const internalRef = useRef<HTMLInputElement>(null);
   const inputRef = searchInputRef || internalRef;
 
   return (
     <header className="sticky top-0 z-30 glass-header">
-      <div className="max-w-7xl mx-auto px-4 py-4">
-        {/* Top row */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">GG</span>
+      <div className="max-w-7xl mx-auto px-4 py-3">
+        {/* Single row: Logo + Search + Actions */}
+        <div className="flex items-center gap-4">
+          {/* Logo */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="w-7 h-7 rounded-md bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center">
+              <span className="text-white font-bold text-xs">GG</span>
             </div>
-            <div>
-              <h1 className="text-lg font-semibold text-white">GoodGradients</h1>
-              <p className="text-xs text-neutral-500">CSS gradients for developers</p>
-            </div>
+            <h1 className="text-base font-medium text-white hidden sm:block">GoodGradients</h1>
           </div>
 
-          <div className="flex items-center gap-2">
-            {onOpenWizard && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onOpenWizard}
-                className="btn-shine bg-gradient-to-r from-violet-500/10 to-pink-500/10 border-violet-500/30 hover:border-violet-400"
-              >
-                <Sparkles className="w-4 h-4 mr-1 text-violet-400" />
-                <span className="hidden sm:inline">Find My Gradient</span>
-                <span className="sm:hidden">Find</span>
-              </Button>
-            )}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onRandomGradient}
-              className="hidden sm:flex btn-shine"
-            >
-              <Shuffle className="w-4 h-4 mr-1" />
-              Random
-            </Button>
-          </div>
-        </div>
-
-        {/* Search and filters */}
-        <div className="flex flex-col sm:flex-row gap-3">
           {/* Search */}
-          <div className="relative flex-1 max-w-md">
+          <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
             <input
               ref={inputRef}
               type="text"
-              placeholder="Search gradients, colors, or tags..."
+              placeholder="Search..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full h-10 pl-10 pr-12 bg-neutral-900 border border-neutral-700 rounded-lg text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600"
+              className="w-full h-9 pl-9 pr-8 bg-neutral-900 border border-neutral-800 rounded-lg text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:border-neutral-600"
             />
-            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center gap-1 text-xs text-neutral-500 bg-neutral-800 px-1.5 py-0.5 rounded">
+            <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 hidden sm:inline text-[10px] text-neutral-600">
               /
             </kbd>
           </div>
 
-          {/* Category pills */}
-          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
-            {gradientCategories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => onCategoryChange(cat)}
-                className={cn(
-                  'category-pill px-3 py-1.5 rounded-full text-sm whitespace-nowrap transition-all',
-                  category === cat
-                    ? 'bg-white text-black font-medium active'
-                    : 'bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-white'
-                )}
-              >
-                {cat}
-              </button>
-            ))}
+          {/* Actions */}
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            {onOpenWizard && (
+              <Button variant="ghost" size="icon-sm" onClick={onOpenWizard} title="Find gradients">
+                <Sparkles className="w-4 h-4" />
+              </Button>
+            )}
+            <Button variant="ghost" size="icon-sm" onClick={onRandomGradient} title="Random gradient">
+              <Shuffle className="w-4 h-4" />
+            </Button>
           </div>
         </div>
 
-        {/* Wizard filter indicator */}
-        {hasActiveFilters && (
-          <div className="flex items-center justify-between py-2 px-3 mt-3 rounded-lg bg-gradient-to-r from-violet-500/10 to-pink-500/10 border border-violet-500/20">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-violet-400" />
-              <span className="text-sm text-white">
-                <span className="font-medium">{wizardMatchCount}</span> gradients match your style
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={onOpenWizard}
-                className="text-xs text-violet-300 hover:text-violet-200 transition-colors"
-              >
-                Edit preferences
-              </button>
+        {/* Category pills */}
+        <div className="flex gap-1.5 mt-3 overflow-x-auto pb-1 scrollbar-hide">
+          {hasActiveFilters && wizardSelections ? (
+            <>
+              {wizardSelections.vibe && (
+                <button
+                  onClick={() => onRemoveWizardVibe?.()}
+                  className="px-2.5 py-1 rounded-full text-sm whitespace-nowrap bg-white text-black font-medium flex items-center gap-1"
+                >
+                  {VIBE_OPTIONS.find(v => v.value === wizardSelections.vibe)?.label}
+                  <span className="text-neutral-400 text-xs">×</span>
+                </button>
+              )}
+              {wizardSelections.colors.map((color) => (
+                <button
+                  key={color}
+                  onClick={() => onRemoveWizardColor?.(color)}
+                  className="px-2.5 py-1 rounded-full text-sm whitespace-nowrap bg-white text-black font-medium flex items-center gap-1"
+                >
+                  {color}
+                  <span className="text-neutral-400 text-xs">×</span>
+                </button>
+              ))}
               <button
                 onClick={onClearFilters}
-                className="p-1 rounded hover:bg-white/10 transition-colors"
-                title="Clear filters"
+                className="px-2.5 py-1 text-sm text-neutral-500 hover:text-white"
               >
-                <X className="w-4 h-4 text-neutral-400 hover:text-white" />
+                Clear
               </button>
-            </div>
+            </>
+          ) : (
+              gradientCategories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => onCategoryChange(cat)}
+                  className={cn(
+                    'px-2.5 py-1 rounded-full text-sm whitespace-nowrap',
+                    category === cat
+                      ? 'bg-white text-black font-medium'
+                      : 'text-neutral-400 hover:text-white'
+                  )}
+                >
+                  {cat}
+                </button>
+              ))
+            )}
+        </div>
+
+        {/* Match count when wizard filters active */}
+        {hasActiveFilters && (
+          <div className="flex items-center justify-between mt-2 text-sm">
+            <span className="text-neutral-500">
+              {wizardMatchCount} {wizardMatchCount === 1 ? 'gradient' : 'gradients'}
+            </span>
+            <button
+              onClick={onOpenWizard}
+              className="text-neutral-400 hover:text-white transition-colors"
+            >
+              Edit filters
+            </button>
           </div>
         )}
       </div>

@@ -11,32 +11,27 @@ import {
   countMatchingGradients,
 } from '@/lib/wizard';
 
-const TOTAL_STEPS = 2; // Vibe → Colors
-
 export interface UseDiscoveryWizardReturn {
   isOpen: boolean;
-  currentStep: number;
   selections: WizardSelections;
+  appliedSelections: WizardSelections | null;
   hasActiveFilters: boolean;
   filteredGradients: Gradient[];
   matchCount: number;
-  totalSteps: number;
-  canGoBack: boolean;
-  isLastStep: boolean;
 
   openWizard: () => void;
   closeWizard: () => void;
-  nextStep: () => void;
-  prevStep: () => void;
   setVibe: (vibe: WizardVibe | null) => void;
   toggleColor: (color: WizardColor) => void;
   applyFilters: () => void;
   clearFilters: () => void;
+  // Direct manipulation of applied filters
+  removeAppliedVibe: () => void;
+  removeAppliedColor: (color: WizardColor) => void;
 }
 
 export function useDiscoveryWizard(allGradients: Gradient[]): UseDiscoveryWizardReturn {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
   const [selections, setSelections] = useState<WizardSelections>(getDefaultSelections);
   const [appliedSelections, setAppliedSelections] = useState<WizardSelections | null>(null);
 
@@ -71,11 +66,7 @@ export function useDiscoveryWizard(allGradients: Gradient[]): UseDiscoveryWizard
     );
   }, [appliedSelections]);
 
-  const canGoBack = currentStep > 0;
-  const isLastStep = currentStep === TOTAL_STEPS - 1;
-
   const openWizard = useCallback(() => {
-    setCurrentStep(0);
     setSelections(appliedSelections ?? getDefaultSelections());
     setIsOpen(true);
   }, [appliedSelections]);
@@ -83,20 +74,7 @@ export function useDiscoveryWizard(allGradients: Gradient[]): UseDiscoveryWizard
   const closeWizard = useCallback(() => {
     setWizardCompleted();
     setIsOpen(false);
-    setCurrentStep(0);
   }, []);
-
-  const nextStep = useCallback(() => {
-    if (currentStep < TOTAL_STEPS - 1) {
-      setCurrentStep(prev => prev + 1);
-    }
-  }, [currentStep]);
-
-  const prevStep = useCallback(() => {
-    if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
-    }
-  }, [currentStep]);
 
   const setVibe = useCallback((vibe: WizardVibe | null) => {
     setSelections(prev => ({ ...prev, vibe }));
@@ -119,7 +97,6 @@ export function useDiscoveryWizard(allGradients: Gradient[]): UseDiscoveryWizard
     setAppliedSelections(selections);
     saveWizardPrefs(selections);
     setIsOpen(false);
-    setCurrentStep(0);
   }, [selections]);
 
   const clearFilters = useCallback(() => {
@@ -128,23 +105,43 @@ export function useDiscoveryWizard(allGradients: Gradient[]): UseDiscoveryWizard
     clearWizardPrefs();
   }, []);
 
+  const removeAppliedVibe = useCallback(() => {
+    const newSelections = { ...appliedSelections!, vibe: null };
+    setAppliedSelections(newSelections);
+    setSelections(newSelections);
+    saveWizardPrefs(newSelections);
+    // Clear all if nothing left
+    if (newSelections.colors.length === 0) {
+      clearFilters();
+    }
+  }, [appliedSelections, clearFilters]);
+
+  const removeAppliedColor = useCallback((color: WizardColor) => {
+    const newColors = appliedSelections!.colors.filter(c => c !== color);
+    const newSelections = { ...appliedSelections!, colors: newColors };
+    setAppliedSelections(newSelections);
+    setSelections(newSelections);
+    saveWizardPrefs(newSelections);
+    // Clear all if nothing left
+    if (!newSelections.vibe && newColors.length === 0) {
+      clearFilters();
+    }
+  }, [appliedSelections, clearFilters]);
+
   return {
     isOpen,
-    currentStep,
     selections,
+    appliedSelections,
     hasActiveFilters,
     filteredGradients,
     matchCount,
-    totalSteps: TOTAL_STEPS,
-    canGoBack,
-    isLastStep,
     openWizard,
     closeWizard,
-    nextStep,
-    prevStep,
     setVibe,
     toggleColor,
     applyFilters,
     clearFilters,
+    removeAppliedVibe,
+    removeAppliedColor,
   };
 }

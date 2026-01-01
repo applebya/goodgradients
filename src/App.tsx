@@ -8,8 +8,9 @@ import { DiscoveryWizard } from './components/discovery-wizard';
 import { useAppState } from './hooks/useAppState';
 import { useKeyboard } from './hooks/useKeyboard';
 import { useDiscoveryWizard } from './hooks/useDiscoveryWizard';
-import { getGradientById, gradients } from './data/gradients';
-import type { Gradient } from './types';
+import { gradients } from './data/gradients';
+import { decodeGradient, gradientToCSS } from './lib/gradient-url';
+import type { GradientPreset } from './types';
 
 export default function App() {
   const { state, favorites, actions } = useAppState();
@@ -25,28 +26,28 @@ export default function App() {
   useKeyboard({
     onSearch: () => searchInputRef.current?.focus(),
     onEscape: () => {
-      if (state.selectedGradientId) {
+      if (state.selectedGradient) {
         actions.selectGradient(null);
       } else {
         actions.setSearchQuery('');
       }
     },
     onCopy: async () => {
-      if (state.selectedGradientId) {
-        const gradient = getGradientById(state.selectedGradientId);
-        if (gradient) {
-          await navigator.clipboard.writeText(gradient.gradient);
+      if (state.selectedGradient) {
+        const gradientDef = decodeGradient(state.selectedGradient);
+        if (gradientDef) {
+          await navigator.clipboard.writeText(gradientToCSS(gradientDef));
           toast.success('Copied to clipboard');
         }
       }
     },
     onFavorite: () => {
-      if (state.selectedGradientId) {
-        actions.toggleFavorite(state.selectedGradientId);
+      if (state.selectedGradient) {
+        actions.toggleFavorite(state.selectedGradient);
       }
     },
     onToggleAnimation: () => {
-      if (state.selectedGradientId) {
+      if (state.selectedGradient) {
         actions.toggleAnimating();
       }
     },
@@ -57,14 +58,14 @@ export default function App() {
     const randomIndex = Math.floor(Math.random() * gradients.length);
     const randomGradient = gradients[randomIndex];
     if (randomGradient) {
-      actions.selectGradient(randomGradient.id);
+      actions.selectPreset(randomGradient);
     }
   }, [actions]);
 
   // Handle gradient selection from gallery
   const handleSelectGradient = useCallback(
-    (gradient: Gradient) => {
-      actions.selectGradient(gradient.id);
+    (gradient: GradientPreset) => {
+      actions.selectPreset(gradient);
     },
     [actions]
   );
@@ -74,9 +75,9 @@ export default function App() {
     return actions.getShareURL();
   }, [actions]);
 
-  // Get selected gradient object
-  const selectedGradient = state.selectedGradientId
-    ? getGradientById(state.selectedGradientId)
+  // Get selected gradient definition (decoded from URL-encoded string)
+  const selectedGradientDef = state.selectedGradient
+    ? decodeGradient(state.selectedGradient)
     : null;
 
   return (
@@ -91,7 +92,10 @@ export default function App() {
         onOpenWizard={wizard.openWizard}
         hasActiveFilters={wizard.hasActiveFilters}
         wizardMatchCount={wizard.matchCount}
+        wizardSelections={wizard.appliedSelections ?? undefined}
         onClearFilters={wizard.clearFilters}
+        onRemoveWizardVibe={wizard.removeAppliedVibe}
+        onRemoveWizardColor={wizard.removeAppliedColor}
       />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
@@ -99,8 +103,6 @@ export default function App() {
           category={state.category}
           searchQuery={state.searchQuery}
           favorites={favorites}
-          gradientType={state.gradientType}
-          gradientAngle={state.gradientAngle}
           onSelectGradient={handleSelectGradient}
           onToggleFavorite={actions.toggleFavorite}
           isFavorite={actions.isFavorite}
@@ -112,34 +114,26 @@ export default function App() {
 
       {/* Gradient Detail Modal */}
       <GradientDetail
-        gradient={selectedGradient ?? null}
-        isOpen={!!selectedGradient}
+        gradientDef={selectedGradientDef}
+        encodedGradient={state.selectedGradient}
+        isOpen={!!selectedGradientDef}
         onClose={actions.closeModal}
-        gradientType={state.gradientType}
-        gradientAngle={state.gradientAngle}
         selectedAnimationId={state.selectedAnimationId}
         isAnimating={state.isAnimating}
-        isFavorite={state.selectedGradientId ? actions.isFavorite(state.selectedGradientId) : false}
-        onGradientTypeChange={actions.setGradientType}
-        onAngleChange={actions.setGradientAngle}
+        isFavorite={state.selectedGradient ? actions.isFavorite(state.selectedGradient) : false}
+        onGradientChange={actions.updateGradient}
         onAnimationChange={actions.selectAnimation}
         onToggleAnimating={actions.toggleAnimating}
-        onToggleFavorite={() => state.selectedGradientId && actions.toggleFavorite(state.selectedGradientId)}
+        onToggleFavorite={() => state.selectedGradient && actions.toggleFavorite(state.selectedGradient)}
         onShare={handleShare}
       />
 
       {/* Discovery Wizard Modal */}
       <DiscoveryWizard
         isOpen={wizard.isOpen}
-        currentStep={wizard.currentStep}
-        totalSteps={wizard.totalSteps}
         selections={wizard.selections}
         matchCount={wizard.matchCount}
-        canGoBack={wizard.canGoBack}
-        isLastStep={wizard.isLastStep}
         onClose={wizard.closeWizard}
-        onNext={wizard.nextStep}
-        onBack={wizard.prevStep}
         onApply={wizard.applyFilters}
         onSetVibe={wizard.setVibe}
         onToggleColor={wizard.toggleColor}

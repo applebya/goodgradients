@@ -1,5 +1,12 @@
-// Core gradient type
-export interface Gradient {
+// Re-export gradient definition types from gradient-url
+export type {
+  GradientDefinition,
+  ColorStop,
+  GradientType,
+} from './lib/gradient-url';
+
+// Core gradient preset type (for browsing presets)
+export interface GradientPreset {
   id: string;
   name: string;
   description: string;
@@ -9,35 +16,21 @@ export interface Gradient {
   tags: string[];
 }
 
+// Legacy alias for backwards compatibility
+export type Gradient = GradientPreset;
+
+// Consolidated categories - matches header UI
 export type GradientCategory =
   | 'Purple'
   | 'Blue'
   | 'Green'
   | 'Pink'
-  | 'Red'
   | 'Orange'
-  | 'Yellow'
   | 'Teal'
-  | 'Pastel'
-  | 'Neutral'
   | 'Warm'
   | 'Cool'
-  | 'Sunset'
-  | 'Ocean'
-  | 'Nature'
-  | 'Abstract'
-  | 'Subtle'
-  | 'Dark'
+  | 'Neutral'
   | 'Multi';
-
-// Gradient customization
-export type GradientType = 'linear' | 'radial' | 'conic';
-
-export interface GradientConfig {
-  type: GradientType;
-  angle: number; // 0-360 for linear/conic
-  colors: string[];
-}
 
 // Animation types
 export interface Animation {
@@ -55,21 +48,18 @@ export interface Animation {
 
 export type AnimationCategory = 'Movement' | 'Rotation' | 'Pulse' | 'Morph' | 'Wave';
 
-// App state
+// App state - now uses gradient definition instead of ID
 export interface AppState {
   // View state
   view: 'gallery' | 'detail' | 'studio';
 
-  // Selected items
-  selectedGradientId: string | null;
+  // Selected gradient (full definition, not just ID)
+  // Format: "linear,135,667eea:0,764ba2:100"
+  selectedGradient: string | null;
   selectedAnimationId: string | null;
 
-  // Customization
-  gradientType: GradientType;
-  gradientAngle: number;
-
   // Filters
-  category: GradientCategory | 'All' | 'Favorites' | 'Animated';
+  category: GradientCategory | 'All' | 'Favorites';
   searchQuery: string;
 
   // UI state
@@ -78,13 +68,14 @@ export interface AppState {
 
 // URL state (serialized subset of AppState)
 export interface URLState {
-  g?: string; // gradient ID
-  a?: string; // animation ID
-  t?: GradientType; // gradient type
-  d?: number; // angle (degrees)
-  v?: 'gallery' | 'detail' | 'studio'; // view
-  c?: string; // category
-  q?: string; // search query
+  // Gradient definition: "linear,135,667eea:0,764ba2:100"
+  g?: string;
+  // Animation ID
+  a?: string;
+  // Category filter
+  c?: string;
+  // Search query
+  q?: string;
 }
 
 // Export formats
@@ -96,25 +87,24 @@ export interface ExportResult {
   language: string; // For syntax highlighting
 }
 
-// Favorites (persisted to localStorage)
+// Favorites - now stores gradient definitions, not IDs
 export interface FavoritesState {
-  gradientIds: string[];
+  gradients: string[]; // Array of encoded gradient definitions
 }
 
-// Discovery Wizard types (2-step wizard: Vibe → Colors)
+// Discovery Wizard types
 export type WizardVibe = 'playful' | 'professional' | 'bold' | 'subtle' | 'warm' | 'cool';
 
-// Color categories map to actual gradient categories
+// Wizard colors match the main categories
 export type WizardColor = 'Purple' | 'Blue' | 'Green' | 'Pink' | 'Orange' | 'Teal' | 'Neutral' | 'Multi';
 
 export interface WizardSelections {
   vibe: WizardVibe | null;
-  colors: WizardColor[]; // Multi-select actual colors
+  colors: WizardColor[];
 }
 
 export interface WizardState {
   isOpen: boolean;
-  currentStep: number; // 0-1 (2 steps)
   selections: WizardSelections;
   hasCompletedOnce: boolean;
 }

@@ -1,13 +1,20 @@
-const STORAGE_KEY = 'goodgradients_favorites';
+/**
+ * Favorites management - stores gradient definitions (not IDs)
+ *
+ * Gradient definitions are encoded strings like "linear,135,667eea:0,764ba2:100"
+ * This allows favoriting any gradient, not just presets.
+ */
+
+const STORAGE_KEY = 'goodgradients_favorites_v2';
 
 export interface FavoritesStore {
-  gradientIds: string[];
+  gradients: string[]; // Encoded gradient definitions
   version: number;
 }
 
 const DEFAULT_STORE: FavoritesStore = {
-  gradientIds: [],
-  version: 1,
+  gradients: [],
+  version: 2,
 };
 
 /**
@@ -20,7 +27,7 @@ export function loadFavorites(): FavoritesStore {
 
     const parsed = JSON.parse(stored) as FavoritesStore;
     // Validate structure
-    if (!Array.isArray(parsed.gradientIds)) {
+    if (!Array.isArray(parsed.gradients)) {
       return DEFAULT_STORE;
     }
     return parsed;
@@ -43,10 +50,10 @@ export function saveFavorites(store: FavoritesStore): void {
 /**
  * Add a gradient to favorites
  */
-export function addFavorite(gradientId: string): FavoritesStore {
+export function addFavorite(gradientDef: string): FavoritesStore {
   const store = loadFavorites();
-  if (!store.gradientIds.includes(gradientId)) {
-    store.gradientIds.push(gradientId);
+  if (!store.gradients.includes(gradientDef)) {
+    store.gradients.push(gradientDef);
     saveFavorites(store);
   }
   return store;
@@ -55,9 +62,9 @@ export function addFavorite(gradientId: string): FavoritesStore {
 /**
  * Remove a gradient from favorites
  */
-export function removeFavorite(gradientId: string): FavoritesStore {
+export function removeFavorite(gradientDef: string): FavoritesStore {
   const store = loadFavorites();
-  store.gradientIds = store.gradientIds.filter((id) => id !== gradientId);
+  store.gradients = store.gradients.filter((g) => g !== gradientDef);
   saveFavorites(store);
   return store;
 }
@@ -65,33 +72,33 @@ export function removeFavorite(gradientId: string): FavoritesStore {
 /**
  * Toggle a gradient's favorite status
  */
-export function toggleFavorite(gradientId: string): { store: FavoritesStore; added: boolean } {
+export function toggleFavorite(gradientDef: string): { favorites: string[]; added: boolean } {
   const store = loadFavorites();
-  const isCurrentlyFavorite = store.gradientIds.includes(gradientId);
+  const isCurrentlyFavorite = store.gradients.includes(gradientDef);
 
   if (isCurrentlyFavorite) {
-    store.gradientIds = store.gradientIds.filter((id) => id !== gradientId);
+    store.gradients = store.gradients.filter((g) => g !== gradientDef);
   } else {
-    store.gradientIds.push(gradientId);
+    store.gradients.push(gradientDef);
   }
 
   saveFavorites(store);
-  return { store, added: !isCurrentlyFavorite };
+  return { favorites: store.gradients, added: !isCurrentlyFavorite };
 }
 
 /**
  * Check if a gradient is favorited
  */
-export function isFavorite(gradientId: string): boolean {
+export function isFavorite(gradientDef: string): boolean {
   const store = loadFavorites();
-  return store.gradientIds.includes(gradientId);
+  return store.gradients.includes(gradientDef);
 }
 
 /**
- * Get all favorite gradient IDs
+ * Get all favorite gradients (encoded definitions)
  */
-export function getFavoriteIds(): string[] {
-  return loadFavorites().gradientIds;
+export function getFavorites(): string[] {
+  return loadFavorites().gradients;
 }
 
 /**
