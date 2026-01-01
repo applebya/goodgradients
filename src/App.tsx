@@ -5,14 +5,19 @@ import { Footer } from './components/Footer';
 import { GradientGallery } from './components/GradientGallery';
 import { GradientDetail } from './components/GradientDetail';
 import { AnimationStudio } from './components/AnimationStudio';
+import { DiscoveryWizard } from './components/discovery-wizard';
 import { useAppState } from './hooks/useAppState';
 import { useKeyboard } from './hooks/useKeyboard';
+import { useDiscoveryWizard } from './hooks/useDiscoveryWizard';
 import { getGradientById, gradients } from './data/gradients';
 import type { Gradient } from './types';
 
 export default function App() {
   const { state, favorites, actions } = useAppState();
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Discovery Wizard
+  const wizard = useDiscoveryWizard(gradients);
 
   // Register toast function
   useToastRegister();
@@ -96,6 +101,10 @@ export default function App() {
         onRandomGradient={handleRandomGradient}
         onOpenStudio={actions.openStudio}
         searchInputRef={searchInputRef}
+        onOpenWizard={wizard.openWizard}
+        hasActiveFilters={wizard.hasActiveFilters}
+        wizardMatchCount={wizard.matchCount}
+        onClearFilters={wizard.clearFilters}
       />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
@@ -108,6 +117,7 @@ export default function App() {
           onSelectGradient={handleSelectGradient}
           onToggleFavorite={actions.toggleFavorite}
           isFavorite={actions.isFavorite}
+          wizardFilteredGradients={wizard.hasActiveFilters ? wizard.filteredGradients : undefined}
         />
       </main>
 
@@ -136,6 +146,26 @@ export default function App() {
         isOpen={state.view === 'studio'}
         onClose={actions.closeModal}
         onSelectCombination={handleStudioCombination}
+      />
+
+      {/* Discovery Wizard Modal */}
+      <DiscoveryWizard
+        isOpen={wizard.isOpen}
+        currentStep={wizard.currentStep}
+        totalSteps={wizard.totalSteps}
+        selections={wizard.selections}
+        matchCount={wizard.matchCount}
+        canGoBack={wizard.canGoBack}
+        isLastStep={wizard.isLastStep}
+        onClose={wizard.closeWizard}
+        onSkip={wizard.skipWizard}
+        onNext={wizard.nextStep}
+        onBack={wizard.prevStep}
+        onApply={wizard.applyFilters}
+        onSetVibe={wizard.setVibe}
+        onToggleColorTemp={wizard.toggleColorTemp}
+        onSetUseCase={wizard.setUseCase}
+        onSetAnimationPref={wizard.setAnimationPref}
       />
     </div>
   );

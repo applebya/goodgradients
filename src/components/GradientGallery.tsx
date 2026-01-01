@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { GradientCard } from './GradientCard';
-import { gradients, getGradientsByCategory } from '@/data/gradients';
+import { gradients } from '@/data/gradients';
 import type { Gradient, GradientType, GradientCategory } from '@/types';
 
 interface GradientGalleryProps {
@@ -13,6 +13,7 @@ interface GradientGalleryProps {
   onSelectGradient: (gradient: Gradient) => void;
   onToggleFavorite: (id: string) => void;
   isFavorite: (id: string) => boolean;
+  wizardFilteredGradients?: Gradient[]; // Optional: wizard-filtered gradients take priority
 }
 
 export function GradientGallery({
@@ -24,19 +25,23 @@ export function GradientGallery({
   onSelectGradient,
   onToggleFavorite,
   isFavorite,
+  wizardFilteredGradients,
 }: GradientGalleryProps) {
   const filteredGradients = useMemo(() => {
+    // Start with wizard-filtered gradients if provided, otherwise use all gradients
+    let baseGradients = wizardFilteredGradients ?? gradients;
     let result: Gradient[];
 
     // Apply category filter first
     if (category === 'Favorites') {
-      result = gradients.filter((g) => favorites.includes(g.id));
+      result = baseGradients.filter((g) => favorites.includes(g.id));
     } else if (category === 'Animated') {
-      result = gradients.filter((g) => g.tags.includes('animated'));
+      result = baseGradients.filter((g) => g.tags.includes('animated'));
     } else if (category === 'All') {
-      result = gradients;
+      result = baseGradients;
     } else {
-      result = getGradientsByCategory(category);
+      // When using wizard filters with a category, filter from the base
+      result = baseGradients.filter((g) => g.category === category);
     }
 
     // Then apply search filter
@@ -52,7 +57,7 @@ export function GradientGallery({
     }
 
     return result;
-  }, [category, searchQuery, favorites]);
+  }, [category, searchQuery, favorites, wizardFilteredGradients]);
 
   if (filteredGradients.length === 0) {
     return (

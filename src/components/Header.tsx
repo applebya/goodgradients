@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Search, Shuffle, Zap } from './icons';
+import { Search, Shuffle, Zap, Sparkles, X } from './icons';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
 import { gradientCategories } from '@/data/gradients';
@@ -13,6 +13,10 @@ interface HeaderProps {
   onRandomGradient: () => void;
   onOpenStudio: () => void;
   searchInputRef?: React.RefObject<HTMLInputElement>;
+  onOpenWizard?: () => void;
+  hasActiveFilters?: boolean;
+  wizardMatchCount?: number;
+  onClearFilters?: () => void;
 }
 
 export function Header({
@@ -23,6 +27,10 @@ export function Header({
   onRandomGradient,
   onOpenStudio,
   searchInputRef,
+  onOpenWizard,
+  hasActiveFilters,
+  wizardMatchCount,
+  onClearFilters,
 }: HeaderProps) {
   const internalRef = useRef<HTMLInputElement>(null);
   const inputRef = searchInputRef || internalRef;
@@ -43,6 +51,18 @@ export function Header({
           </div>
 
           <div className="flex items-center gap-2">
+            {onOpenWizard && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onOpenWizard}
+                className="btn-shine bg-gradient-to-r from-violet-500/10 to-pink-500/10 border-violet-500/30 hover:border-violet-400"
+              >
+                <Sparkles className="w-4 h-4 mr-1 text-violet-400" />
+                <span className="hidden sm:inline">Find My Gradient</span>
+                <span className="sm:hidden">Find</span>
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
@@ -100,6 +120,33 @@ export function Header({
             ))}
           </div>
         </div>
+
+        {/* Wizard filter indicator */}
+        {hasActiveFilters && (
+          <div className="flex items-center justify-between py-2 px-3 mt-3 rounded-lg bg-gradient-to-r from-violet-500/10 to-pink-500/10 border border-violet-500/20">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-violet-400" />
+              <span className="text-sm text-white">
+                <span className="font-medium">{wizardMatchCount}</span> gradients match your style
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={onOpenWizard}
+                className="text-xs text-violet-300 hover:text-violet-200 transition-colors"
+              >
+                Edit preferences
+              </button>
+              <button
+                onClick={onClearFilters}
+                className="p-1 rounded hover:bg-white/10 transition-colors"
+                title="Clear filters"
+              >
+                <X className="w-4 h-4 text-neutral-400 hover:text-white" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );

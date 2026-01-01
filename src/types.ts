@@ -100,3 +100,29 @@ export interface ExportResult {
 export interface FavoritesState {
   gradientIds: string[];
 }
+
+// Discovery Wizard types
+export type WizardVibe = 'playful' | 'professional' | 'bold' | 'subtle' | 'futuristic' | 'natural';
+export type WizardColorTemp = 'warm' | 'cool' | 'neutral' | 'vibrant' | 'earth';
+export type WizardUseCase = 'hero' | 'buttons' | 'cards' | 'backgrounds' | 'accents';
+export type WizardAnimationPref = 'subtle' | 'dynamic' | 'static';
+
+export interface WizardSelections {
+  vibe: WizardVibe | null;
+  colorTemps: WizardColorTemp[]; // Multi-select
+  useCase: WizardUseCase | null;
+  animationPref: WizardAnimationPref | null;
+}
+
+export interface WizardState {
+  isOpen: boolean;
+  currentStep: number; // 0-3
+  selections: WizardSelections;
+  hasCompletedOnce: boolean;
+}
+
+export interface WizardFilters {
+  vibes: WizardVibe[];
+  colorTemps: WizardColorTemp[];
+  useCases: WizardUseCase[];
+}
