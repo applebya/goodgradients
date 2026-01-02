@@ -1,15 +1,7 @@
 import { test, expect, Page } from '@playwright/test';
 
-// Helper to skip the discovery wizard by setting localStorage before navigation
-async function skipWizard(page: Page) {
-  await page.addInitScript(() => {
-    localStorage.setItem('goodgradients_wizard_completed', 'true');
-  });
-}
-
 test.describe('GoodGradients - Gallery', () => {
   test.beforeEach(async ({ page }) => {
-    await skipWizard(page);
     await page.goto('/');
     // Wait for the app to fully load
     await page.waitForSelector('[data-testid="gradient-card"]', { timeout: 15000 });
@@ -26,15 +18,20 @@ test.describe('GoodGradients - Gallery', () => {
   });
 
   test('should filter gradients by category', async ({ page }) => {
-    // Click on a category button (the pill buttons under the search)
-    const purpleButton = page.locator('button').filter({ hasText: /^Purple$/ });
-    await purpleButton.click();
+    // Open the category select
+    await page.locator('button').filter({ hasText: /^All$/ }).first().click();
+
+    // Select Purple
+    await page.getByRole('option', { name: 'Purple' }).click();
 
     // Wait for state to update
     await page.waitForTimeout(500);
 
-    // Check that the Purple button is now active (has different styling)
-    await expect(purpleButton).toHaveClass(/bg-white/);
+    // Cards should be filtered
+    const cards = page.locator('[data-testid="gradient-card"]');
+    const count = await cards.count();
+    expect(count).toBeGreaterThan(0);
+    expect(count).toBeLessThan(100); // Should be filtered
   });
 
   test('should search gradients', async ({ page }) => {
@@ -63,7 +60,6 @@ test.describe('GoodGradients - Gallery', () => {
 
 test.describe('GoodGradients - Gradient Detail', () => {
   test.beforeEach(async ({ page }) => {
-    await skipWizard(page);
     await page.goto('/');
     await page.waitForSelector('[data-testid="gradient-card"]', { timeout: 15000 });
   });
@@ -183,7 +179,6 @@ test.describe('GoodGradients - Gradient Detail', () => {
 
 test.describe('GoodGradients - URL State', () => {
   test('should open modal when gradient is encoded in URL', async ({ page }) => {
-    await skipWizard(page);
     // Navigate with encoded gradient in URL (format: type,angle,color1:stop1,color2:stop2)
     // This represents a purple gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
     await page.goto('/?g=linear,135,667eea:0,764ba2:100');
@@ -199,7 +194,6 @@ test.describe('GoodGradients - URL State', () => {
   });
 
   test('should update gradient type when clicking buttons', async ({ page }) => {
-    await skipWizard(page);
     await page.goto('/');
     await page.waitForSelector('[data-testid="gradient-card"]', { timeout: 15000 });
 
@@ -221,7 +215,6 @@ test.describe('GoodGradients - URL State', () => {
 
 test.describe('GoodGradients - Favorites', () => {
   test('should have heart button on cards', async ({ page }) => {
-    await skipWizard(page);
     await page.goto('/');
     await page.waitForSelector('[data-testid="gradient-card"]', { timeout: 15000 });
 
@@ -236,20 +229,20 @@ test.describe('GoodGradients - Favorites', () => {
     await heartButton.click();
   });
 
-  test('should show favorites filter button', async ({ page }) => {
-    await skipWizard(page);
+  test('should show favorites filter option', async ({ page }) => {
     await page.goto('/');
     await page.waitForSelector('[data-testid="gradient-card"]', { timeout: 15000 });
 
-    // Favorites filter button should exist
-    const favoritesButton = page.locator('button').filter({ hasText: /^Favorites$/ });
-    await expect(favoritesButton).toBeVisible();
+    // Open the category select
+    await page.locator('button').filter({ hasText: /^All$/ }).first().click();
+
+    // Favorites option should exist in the dropdown
+    await expect(page.getByRole('option', { name: 'Favorites' })).toBeVisible();
   });
 });
 
 test.describe('GoodGradients - Keyboard Shortcuts', () => {
   test('should show keyboard shortcuts in footer', async ({ page }) => {
-    await skipWizard(page);
     await page.goto('/');
     await page.waitForSelector('[data-testid="gradient-card"]', { timeout: 15000 });
 
@@ -258,7 +251,6 @@ test.describe('GoodGradients - Keyboard Shortcuts', () => {
   });
 
   test('should close modal with escape key', async ({ page }) => {
-    await skipWizard(page);
     await page.goto('/');
     await page.waitForSelector('[data-testid="gradient-card"]', { timeout: 15000 });
     await page.locator('[data-testid="gradient-card"]').first().click();
@@ -272,135 +264,124 @@ test.describe('GoodGradients - Keyboard Shortcuts', () => {
   });
 });
 
-// Discovery Wizard Tests - Single-page wizard with Mood + Colors sections
-test.describe('GoodGradients - Discovery Wizard', () => {
-  test('should auto-open wizard on first visit', async ({ page }) => {
-    // Don't skip wizard for this test
-    await page.goto('/');
-
-    // Wait for wizard to auto-open (500ms delay + render time)
-    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
-    await expect(page.getByText('Find your gradient')).toBeVisible();
-  });
-
-  test('should close wizard by clicking outside (dialog dismiss)', async ({ page }) => {
-    await page.goto('/');
-    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
-
-    // Press Escape to close (standard dialog dismiss)
-    await page.keyboard.press('Escape');
-
-    // Dialog should close
-    await expect(page.getByRole('dialog')).not.toBeVisible();
-
-    // Gallery should be visible
-    await expect(page.locator('[data-testid="gradient-card"]').first()).toBeVisible();
-  });
-
-  test('should show single-page wizard with mood and colors', async ({ page }) => {
-    await page.goto('/');
-    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
-
-    // Both sections should be visible on same page (use exact match)
-    await expect(page.getByText('Mood', { exact: true })).toBeVisible();
-    await expect(page.getByText('Colors', { exact: true })).toBeVisible();
-
-    // Mood options should be visible
-    await expect(page.getByRole('dialog').locator('button', { hasText: 'Playful' })).toBeVisible();
-    await expect(page.getByRole('dialog').locator('button', { hasText: 'Bold' })).toBeVisible();
-
-    // Color options should be visible
-    await expect(page.getByRole('dialog').locator('button', { hasText: 'Purple' })).toBeVisible();
-    await expect(page.getByRole('dialog').locator('button', { hasText: 'Blue' })).toBeVisible();
-  });
-
-  test('should apply filters and close wizard', async ({ page }) => {
-    await page.goto('/');
-    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
-
-    // Select a mood
-    await page.getByRole('dialog').locator('button', { hasText: 'Playful' }).click();
-
-    // Select colors
-    await page.getByRole('dialog').locator('button', { hasText: 'Purple' }).click();
-    await page.getByRole('dialog').locator('button', { hasText: 'Pink' }).click();
-
-    // Click Show results
-    await page.getByRole('button', { name: 'Show results' }).click();
-
-    // Dialog should close and gallery should show filtered results
-    await expect(page.getByRole('dialog')).not.toBeVisible();
-    await expect(page.locator('[data-testid="gradient-card"]').first()).toBeVisible();
-  });
-
-  test('should allow multi-select for colors', async ({ page }) => {
-    await page.goto('/');
-    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
-
-    // Select multiple colors (all on same page)
-    await page.getByRole('dialog').locator('button', { hasText: 'Blue' }).click();
-    await page.getByRole('dialog').locator('button', { hasText: 'Green' }).click();
-    await page.getByRole('dialog').locator('button', { hasText: 'Teal' }).click();
-
-    // All should be selected (have active styling with border-white)
-    const blueButton = page.getByRole('dialog').locator('button', { hasText: 'Blue' });
-    await expect(blueButton).toHaveClass(/border-white/);
-  });
-
-  test('should show wizard button in header', async ({ page }) => {
-    await skipWizard(page);
+// Filter Bar Tests
+test.describe('GoodGradients - Filter Bar', () => {
+  test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.waitForSelector('[data-testid="gradient-card"]', { timeout: 15000 });
-
-    // Wizard button (sparkles icon) should be visible
-    await expect(page.getByRole('button', { name: /Find gradients/i })).toBeVisible();
   });
 
-  test('should reopen wizard from header button', async ({ page }) => {
-    await skipWizard(page);
-    await page.goto('/');
-    await page.waitForSelector('[data-testid="gradient-card"]', { timeout: 15000 });
+  test('should show filter dropdowns on desktop', async ({ page }) => {
+    // Skip on mobile viewport
+    const viewportSize = page.viewportSize();
+    if (viewportSize && viewportSize.width < 640) {
+      test.skip();
+      return;
+    }
 
-    // Click wizard button
-    await page.getByRole('button', { name: /Find gradients/i }).click();
+    // Category dropdown should be visible
+    await expect(page.locator('button').filter({ hasText: /^All$/ }).first()).toBeVisible();
 
-    // Wizard should open
-    await expect(page.getByRole('dialog')).toBeVisible();
-    await expect(page.getByText('Find your gradient')).toBeVisible();
+    // Vibe dropdown should be visible
+    await expect(page.locator('button').filter({ hasText: /Any vibe/i })).toBeVisible();
+
+    // Colors dropdown should be visible
+    await expect(page.locator('button').filter({ hasText: /Colors/i })).toBeVisible();
+
+    // Type dropdown should be visible
+    await expect(page.locator('button').filter({ hasText: /Any type/i })).toBeVisible();
   });
 
-  test('should show match count', async ({ page }) => {
-    await page.goto('/');
-    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
+  test('should filter by vibe', async ({ page }) => {
+    const viewportSize = page.viewportSize();
+    if (viewportSize && viewportSize.width < 640) {
+      test.skip();
+      return;
+    }
 
-    // Should show matches text
-    await expect(page.getByText(/\d+ matches?$/)).toBeVisible();
+    const cards = page.locator('[data-testid="gradient-card"]');
+    const initialCount = await cards.count();
+
+    // Open vibe dropdown and select "Bold"
+    await page.locator('button').filter({ hasText: /Any vibe/i }).click();
+    await page.getByRole('option', { name: 'Bold' }).click();
+
+    // Wait for filter to apply
+    await page.waitForTimeout(500);
+
+    // Results should change (likely fewer)
+    const filteredCount = await cards.count();
+    expect(filteredCount).toBeGreaterThan(0);
+    expect(filteredCount).toBeLessThanOrEqual(initialCount);
   });
 
-  test('should toggle mood selection', async ({ page }) => {
-    await page.goto('/');
-    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
+  test('should filter by gradient type', async ({ page }) => {
+    const viewportSize = page.viewportSize();
+    if (viewportSize && viewportSize.width < 640) {
+      test.skip();
+      return;
+    }
 
-    const playfulButton = page.getByRole('dialog').locator('button', { hasText: 'Playful' });
+    const cards = page.locator('[data-testid="gradient-card"]');
+    const initialCount = await cards.count();
 
-    // Select mood
-    await playfulButton.click();
-    await expect(playfulButton).toHaveClass(/border-white/);
+    // Open type dropdown and select "Radial"
+    await page.locator('button').filter({ hasText: /Any type/i }).click();
+    await page.getByRole('option', { name: 'Radial' }).click();
 
-    // Deselect mood (toggle)
-    await playfulButton.click();
-    await expect(playfulButton).not.toHaveClass(/border-white/);
+    // Wait for filter to apply
+    await page.waitForTimeout(500);
+
+    // Results should change (radial gradients only)
+    const filteredCount = await cards.count();
+    expect(filteredCount).toBeLessThan(initialCount);
   });
 
-  test('should skip wizard without selections', async ({ page }) => {
-    await page.goto('/');
-    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
+  test('should multi-select colors', async ({ page }) => {
+    const viewportSize = page.viewportSize();
+    if (viewportSize && viewportSize.width < 640) {
+      test.skip();
+      return;
+    }
 
-    // Close button should say "Close" when no selections (use first to avoid X button)
-    await page.getByRole('button', { name: 'Close' }).first().click();
+    // Open colors popover
+    await page.locator('button').filter({ hasText: /Colors/i }).click();
 
-    // Dialog should close
-    await expect(page.getByRole('dialog')).not.toBeVisible();
-    await expect(page.locator('[data-testid="gradient-card"]').first()).toBeVisible();
+    // Select Purple
+    await page.locator('button').filter({ hasText: 'Purple' }).first().click();
+
+    // Select Blue
+    await page.locator('button').filter({ hasText: 'Blue' }).first().click();
+
+    // Wait for filter to apply
+    await page.waitForTimeout(500);
+
+    // Cards should still be visible (filtered)
+    const cards = page.locator('[data-testid="gradient-card"]');
+    expect(await cards.count()).toBeGreaterThan(0);
+  });
+
+  test('should clear all filters', async ({ page }) => {
+    const viewportSize = page.viewportSize();
+    if (viewportSize && viewportSize.width < 640) {
+      test.skip();
+      return;
+    }
+
+    // Apply a filter first
+    await page.locator('button').filter({ hasText: /Any vibe/i }).click();
+    await page.getByRole('option', { name: 'Bold' }).click();
+    await page.waitForTimeout(300);
+
+    // Clear button should appear
+    const clearButton = page.locator('button').filter({ hasText: /Clear/i });
+    await expect(clearButton).toBeVisible();
+
+    // Click clear
+    await clearButton.click();
+    await page.waitForTimeout(300);
+
+    // Vibe should be reset to "Any vibe"
+    await expect(page.locator('button').filter({ hasText: /Any vibe/i })).toBeVisible();
   });
 });

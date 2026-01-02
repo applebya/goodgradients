@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import type { AppState, GradientCategory, GradientPreset } from '@/types';
+import type { AppState, GradientCategory, GradientPreset, WizardVibe, WizardColor, GradientTypeFilter } from '@/types';
 import { getInitialState, updateURL, getMinimalShareState, getShareableURL } from '@/lib/state';
 import { getFavorites, toggleFavorite as toggleFavoriteStorage, isFavorite as isFavoriteStorage } from '@/lib/favorites';
 import { encodeGradient, parseGradientCSS } from '@/lib/gradient-url';
@@ -10,6 +10,9 @@ const DEFAULT_STATE: AppState = {
   selectedAnimationId: null,
   category: 'All',
   searchQuery: '',
+  vibe: null,
+  colors: [],
+  gradientType: null,
   isAnimating: true,
 };
 
@@ -91,6 +94,42 @@ export function useAppState() {
     setState((prev) => ({ ...prev, searchQuery }));
   }, []);
 
+  const setVibe = useCallback((vibe: WizardVibe | null) => {
+    setState((prev) => ({ ...prev, vibe }));
+  }, []);
+
+  const setColors = useCallback((colors: WizardColor[]) => {
+    setState((prev) => ({ ...prev, colors }));
+  }, []);
+
+  const toggleColor = useCallback((color: WizardColor) => {
+    setState((prev) => {
+      const newColors = prev.colors.includes(color)
+        ? prev.colors.filter((c) => c !== color)
+        : [...prev.colors, color];
+      return { ...prev, colors: newColors };
+    });
+  }, []);
+
+  const setGradientType = useCallback((gradientType: GradientTypeFilter | null) => {
+    setState((prev) => ({ ...prev, gradientType }));
+  }, []);
+
+  const clearFilters = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      vibe: null,
+      colors: [],
+      gradientType: null,
+      category: 'All',
+      searchQuery: '',
+    }));
+  }, []);
+
+  const hasActiveFilters = useCallback(() => {
+    return state.vibe !== null || state.colors.length > 0 || state.gradientType !== null;
+  }, [state.vibe, state.colors, state.gradientType]);
+
   const toggleAnimating = useCallback(() => {
     setState((prev) => ({ ...prev, isAnimating: !prev.isAnimating }));
   }, []);
@@ -105,10 +144,6 @@ export function useAppState() {
     (gradientDef: string) => isFavoriteStorage(gradientDef),
     []
   );
-
-  const openStudio = useCallback(() => {
-    setState((prev) => ({ ...prev, view: 'studio' }));
-  }, []);
 
   const closeModal = useCallback(() => {
     setState((prev) => ({
@@ -146,10 +181,15 @@ export function useAppState() {
       selectAnimation,
       setCategory,
       setSearchQuery,
+      setVibe,
+      setColors,
+      toggleColor,
+      setGradientType,
+      clearFilters,
+      hasActiveFilters,
       toggleAnimating,
       toggleFavorite,
       isFavorite,
-      openStudio,
       closeModal,
       reset,
       getShareURL,

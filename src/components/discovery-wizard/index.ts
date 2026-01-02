@@ -1,1 +1,0 @@
-export { DiscoveryWizard } from './DiscoveryWizard';

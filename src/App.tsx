@@ -4,10 +4,9 @@ import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { GradientGallery } from './components/GradientGallery';
 import { GradientDetail } from './components/GradientDetail';
-import { DiscoveryWizard } from './components/discovery-wizard';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { useAppState } from './hooks/useAppState';
 import { useKeyboard } from './hooks/useKeyboard';
-import { useDiscoveryWizard } from './hooks/useDiscoveryWizard';
 import { gradients } from './data/gradients';
 import { decodeGradient, gradientToCSS } from './lib/gradient-url';
 import type { GradientPreset } from './types';
@@ -15,9 +14,6 @@ import type { GradientPreset } from './types';
 export default function App() {
   const { state, favorites, actions } = useAppState();
   const searchInputRef = useRef<HTMLInputElement>(null);
-
-  // Discovery Wizard
-  const wizard = useDiscoveryWizard(gradients);
 
   // Register toast function
   useToastRegister();
@@ -83,61 +79,58 @@ export default function App() {
   return (
     <div className="min-h-screen bg-neutral-950 text-white bg-page-gradient bg-grid-pattern">
       <Header
-        category={state.category}
         searchQuery={state.searchQuery}
-        onCategoryChange={actions.setCategory}
         onSearchChange={actions.setSearchQuery}
-        onRandomGradient={handleRandomGradient}
         searchInputRef={searchInputRef}
-        onOpenWizard={wizard.openWizard}
-        hasActiveFilters={wizard.hasActiveFilters}
-        wizardMatchCount={wizard.matchCount}
-        wizardSelections={wizard.appliedSelections ?? undefined}
-        onClearFilters={wizard.clearFilters}
-        onRemoveWizardVibe={wizard.removeAppliedVibe}
-        onRemoveWizardColor={wizard.removeAppliedColor}
+        category={state.category}
+        vibe={state.vibe}
+        colors={state.colors}
+        gradientType={state.gradientType}
+        onCategoryChange={actions.setCategory}
+        onVibeChange={actions.setVibe}
+        onColorsChange={actions.setColors}
+        onToggleColor={actions.toggleColor}
+        onGradientTypeChange={actions.setGradientType}
+        onClearFilters={actions.clearFilters}
+        hasActiveFilters={actions.hasActiveFilters()}
+        onRandomGradient={handleRandomGradient}
       />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <GradientGallery
-          category={state.category}
-          searchQuery={state.searchQuery}
-          favorites={favorites}
-          onSelectGradient={handleSelectGradient}
-          onToggleFavorite={actions.toggleFavorite}
-          isFavorite={actions.isFavorite}
-          wizardFilteredGradients={wizard.hasActiveFilters ? wizard.filteredGradients : undefined}
-        />
+        <ErrorBoundary>
+          <GradientGallery
+            category={state.category}
+            searchQuery={state.searchQuery}
+            vibe={state.vibe}
+            colors={state.colors}
+            gradientType={state.gradientType}
+            favorites={favorites}
+            onSelectGradient={handleSelectGradient}
+            onToggleFavorite={actions.toggleFavorite}
+            isFavorite={actions.isFavorite}
+          />
+        </ErrorBoundary>
       </main>
 
       <Footer />
 
       {/* Gradient Detail Modal */}
-      <GradientDetail
-        gradientDef={selectedGradientDef}
-        encodedGradient={state.selectedGradient}
-        isOpen={!!selectedGradientDef}
-        onClose={actions.closeModal}
-        selectedAnimationId={state.selectedAnimationId}
-        isAnimating={state.isAnimating}
-        isFavorite={state.selectedGradient ? actions.isFavorite(state.selectedGradient) : false}
-        onGradientChange={actions.updateGradient}
-        onAnimationChange={actions.selectAnimation}
-        onToggleAnimating={actions.toggleAnimating}
-        onToggleFavorite={() => state.selectedGradient && actions.toggleFavorite(state.selectedGradient)}
-        onShare={handleShare}
-      />
-
-      {/* Discovery Wizard Modal */}
-      <DiscoveryWizard
-        isOpen={wizard.isOpen}
-        selections={wizard.selections}
-        matchCount={wizard.matchCount}
-        onClose={wizard.closeWizard}
-        onApply={wizard.applyFilters}
-        onSetVibe={wizard.setVibe}
-        onToggleColor={wizard.toggleColor}
-      />
+      <ErrorBoundary>
+        <GradientDetail
+          gradientDef={selectedGradientDef}
+          encodedGradient={state.selectedGradient}
+          isOpen={!!selectedGradientDef}
+          onClose={actions.closeModal}
+          selectedAnimationId={state.selectedAnimationId}
+          isAnimating={state.isAnimating}
+          isFavorite={state.selectedGradient ? actions.isFavorite(state.selectedGradient) : false}
+          onGradientChange={actions.updateGradient}
+          onAnimationChange={actions.selectAnimation}
+          onToggleAnimating={actions.toggleAnimating}
+          onToggleFavorite={() => state.selectedGradient && actions.toggleFavorite(state.selectedGradient)}
+          onShare={handleShare}
+        />
+      </ErrorBoundary>
     </div>
   );
 }

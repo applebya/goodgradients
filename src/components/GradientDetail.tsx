@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { toast } from './Toast';
 import {
   Copy,
@@ -10,7 +10,12 @@ import {
   RotateCw,
   Maximize2,
   ChevronRight,
+  Zap,
+  Play,
+  Pause,
 } from './icons';
+import { animations, animationCategories, getAnimationById } from '@/data/animations';
+import type { Animation } from '@/types';
 import {
   Dialog,
   DialogContent,
@@ -43,8 +48,12 @@ export function GradientDetail({
   gradientDef,
   isOpen,
   onClose,
+  selectedAnimationId,
+  isAnimating,
   isFavorite,
   onGradientChange,
+  onAnimationChange,
+  onToggleAnimating,
   onToggleFavorite,
   onShare,
 }: GradientDetailProps) {
@@ -52,6 +61,37 @@ export function GradientDetail({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showCode, setShowCode] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showAnimation, setShowAnimation] = useState(false);
+  const [animationCategory, setAnimationCategory] = useState<string>('All');
+
+  // Get selected animation
+  const selectedAnimation = selectedAnimationId ? getAnimationById(selectedAnimationId) : undefined;
+
+  // Filter animations by category
+  const filteredAnimations = useMemo(() => {
+    if (animationCategory === 'All') return animations;
+    return animations.filter(a => a.category === animationCategory);
+  }, [animationCategory]);
+
+  // Helper to get animation inline styles
+  const getAnimationStyle = useCallback((animation: Animation | undefined): React.CSSProperties => {
+    if (!animation || !isAnimating) {
+      return {};
+    }
+
+    // Parse the property string to extract animation value
+    const animMatch = animation.property.match(/animation:\s*([^;]+);?/);
+    const animValue = animMatch ? animMatch[1] : undefined;
+
+    // Check if needs expanded background-size
+    const bgSizeMatch = animation.property.match(/background-size:\s*([^;]+);?/);
+    const bgSize = bgSizeMatch ? bgSizeMatch[1] : undefined;
+
+    return {
+      ...(bgSize ? { backgroundSize: bgSize } : {}),
+      ...(animValue ? { animation: animValue } : {}),
+    };
+  }, [isAnimating]);
 
   const handleCopy = useCallback(
     async (text: string, id: string) => {
@@ -99,16 +139,37 @@ export function GradientDetail({
     .slice(0, 2);
 
   // Generate export code
-  const cssCode = `background: ${displayGradient};`;
-  const tailwindCode = `bg-[${displayGradient.replace(/\s+/g, '_')}]`;
+  const cssCode = selectedAnimation
+    ? `background: ${displayGradient};\n${selectedAnimation.property}`
+    : `background: ${displayGradient};`;
+
+  const fullCSSCode = selectedAnimation
+    ? `/* Gradient with Animation */\n${selectedAnimation.keyframes}\n\n.animated-gradient {\n  background: ${displayGradient};\n  ${selectedAnimation.property}\n}`
+    : cssCode;
+
+  // Tailwind: Use CSS variable approach or provide inline style
+  const tailwindCode = `/* Add to your CSS/Tailwind config */
+.bg-gradient-custom {
+  background: ${displayGradient};
+}
+
+/* Or use inline style */
+style={{ background: '${displayGradient}' }}`;
 
   // Fullscreen preview
   if (isFullscreen) {
     return (
       <div className="fixed inset-0 z-[100]" onClick={() => setIsFullscreen(false)}>
+        {/* Inject animation keyframes */}
+        {selectedAnimation && (
+          <style dangerouslySetInnerHTML={{ __html: selectedAnimation.keyframes }} />
+        )}
         <div
           className="w-full h-full flex flex-col items-center justify-center p-8"
-          style={{ background: displayGradient }}
+          style={{
+            background: displayGradient,
+            ...getAnimationStyle(selectedAnimation),
+          }}
         >
           {/* Sample content */}
           <h1
@@ -189,6 +250,7 @@ export function GradientDetail({
                 variant="ghost"
                 className={cn('h-8 w-8', isFavorite && 'text-red-400')}
                 onClick={onToggleFavorite}
+                aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
               >
                 <Heart className={cn('w-4 h-4', isFavorite && 'fill-current')} />
               </Button>
@@ -197,6 +259,7 @@ export function GradientDetail({
                 variant="ghost"
                 className="h-8 w-8"
                 onClick={handleShare}
+                aria-label="Share gradient"
               >
                 <Share2 className="w-4 h-4" />
               </Button>
@@ -204,10 +267,18 @@ export function GradientDetail({
           </div>
         </DialogHeader>
 
+        {/* Inject animation keyframes for main modal */}
+        {selectedAnimation && (
+          <style dangerouslySetInnerHTML={{ __html: selectedAnimation.keyframes }} />
+        )}
+
         {/* Preview with fullscreen option */}
         <div
           className="rounded-xl relative overflow-hidden h-28 cursor-pointer group"
-          style={{ background: displayGradient }}
+          style={{
+            background: displayGradient,
+            ...getAnimationStyle(selectedAnimation),
+          }}
           onClick={() => setIsFullscreen(true)}
         >
           {/* Text preview */}
@@ -226,6 +297,7 @@ export function GradientDetail({
             variant="ghost"
             className="absolute top-2 right-2 bg-black/40 text-white hover:bg-black/60 h-7 w-7"
             onClick={(e) => { e.stopPropagation(); setIsFullscreen(true); }}
+            aria-label="Fullscreen preview"
           >
             <Maximize2 className="w-3.5 h-3.5" />
           </Button>
@@ -252,7 +324,10 @@ export function GradientDetail({
           {/* Background */}
           <div
             className="rounded-lg p-3 flex flex-col items-center justify-center min-h-[70px] cursor-pointer hover:scale-[1.02] transition-transform"
-            style={{ background: displayGradient }}
+            style={{
+              background: displayGradient,
+              ...getAnimationStyle(selectedAnimation),
+            }}
             onClick={() => setIsFullscreen(true)}
           >
             <span className="text-xs font-medium drop-shadow" style={{ color: bestTextColors[0]?.color || '#fff' }}>
@@ -356,6 +431,90 @@ export function GradientDetail({
           </div>
         )}
 
+        {/* Collapsible: Animation */}
+        <button
+          onClick={() => setShowAnimation(!showAnimation)}
+          className="flex items-center justify-between w-full py-2 text-sm text-neutral-400 hover:text-white transition-colors border-t border-neutral-800 pt-3"
+        >
+          <span className="flex items-center gap-2">
+            <Zap className="w-4 h-4" />
+            Animate Gradient
+            {selectedAnimation && (
+              <Badge variant="secondary" className="text-xs">
+                {selectedAnimation.name}
+              </Badge>
+            )}
+          </span>
+          <div className="flex items-center gap-2">
+            {selectedAnimation && (
+              <Button
+                size="icon-xs"
+                variant="ghost"
+                className="h-6 w-6"
+                onClick={(e) => { e.stopPropagation(); onToggleAnimating(); }}
+                aria-label={isAnimating ? 'Pause animation' : 'Play animation'}
+              >
+                {isAnimating ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+              </Button>
+            )}
+            <ChevronRight className={cn('w-4 h-4 transition-transform', showAnimation && 'rotate-90')} />
+          </div>
+        </button>
+        {showAnimation && (
+          <div className="space-y-3 pb-2">
+            {/* Category filter pills */}
+            <div className="flex gap-1.5 flex-wrap">
+              {animationCategories.map((cat) => (
+                <Button
+                  key={cat}
+                  size="sm"
+                  variant={animationCategory === cat ? 'default' : 'outline'}
+                  onClick={() => setAnimationCategory(cat)}
+                  className="text-xs px-2 py-0.5 h-6"
+                >
+                  {cat}
+                </Button>
+              ))}
+            </div>
+
+            {/* Animation grid */}
+            <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+              {/* "None" option to clear animation */}
+              <button
+                onClick={() => onAnimationChange(null)}
+                className={cn(
+                  'p-2 rounded-lg border text-left transition-all',
+                  !selectedAnimationId
+                    ? 'border-white bg-neutral-800'
+                    : 'border-neutral-700 bg-neutral-800/50 hover:border-neutral-600'
+                )}
+              >
+                <p className="text-xs text-white font-medium">None</p>
+                <p className="text-[10px] text-neutral-500">Static gradient</p>
+              </button>
+
+              {filteredAnimations.map((anim) => (
+                <button
+                  key={anim.id}
+                  onClick={() => {
+                    onAnimationChange(anim.id);
+                    if (!isAnimating) onToggleAnimating();
+                  }}
+                  className={cn(
+                    'p-2 rounded-lg border text-left transition-all',
+                    selectedAnimationId === anim.id
+                      ? 'border-white bg-neutral-800'
+                      : 'border-neutral-700 bg-neutral-800/50 hover:border-neutral-600'
+                  )}
+                >
+                  <p className="text-xs text-white font-medium">{anim.name}</p>
+                  <p className="text-[10px] text-neutral-500 line-clamp-1">{anim.description}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Collapsible: Code Export */}
         <button
           onClick={() => setShowCode(!showCode)}
@@ -365,21 +524,37 @@ export function GradientDetail({
           <ChevronRight className={cn('w-4 h-4 transition-transform', showCode && 'rotate-90')} />
         </button>
         {showCode && (
-          <div className="grid grid-cols-2 gap-2 pb-2">
-            <button
-              onClick={() => handleCopy(cssCode, 'css')}
-              className="flex items-center justify-between px-3 py-2 bg-neutral-800 rounded-lg hover:bg-neutral-700 transition-colors"
-            >
-              <span className="text-sm text-white">CSS</span>
-              {copiedId === 'css' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-neutral-400" />}
-            </button>
-            <button
-              onClick={() => handleCopy(tailwindCode, 'tailwind')}
-              className="flex items-center justify-between px-3 py-2 bg-neutral-800 rounded-lg hover:bg-neutral-700 transition-colors"
-            >
-              <span className="text-sm text-white">Tailwind</span>
-              {copiedId === 'tailwind' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-neutral-400" />}
-            </button>
+          <div className="space-y-2 pb-2">
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => handleCopy(cssCode, 'css')}
+                className="flex items-center justify-between px-3 py-2 bg-neutral-800 rounded-lg hover:bg-neutral-700 transition-colors"
+              >
+                <span className="text-sm text-white">CSS</span>
+                {copiedId === 'css' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-neutral-400" />}
+              </button>
+              <button
+                onClick={() => handleCopy(tailwindCode, 'tailwind')}
+                className="flex items-center justify-between px-3 py-2 bg-neutral-800 rounded-lg hover:bg-neutral-700 transition-colors"
+              >
+                <span className="text-sm text-white">Tailwind</span>
+                {copiedId === 'tailwind' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-neutral-400" />}
+              </button>
+            </div>
+
+            {/* Show full CSS with animation when animation is selected */}
+            {selectedAnimation && (
+              <button
+                onClick={() => handleCopy(fullCSSCode, 'full-css')}
+                className="w-full flex items-center justify-between px-3 py-2 bg-neutral-700 rounded-lg hover:bg-neutral-600 transition-colors"
+              >
+                <span className="text-sm text-white flex items-center gap-2">
+                  <Zap className="w-3 h-3" />
+                  Full CSS with Animation
+                </span>
+                {copiedId === 'full-css' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-neutral-400" />}
+              </button>
+            )}
           </div>
         )}
 

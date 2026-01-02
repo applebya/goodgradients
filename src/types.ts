@@ -48,10 +48,13 @@ export interface Animation {
 
 export type AnimationCategory = 'Movement' | 'Rotation' | 'Pulse' | 'Morph' | 'Wave';
 
+// Gradient type filter
+export type GradientTypeFilter = 'linear' | 'radial' | 'conic';
+
 // App state - now uses gradient definition instead of ID
 export interface AppState {
   // View state
-  view: 'gallery' | 'detail' | 'studio';
+  view: 'gallery' | 'detail';
 
   // Selected gradient (full definition, not just ID)
   // Format: "linear,135,667eea:0,764ba2:100"
@@ -61,6 +64,9 @@ export interface AppState {
   // Filters
   category: GradientCategory | 'All' | 'Favorites';
   searchQuery: string;
+  vibe: WizardVibe | null;          // Vibe filter
+  colors: WizardColor[];            // Color filters (multi-select)
+  gradientType: GradientTypeFilter | null; // Gradient type filter
 
   // UI state
   isAnimating: boolean;
@@ -76,6 +82,12 @@ export interface URLState {
   c?: string;
   // Search query
   q?: string;
+  // Vibe filter
+  v?: string;
+  // Colors filter (comma-separated)
+  colors?: string;
+  // Gradient type filter
+  t?: string;
 }
 
 // Export formats

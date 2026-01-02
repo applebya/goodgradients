@@ -1,56 +1,76 @@
 import { useRef } from 'react';
-import { Search, Shuffle, Sparkles } from './icons';
+import { Search, Shuffle } from './icons';
 import { Button } from './ui/button';
-import { cn } from '@/lib/utils';
-import { gradientCategories } from '@/data/gradients';
-import { VIBE_OPTIONS } from '@/lib/wizard';
-import type { GradientCategory, WizardSelections, WizardColor } from '@/types';
+import { FilterBar } from './FilterBar';
+import { MobileFilterSheet } from './MobileFilterSheet';
+import { useIsMobile } from '@/hooks/useMediaQuery';
+import type { GradientCategory, WizardVibe, WizardColor, GradientTypeFilter } from '@/types';
 
 interface HeaderProps {
-  category: GradientCategory | 'All' | 'Favorites';
+  // Search
   searchQuery: string;
-  onCategoryChange: (category: GradientCategory | 'All' | 'Favorites') => void;
   onSearchChange: (query: string) => void;
-  onRandomGradient: () => void;
   searchInputRef?: React.RefObject<HTMLInputElement>;
-  onOpenWizard?: () => void;
-  hasActiveFilters?: boolean;
-  wizardMatchCount?: number;
-  wizardSelections?: WizardSelections;
-  onClearFilters?: () => void;
-  onRemoveWizardVibe?: () => void;
-  onRemoveWizardColor?: (color: WizardColor) => void;
+
+  // Filters
+  category: GradientCategory | 'All' | 'Favorites';
+  vibe: WizardVibe | null;
+  colors: WizardColor[];
+  gradientType: GradientTypeFilter | null;
+  onCategoryChange: (category: GradientCategory | 'All' | 'Favorites') => void;
+  onVibeChange: (vibe: WizardVibe | null) => void;
+  onColorsChange: (colors: WizardColor[]) => void;
+  onToggleColor: (color: WizardColor) => void;
+  onGradientTypeChange: (type: GradientTypeFilter | null) => void;
+  onClearFilters: () => void;
+  hasActiveFilters: boolean;
+
+  // Actions
+  onRandomGradient: () => void;
 }
 
 export function Header({
-  category,
   searchQuery,
-  onCategoryChange,
   onSearchChange,
-  onRandomGradient,
   searchInputRef,
-  onOpenWizard,
-  hasActiveFilters,
-  wizardMatchCount,
-  wizardSelections,
+  category,
+  vibe,
+  colors,
+  gradientType,
+  onCategoryChange,
+  onVibeChange,
+  onColorsChange,
+  onToggleColor,
+  onGradientTypeChange,
   onClearFilters,
-  onRemoveWizardVibe,
-  onRemoveWizardColor,
+  hasActiveFilters,
+  onRandomGradient,
 }: HeaderProps) {
   const internalRef = useRef<HTMLInputElement>(null);
-  const inputRef = searchInputRef || internalRef;
+  const inputRef = searchInputRef ?? internalRef;
+  const isMobile = useIsMobile();
+
+  // Count active filters for mobile badge
+  const activeFilterCount = [
+    category !== 'All' ? 1 : 0,
+    vibe ? 1 : 0,
+    colors.length,
+    gradientType ? 1 : 0,
+  ].reduce((a, b) => a + b, 0);
 
   return (
     <header className="sticky top-0 z-30 glass-header">
       <div className="max-w-7xl mx-auto px-4 py-3">
-        {/* Single row: Logo + Search + Actions */}
+        {/* Top row: Logo + Search + Actions */}
         <div className="flex items-center gap-4">
           {/* Logo */}
           <div className="flex items-center gap-2 flex-shrink-0">
             <div className="w-7 h-7 rounded-md bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center">
               <span className="text-white font-bold text-xs">GG</span>
             </div>
-            <h1 className="text-base font-medium text-white hidden sm:block">GoodGradients</h1>
+            <h1 className="text-base font-medium text-white hidden sm:block">
+              GoodGradients
+            </h1>
           </div>
 
           {/* Search */}
@@ -71,77 +91,49 @@ export function Header({
 
           {/* Actions */}
           <div className="flex items-center gap-1.5 flex-shrink-0">
-            {onOpenWizard && (
-              <Button variant="ghost" size="icon-sm" onClick={onOpenWizard} title="Find gradients">
-                <Sparkles className="w-4 h-4" />
-              </Button>
+            {/* Mobile: Filter sheet trigger */}
+            {isMobile && (
+              <MobileFilterSheet
+                category={category}
+                vibe={vibe}
+                colors={colors}
+                gradientType={gradientType}
+                onCategoryChange={onCategoryChange}
+                onVibeChange={onVibeChange}
+                onToggleColor={onToggleColor}
+                onGradientTypeChange={onGradientTypeChange}
+                onClearFilters={onClearFilters}
+                activeFilterCount={activeFilterCount}
+              />
             )}
-            <Button variant="ghost" size="icon-sm" onClick={onRandomGradient} title="Random gradient">
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={onRandomGradient}
+              title="Random gradient"
+              aria-label="Select random gradient"
+            >
               <Shuffle className="w-4 h-4" />
             </Button>
           </div>
         </div>
 
-        {/* Category pills */}
-        <div className="flex gap-1.5 mt-3 overflow-x-scroll pb-1 scrollbar-hide min-h-[32px]">
-          {hasActiveFilters && wizardSelections ? (
-            <>
-              {wizardSelections.vibe && (
-                <button
-                  onClick={() => onRemoveWizardVibe?.()}
-                  className="px-2.5 py-1 rounded-full text-sm whitespace-nowrap bg-white text-black font-medium flex items-center gap-1"
-                >
-                  {VIBE_OPTIONS.find(v => v.value === wizardSelections.vibe)?.label}
-                  <span className="text-neutral-400 text-xs">×</span>
-                </button>
-              )}
-              {wizardSelections.colors.map((color) => (
-                <button
-                  key={color}
-                  onClick={() => onRemoveWizardColor?.(color)}
-                  className="px-2.5 py-1 rounded-full text-sm whitespace-nowrap bg-white text-black font-medium flex items-center gap-1"
-                >
-                  {color}
-                  <span className="text-neutral-400 text-xs">×</span>
-                </button>
-              ))}
-              <button
-                onClick={onClearFilters}
-                className="px-2.5 py-1 text-sm text-neutral-500 hover:text-white"
-              >
-                Clear
-              </button>
-            </>
-          ) : (
-              gradientCategories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => onCategoryChange(cat)}
-                  className={cn(
-                    'px-2.5 py-1 rounded-full text-sm whitespace-nowrap',
-                    category === cat
-                      ? 'bg-white text-black font-medium'
-                      : 'text-neutral-400 hover:text-white'
-                  )}
-                >
-                  {cat}
-                </button>
-              ))
-            )}
-        </div>
-
-        {/* Match count when wizard filters active */}
-        {hasActiveFilters && (
-          <div className="flex items-center justify-between mt-2 text-sm">
-            <span className="text-neutral-500">
-              {wizardMatchCount} {wizardMatchCount === 1 ? 'gradient' : 'gradients'}
-            </span>
-            <button
-              onClick={onOpenWizard}
-              className="text-neutral-400 hover:text-white transition-colors"
-            >
-              Edit filters
-            </button>
+        {/* Desktop: Filter bar */}
+        {!isMobile && (
+          <div className="mt-3">
+            <FilterBar
+              category={category}
+              vibe={vibe}
+              colors={colors}
+              gradientType={gradientType}
+              onCategoryChange={onCategoryChange}
+              onVibeChange={onVibeChange}
+              onColorsChange={onColorsChange}
+              onToggleColor={onToggleColor}
+              onGradientTypeChange={onGradientTypeChange}
+              onClearFilters={onClearFilters}
+              hasActiveFilters={hasActiveFilters}
+            />
           </div>
         )}
       </div>

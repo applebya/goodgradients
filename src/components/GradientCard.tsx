@@ -89,6 +89,7 @@ export const GradientCard = memo(function GradientCard({
               }}
               className="shadow-lg hover:opacity-90"
               onClick={handleFavorite}
+              aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
             >
               <Heart className={cn('w-4 h-4', isFavorite && 'fill-current')} />
             </Button>

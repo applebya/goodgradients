@@ -3,16 +3,19 @@ import { AnimatePresence } from 'framer-motion';
 import { GradientCard } from './GradientCard';
 import { gradients } from '@/data/gradients';
 import { encodeGradient, parseGradientCSS } from '@/lib/gradient-url';
-import type { GradientPreset, GradientCategory } from '@/types';
+import { filterGradientsBySelections } from '@/lib/wizard';
+import type { GradientPreset, GradientCategory, WizardVibe, WizardColor, GradientTypeFilter } from '@/types';
 
 interface GradientGalleryProps {
   category: GradientCategory | 'All' | 'Favorites';
   searchQuery: string;
+  vibe: WizardVibe | null;
+  colors: WizardColor[];
+  gradientType: GradientTypeFilter | null;
   favorites: string[]; // Encoded gradient definitions
   onSelectGradient: (gradient: GradientPreset) => void;
   onToggleFavorite: (encodedGradient: string) => void;
   isFavorite: (encodedGradient: string) => boolean;
-  wizardFilteredGradients?: GradientPreset[]; // Optional: wizard-filtered gradients take priority
 }
 
 /**
@@ -23,35 +26,52 @@ function getEncodedGradient(preset: GradientPreset): string | null {
   return def ? encodeGradient(def) : null;
 }
 
+/**
+ * Detect gradient type from CSS string
+ */
+function getGradientType(css: string): GradientTypeFilter | null {
+  if (css.includes('linear-gradient')) return 'linear';
+  if (css.includes('radial-gradient')) return 'radial';
+  if (css.includes('conic-gradient')) return 'conic';
+  return null;
+}
+
 export function GradientGallery({
   category,
   searchQuery,
+  vibe,
+  colors,
+  gradientType,
   favorites,
   onSelectGradient,
   onToggleFavorite,
   isFavorite,
-  wizardFilteredGradients,
 }: GradientGalleryProps) {
   const filteredGradients = useMemo(() => {
-    // Start with wizard-filtered gradients if provided, otherwise use all gradients
-    let baseGradients = wizardFilteredGradients ?? gradients;
-    let result: GradientPreset[];
+    let result: GradientPreset[] = gradients;
 
     // Apply category filter first
     if (category === 'Favorites') {
       // Filter by encoded gradient definitions in favorites
-      result = baseGradients.filter((g) => {
+      result = result.filter((g) => {
         const encoded = getEncodedGradient(g);
         return encoded && favorites.includes(encoded);
       });
-    } else if (category === 'All') {
-      result = baseGradients;
-    } else {
-      // When using wizard filters with a category, filter from the base
-      result = baseGradients.filter((g) => g.category === category);
+    } else if (category !== 'All') {
+      result = result.filter((g) => g.category === category);
     }
 
-    // Then apply search filter
+    // Apply vibe and colors filter using the wizard scoring logic
+    if (vibe || colors.length > 0) {
+      result = filterGradientsBySelections(result, { vibe, colors });
+    }
+
+    // Apply gradient type filter
+    if (gradientType) {
+      result = result.filter((g) => getGradientType(g.gradient) === gradientType);
+    }
+
+    // Apply search filter
     if (searchQuery.trim()) {
       const searchLower = searchQuery.toLowerCase();
       result = result.filter(
@@ -64,7 +84,7 @@ export function GradientGallery({
     }
 
     return result;
-  }, [category, searchQuery, favorites, wizardFilteredGradients]);
+  }, [category, searchQuery, vibe, colors, gradientType, favorites]);
 
   if (filteredGradients.length === 0) {
     return (
@@ -78,7 +98,7 @@ export function GradientGallery({
         <p className="text-neutral-400 max-w-sm">
           {category === 'Favorites'
             ? 'Start adding gradients to your favorites by clicking the heart icon.'
-            : 'Try adjusting your search or category filter.'}
+            : 'Try adjusting your filters or search query.'}
         </p>
       </div>
     );
