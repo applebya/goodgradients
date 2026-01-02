@@ -54,15 +54,19 @@ function OptionPill({
   onClick,
   children,
   preview,
+  ariaLabel,
 }: {
   selected: boolean;
   onClick: () => void;
   children: React.ReactNode;
   preview?: string;
+  ariaLabel?: string;
 }) {
   return (
     <button
       onClick={onClick}
+      aria-label={ariaLabel}
+      aria-pressed={selected}
       className={cn(
         'flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors',
         selected
@@ -155,6 +159,8 @@ export function MobileFilterSheet({
                 <button
                   key={opt.value}
                   onClick={() => onToggleColor(opt.value)}
+                  aria-label={`${opt.label} color`}
+                  aria-pressed={colors.includes(opt.value)}
                   className={cn(
                     'flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors',
                     colors.includes(opt.value)

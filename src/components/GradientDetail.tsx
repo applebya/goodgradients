@@ -423,6 +423,7 @@ style={{ background: '${displayGradient}' }}`;
                   max="360"
                   value={gradientDef.angle}
                   onChange={(e) => handleAngleChange(Number(e.target.value))}
+                  aria-label="Gradient angle"
                   className="flex-1 h-1.5 bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
                 />
                 <span className="text-xs text-white w-8 text-right">{gradientDef.angle}°</span>
@@ -490,7 +491,7 @@ style={{ background: '${displayGradient}' }}`;
                 )}
               >
                 <p className="text-xs text-white font-medium">None</p>
-                <p className="text-[10px] text-neutral-500">Static gradient</p>
+                <p className="text-[10px] text-neutral-400">Static gradient</p>
               </button>
 
               {filteredAnimations.map((anim) => (
@@ -508,7 +509,7 @@ style={{ background: '${displayGradient}' }}`;
                   )}
                 >
                   <p className="text-xs text-white font-medium">{anim.name}</p>
-                  <p className="text-[10px] text-neutral-500 line-clamp-1">{anim.description}</p>
+                  <p className="text-[10px] text-neutral-400 line-clamp-1">{anim.description}</p>
                 </button>
               ))}
             </div>
@@ -560,14 +561,14 @@ style={{ background: '${displayGradient}' }}`;
 
         {/* Accessibility - Compact */}
         <div className="flex items-center gap-2 pt-2 border-t border-neutral-800">
-          <span className="text-xs text-neutral-500">Accessibility:</span>
+          <span className="text-xs text-neutral-400">Accessibility:</span>
           {contrastInfo.slice(0, 2).map((info) => (
             <div
               key={info.color}
               className="flex items-center gap-1 px-2 py-1 bg-neutral-800/50 rounded text-xs"
             >
               <div className="w-3 h-3 rounded" style={{ background: info.color }} />
-              <span className={cn(info.meetsAA ? 'text-green-400' : 'text-neutral-500')}>
+              <span className={cn(info.meetsAA ? 'text-green-400' : 'text-red-400')}>
                 {info.meetsAAA ? 'AAA' : info.meetsAA ? 'AA' : 'Fail'}
               </span>
             </div>

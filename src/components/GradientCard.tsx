@@ -42,8 +42,15 @@ export const GradientCard = memo(function GradientCard({
     onToggleFavorite();
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onSelect(gradient);
+    }
+  };
+
   return (
-    <motion.div
+    <motion.article
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -52,11 +59,14 @@ export const GradientCard = memo(function GradientCard({
         delay: Math.min(index * 0.01, 0.2),
       }}
       data-testid="gradient-card"
+      tabIndex={0}
+      aria-label={`${gradient.name} gradient - ${gradient.description}`}
       className={cn(
         'group bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden',
-        'hover:border-neutral-600 transition-colors cursor-pointer'
+        'hover:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors cursor-pointer'
       )}
       onClick={() => onSelect(gradient)}
+      onKeyDown={handleKeyDown}
     >
       {/* Gradient Preview */}
       <div className="relative aspect-video" style={{ background: displayGradient }}>
@@ -77,6 +87,7 @@ export const GradientCard = memo(function GradientCard({
               style={{ backgroundColor: buttonBg, color: textColor }}
               className="flex-1 shadow-lg hover:opacity-90"
               onClick={handleCopy}
+              aria-label={`Copy ${gradient.name} CSS`}
             >
               <Copy className="w-3 h-3 mr-1" />
               Copy CSS
@@ -89,7 +100,7 @@ export const GradientCard = memo(function GradientCard({
               }}
               className="shadow-lg hover:opacity-90"
               onClick={handleFavorite}
-              aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+              aria-label={isFavorite ? `Remove ${gradient.name} from favorites` : `Add ${gradient.name} to favorites`}
             >
               <Heart className={cn('w-4 h-4', isFavorite && 'fill-current')} />
             </Button>
@@ -116,7 +127,7 @@ export const GradientCard = memo(function GradientCard({
                 className="w-5 h-5 rounded-md border border-white/20 flex-shrink-0"
                 style={{ background: color }}
               />
-              <span className="text-xs text-neutral-500 font-mono truncate">
+              <span className="text-xs text-neutral-400 font-mono truncate">
                 {color}
               </span>
             </div>
@@ -132,6 +143,6 @@ export const GradientCard = memo(function GradientCard({
           ))}
         </div>
       </div>
-    </motion.div>
+    </motion.article>
   );
 });

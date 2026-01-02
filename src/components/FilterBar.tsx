@@ -52,7 +52,7 @@ export function FilterBar({
         value={category}
         onValueChange={(val) => onCategoryChange(val as GradientCategory | 'All' | 'Favorites')}
       >
-        <SelectTrigger className="w-[130px] h-8 text-xs">
+        <SelectTrigger className="w-[130px] h-8 text-xs" aria-label="Filter by category">
           <SelectValue placeholder="Category" />
         </SelectTrigger>
         <SelectContent>
@@ -69,7 +69,7 @@ export function FilterBar({
         value={vibe ?? 'any'}
         onValueChange={(val) => onVibeChange(val === 'any' ? null : (val as WizardVibe))}
       >
-        <SelectTrigger className="w-[130px] h-8 text-xs">
+        <SelectTrigger className="w-[130px] h-8 text-xs" aria-label="Filter by vibe">
           <SelectValue placeholder="Vibe" />
         </SelectTrigger>
         <SelectContent>
@@ -91,6 +91,7 @@ export function FilterBar({
               'hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600',
               colors.length > 0 && 'border-white/30'
             )}
+            aria-label="Filter by colors"
           >
             {colors.length === 0 ? (
               <span className="text-neutral-400">Colors</span>
@@ -133,7 +134,7 @@ export function FilterBar({
         value={gradientType ?? 'any'}
         onValueChange={(val) => onGradientTypeChange(val === 'any' ? null : (val as GradientTypeFilter))}
       >
-        <SelectTrigger className="w-[110px] h-8 text-xs">
+        <SelectTrigger className="w-[110px] h-8 text-xs" aria-label="Filter by gradient type">
           <SelectValue placeholder="Type" />
         </SelectTrigger>
         <SelectContent>

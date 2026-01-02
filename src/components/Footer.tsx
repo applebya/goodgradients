@@ -6,7 +6,7 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           {/* Keyboard shortcuts hint */}
-          <div className="flex flex-wrap gap-3 text-xs text-neutral-500">
+          <div className="flex flex-wrap gap-3 text-xs text-neutral-400">
             {KEYBOARD_SHORTCUTS.slice(0, 4).map(({ key, description }) => (
               <div key={key} className="flex items-center gap-1.5">
                 <kbd className="px-1.5 py-0.5 bg-neutral-800 rounded text-neutral-400">
@@ -18,7 +18,7 @@ export function Footer() {
           </div>
 
           {/* Branding */}
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-400">
             Vibe-coded with{' '}
             <span className="text-red-400" aria-label="love">
               ❤️
