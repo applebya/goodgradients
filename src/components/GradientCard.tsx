@@ -44,19 +44,12 @@ export const GradientCard = memo(function GradientCard({
 
   return (
     <motion.div
-      layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       transition={{
-        duration: 0.2,
-        delay: Math.min(index * 0.02, 0.4),
-        ease: [0.22, 1, 0.36, 1],
-        layout: {
-          type: 'spring',
-          stiffness: 400,
-          damping: 30,
-        },
+        duration: 0.15,
+        delay: Math.min(index * 0.01, 0.2),
       }}
       data-testid="gradient-card"
       className={cn(

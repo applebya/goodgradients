@@ -62,7 +62,7 @@ export function Header({
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full h-9 pl-9 pr-8 bg-neutral-900 border border-neutral-800 rounded-lg text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:border-neutral-600"
+              className="w-full h-9 pl-9 pr-8 bg-neutral-900 border border-neutral-800 rounded-lg text-sm text-white caret-white placeholder:text-neutral-500 focus:outline-none focus:border-neutral-600 focus:bg-neutral-800"
             />
             <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 hidden sm:inline text-[10px] text-neutral-600">
               /
@@ -83,7 +83,7 @@ export function Header({
         </div>
 
         {/* Category pills */}
-        <div className="flex gap-1.5 mt-3 overflow-x-auto pb-1 scrollbar-hide">
+        <div className="flex gap-1.5 mt-3 overflow-x-scroll pb-1 scrollbar-hide min-h-[32px]">
           {hasActiveFilters && wizardSelections ? (
             <>
               {wizardSelections.vibe && (
