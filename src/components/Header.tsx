@@ -4,7 +4,7 @@ import { Button } from './ui/button';
 import { FilterBar } from './FilterBar';
 import { MobileFilterSheet } from './MobileFilterSheet';
 import { useIsMobile } from '@/hooks/useMediaQuery';
-import type { GradientCategory, WizardVibe, WizardColor, GradientTypeFilter } from '@/types';
+import type { WizardColor, GradientTypeFilter, UIPreviewMode } from '@/types';
 
 interface HeaderProps {
   // Search
@@ -13,15 +13,15 @@ interface HeaderProps {
   searchInputRef?: React.RefObject<HTMLInputElement>;
 
   // Filters
-  category: GradientCategory | 'All' | 'Favorites';
-  vibe: WizardVibe | null;
   colors: WizardColor[];
-  gradientType: GradientTypeFilter | null;
-  onCategoryChange: (category: GradientCategory | 'All' | 'Favorites') => void;
-  onVibeChange: (vibe: WizardVibe | null) => void;
+  tags: string[];
+  gradientType: GradientTypeFilter;
+  previewMode: UIPreviewMode;
   onColorsChange: (colors: WizardColor[]) => void;
   onToggleColor: (color: WizardColor) => void;
-  onGradientTypeChange: (type: GradientTypeFilter | null) => void;
+  onToggleTag: (tag: string) => void;
+  onGradientTypeChange: (type: GradientTypeFilter) => void;
+  onPreviewModeChange: (mode: UIPreviewMode) => void;
   onClearFilters: () => void;
   hasActiveFilters: boolean;
 
@@ -33,15 +33,15 @@ export function Header({
   searchQuery,
   onSearchChange,
   searchInputRef,
-  category,
-  vibe,
   colors,
+  tags,
   gradientType,
-  onCategoryChange,
-  onVibeChange,
+  previewMode,
   onColorsChange,
   onToggleColor,
+  onToggleTag,
   onGradientTypeChange,
+  onPreviewModeChange,
   onClearFilters,
   hasActiveFilters,
   onRandomGradient,
@@ -51,27 +51,22 @@ export function Header({
   const isMobile = useIsMobile();
 
   // Count active filters for mobile badge
-  const activeFilterCount = [
-    category !== 'All' ? 1 : 0,
-    vibe ? 1 : 0,
-    colors.length,
-    gradientType ? 1 : 0,
-  ].reduce((a, b) => a + b, 0);
+  const activeFilterCount = colors.length + tags.length;
 
   return (
-    <header className="sticky top-0 z-30 glass-header">
+    <header className="bg-neutral-950 border-b border-neutral-800">
       <div className="max-w-7xl mx-auto px-4 py-3">
         {/* Top row: Logo + Search + Actions */}
         <div className="flex items-center gap-4">
           {/* Logo */}
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <a href="/" className="flex items-center gap-2 flex-shrink-0 hover:opacity-80 transition-opacity">
             <div className="w-7 h-7 rounded-md bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center">
               <span className="text-white font-bold text-xs">GG</span>
             </div>
-            <h1 className="text-base font-medium text-white hidden sm:block">
-              GoodGradients
-            </h1>
-          </div>
+            <span className="text-base font-medium text-white hidden sm:block">
+              Good Gradients
+            </span>
+          </a>
 
           {/* Search */}
           <div className="relative flex-1 max-w-sm">
@@ -94,13 +89,11 @@ export function Header({
             {/* Mobile: Filter sheet trigger */}
             {isMobile && (
               <MobileFilterSheet
-                category={category}
-                vibe={vibe}
                 colors={colors}
+                tags={tags}
                 gradientType={gradientType}
-                onCategoryChange={onCategoryChange}
-                onVibeChange={onVibeChange}
                 onToggleColor={onToggleColor}
+                onToggleTag={onToggleTag}
                 onGradientTypeChange={onGradientTypeChange}
                 onClearFilters={onClearFilters}
                 activeFilterCount={activeFilterCount}
@@ -122,15 +115,15 @@ export function Header({
         {!isMobile && (
           <div className="mt-3">
             <FilterBar
-              category={category}
-              vibe={vibe}
               colors={colors}
+              tags={tags}
               gradientType={gradientType}
-              onCategoryChange={onCategoryChange}
-              onVibeChange={onVibeChange}
+              previewMode={previewMode}
               onColorsChange={onColorsChange}
               onToggleColor={onToggleColor}
+              onToggleTag={onToggleTag}
               onGradientTypeChange={onGradientTypeChange}
+              onPreviewModeChange={onPreviewModeChange}
               onClearFilters={onClearFilters}
               hasActiveFilters={hasActiveFilters}
             />

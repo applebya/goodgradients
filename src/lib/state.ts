@@ -1,4 +1,4 @@
-import type { AppState, URLState, GradientCategory, WizardVibe, WizardColor, GradientTypeFilter } from '@/types';
+import type { AppState, URLState, GradientCategory, WizardColor, GradientTypeFilter } from '@/types';
 import { decodeGradient } from './gradient-url';
 
 const DEFAULT_STATE: AppState = {
@@ -7,14 +7,14 @@ const DEFAULT_STATE: AppState = {
   selectedAnimationId: null,
   category: 'All',
   searchQuery: '',
-  vibe: null,
   colors: [],
-  gradientType: null,
+  tags: [],
+  gradientType: 'linear',
   isAnimating: true,
+  previewMode: 'background',
 };
 
 // Valid values for validation
-const VALID_VIBES: WizardVibe[] = ['playful', 'professional', 'bold', 'subtle', 'warm', 'cool'];
 const VALID_COLORS: WizardColor[] = ['Purple', 'Blue', 'Green', 'Pink', 'Orange', 'Teal', 'Neutral', 'Multi'];
 const VALID_GRADIENT_TYPES: GradientTypeFilter[] = ['linear', 'radial', 'conic'];
 
@@ -27,7 +27,6 @@ export function parseURLState(searchParams: URLSearchParams): Partial<AppState> 
     a: searchParams.get('a') ?? undefined,
     c: searchParams.get('c') ?? undefined,
     q: searchParams.get('q') ?? undefined,
-    v: searchParams.get('v') ?? undefined,
     colors: searchParams.get('colors') ?? undefined,
     t: searchParams.get('t') ?? undefined,
   };
@@ -46,11 +45,6 @@ export function parseURLState(searchParams: URLSearchParams): Partial<AppState> 
   if (urlState.a) state.selectedAnimationId = urlState.a;
   if (urlState.c) state.category = urlState.c as GradientCategory | 'All' | 'Favorites';
   if (urlState.q) state.searchQuery = urlState.q;
-
-  // Parse vibe filter
-  if (urlState.v && VALID_VIBES.includes(urlState.v as WizardVibe)) {
-    state.vibe = urlState.v as WizardVibe;
-  }
 
   // Parse colors filter (comma-separated)
   if (urlState.colors) {
@@ -78,7 +72,6 @@ export function serializeStateToURL(state: Partial<AppState>): URLSearchParams {
   if (state.selectedAnimationId) params.set('a', state.selectedAnimationId);
   if (state.category && state.category !== 'All') params.set('c', state.category);
   if (state.searchQuery) params.set('q', state.searchQuery);
-  if (state.vibe) params.set('v', state.vibe);
   if (state.colors && state.colors.length > 0) params.set('colors', state.colors.join(','));
   if (state.gradientType) params.set('t', state.gradientType);
 

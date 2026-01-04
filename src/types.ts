@@ -51,6 +51,9 @@ export type AnimationCategory = 'Movement' | 'Rotation' | 'Pulse' | 'Morph' | 'W
 // Gradient type filter
 export type GradientTypeFilter = 'linear' | 'radial' | 'conic';
 
+// UI preview mode for cards
+export type UIPreviewMode = 'background' | 'button' | 'text' | 'badge';
+
 // App state - now uses gradient definition instead of ID
 export interface AppState {
   // View state
@@ -64,12 +67,13 @@ export interface AppState {
   // Filters
   category: GradientCategory | 'All' | 'Favorites';
   searchQuery: string;
-  vibe: WizardVibe | null;          // Vibe filter
   colors: WizardColor[];            // Color filters (multi-select)
-  gradientType: GradientTypeFilter | null; // Gradient type filter
+  tags: string[];                   // Tag filters (multi-select)
+  gradientType: GradientTypeFilter; // Gradient type filter (defaults to 'linear')
 
   // UI state
   isAnimating: boolean;
+  previewMode: UIPreviewMode;       // How to display gradients in cards
 }
 
 // URL state (serialized subset of AppState)
@@ -82,8 +86,6 @@ export interface URLState {
   c?: string;
   // Search query
   q?: string;
-  // Vibe filter
-  v?: string;
   // Colors filter (comma-separated)
   colors?: string;
   // Gradient type filter
@@ -104,19 +106,5 @@ export interface FavoritesState {
   gradients: string[]; // Array of encoded gradient definitions
 }
 
-// Discovery Wizard types
-export type WizardVibe = 'playful' | 'professional' | 'bold' | 'subtle' | 'warm' | 'cool';
-
 // Wizard colors match the main categories
 export type WizardColor = 'Purple' | 'Blue' | 'Green' | 'Pink' | 'Orange' | 'Teal' | 'Neutral' | 'Multi';
-
-export interface WizardSelections {
-  vibe: WizardVibe | null;
-  colors: WizardColor[];
-}
-
-export interface WizardState {
-  isOpen: boolean;
-  selections: WizardSelections;
-  hasCompletedOnce: boolean;
-}

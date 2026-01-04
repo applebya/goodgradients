@@ -1,17 +1,17 @@
 import { useMemo } from 'react';
-import { AnimatePresence } from 'framer-motion';
 import { GradientCard } from './GradientCard';
 import { gradients } from '@/data/gradients';
 import { encodeGradient, parseGradientCSS } from '@/lib/gradient-url';
-import { filterGradientsBySelections } from '@/lib/wizard';
-import type { GradientPreset, GradientCategory, WizardVibe, WizardColor, GradientTypeFilter } from '@/types';
+import { filterGradientsByColors } from '@/lib/wizard';
+import type { GradientPreset, GradientCategory, WizardColor, GradientTypeFilter, UIPreviewMode } from '@/types';
 
 interface GradientGalleryProps {
   category: GradientCategory | 'All' | 'Favorites';
   searchQuery: string;
-  vibe: WizardVibe | null;
   colors: WizardColor[];
-  gradientType: GradientTypeFilter | null;
+  tags: string[];
+  gradientType: GradientTypeFilter;
+  previewMode: UIPreviewMode;
   favorites: string[]; // Encoded gradient definitions
   onSelectGradient: (gradient: GradientPreset) => void;
   onToggleFavorite: (encodedGradient: string) => void;
@@ -39,9 +39,10 @@ function getGradientType(css: string): GradientTypeFilter | null {
 export function GradientGallery({
   category,
   searchQuery,
-  vibe,
   colors,
+  tags,
   gradientType,
+  previewMode,
   favorites,
   onSelectGradient,
   onToggleFavorite,
@@ -61,15 +62,20 @@ export function GradientGallery({
       result = result.filter((g) => g.category === category);
     }
 
-    // Apply vibe and colors filter using the wizard scoring logic
-    if (vibe || colors.length > 0) {
-      result = filterGradientsBySelections(result, { vibe, colors });
+    // Apply colors filter
+    if (colors.length > 0) {
+      result = filterGradientsByColors(result, colors);
     }
 
-    // Apply gradient type filter
-    if (gradientType) {
-      result = result.filter((g) => getGradientType(g.gradient) === gradientType);
+    // Apply tags filter (gradient must have ALL selected tags)
+    if (tags.length > 0) {
+      result = result.filter((g) =>
+        tags.every((tag) => g.tags.includes(tag))
+      );
     }
+
+    // Apply gradient type filter (always applied, defaults to 'linear')
+    result = result.filter((g) => getGradientType(g.gradient) === gradientType);
 
     // Apply search filter
     if (searchQuery.trim()) {
@@ -84,7 +90,7 @@ export function GradientGallery({
     }
 
     return result;
-  }, [category, searchQuery, vibe, colors, gradientType, favorites]);
+  }, [category, searchQuery, colors, tags, gradientType, favorites]);
 
   if (filteredGradients.length === 0) {
     return (
@@ -106,21 +112,19 @@ export function GradientGallery({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      <AnimatePresence initial={false}>
-        {filteredGradients.map((gradient, index) => {
-          const encoded = getEncodedGradient(gradient);
-          return (
-            <GradientCard
-              key={gradient.id}
-              gradient={gradient}
-              index={index}
-              isFavorite={encoded ? isFavorite(encoded) : false}
-              onToggleFavorite={() => encoded && onToggleFavorite(encoded)}
-              onSelect={onSelectGradient}
-            />
-          );
-        })}
-      </AnimatePresence>
+      {filteredGradients.map((gradient) => {
+        const encoded = getEncodedGradient(gradient);
+        return (
+          <GradientCard
+            key={gradient.id}
+            gradient={gradient}
+            previewMode={previewMode}
+            isFavorite={encoded ? isFavorite(encoded) : false}
+            onToggleFavorite={() => encoded && onToggleFavorite(encoded)}
+            onSelect={onSelectGradient}
+          />
+        );
+      })}
     </div>
   );
 }

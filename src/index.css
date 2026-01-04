@@ -49,6 +49,9 @@
 }
 
 /* Animation keyframes for gradients */
+/* IMPORTANT: Only background-position and background-size animations allowed */
+/* No container-affecting animations (opacity, transform, filter) */
+
 @keyframes gradient-shift {
   0%, 100% {
     background-position: 0% 50%;
@@ -58,90 +61,87 @@
   }
 }
 
-@keyframes gradient-rotate {
-  0% {
-    filter: hue-rotate(0deg);
-  }
-  100% {
-    filter: hue-rotate(360deg);
-  }
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
-@keyframes aurora {
+@keyframes gradient-wave {
   0%, 100% {
     background-position: 0% 50%;
-    filter: hue-rotate(0deg) brightness(100%);
-  }
-  25% {
-    background-position: 50% 100%;
-    filter: hue-rotate(15deg) brightness(105%);
   }
   50% {
     background-position: 100% 50%;
-    filter: hue-rotate(0deg) brightness(110%);
-  }
-  75% {
-    background-position: 50% 0%;
-    filter: hue-rotate(-15deg) brightness(105%);
   }
 }
 
-/* Utility classes for animations */
+@keyframes gradient-flow {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+@keyframes gradient-shimmer {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 100% 0;
+  }
+}
+
+@keyframes gradient-sway {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 0%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 100%;
+  }
+}
+
+@keyframes gradient-drift {
+  0%, 100% {
+    background-position: 50% 0%;
+  }
+  50% {
+    background-position: 50% 100%;
+  }
+}
+
+@keyframes gradient-pulse-move {
+  0%, 100% {
+    background-position: 50% 50%;
+    background-size: 200% 200%;
+  }
+  50% {
+    background-position: 50% 50%;
+    background-size: 150% 150%;
+  }
+}
+
+@keyframes gradient-breathe-move {
+  0%, 100% {
+    background-position: 50% 50%;
+    background-size: 300% 300%;
+  }
+  50% {
+    background-position: 50% 50%;
+    background-size: 200% 200%;
+  }
+}
+
 .animate-gradient-shift {
   background-size: 200% 200%;
   animation: gradient-shift 3s ease infinite;
 }
 
-.animate-gradient-rotate {
-  animation: gradient-rotate 4s linear infinite;
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-.animate-aurora {
-  background-size: 300% 300%;
-  animation: aurora 5s ease-in-out infinite;
-}
-
-/* Glass morphism for header */
-.glass-header {
-  background: rgba(10, 10, 10, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* Subtle grid background pattern */
-.bg-grid-pattern {
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-  background-size: 50px 50px;
-}
-
-/* Category pill */
-.category-pill {
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-/* Smooth page background */
-.bg-page-gradient {
-  background:
-    radial-gradient(ellipse at top left, rgba(139, 92, 246, 0.03) 0%, transparent 50%),
-    radial-gradient(ellipse at bottom right, rgba(236, 72, 153, 0.03) 0%, transparent 50%),
-    hsl(var(--background));
-}
 
 /* Loading shimmer */
 @keyframes shimmer {
@@ -172,4 +172,52 @@
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* Shimmering border effect for cards */
+@keyframes border-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.shimmer-border {
+  position: relative;
+}
+
+.shimmer-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.1) 75%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: border-shimmer 2s ease-in-out infinite;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.shimmer-border:hover::before,
+.shimmer-border:focus-within::before {
+  opacity: 1;
 }

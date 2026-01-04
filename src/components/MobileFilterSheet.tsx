@@ -9,19 +9,17 @@ import {
   SheetTrigger,
 } from './ui/sheet';
 import { cn } from '@/lib/utils';
-import { VIBE_OPTIONS, COLOR_OPTIONS } from '@/lib/wizard';
-import { gradientCategories } from '@/data/gradients';
-import type { GradientCategory, WizardVibe, WizardColor, GradientTypeFilter } from '@/types';
+import { COLOR_OPTIONS } from '@/lib/wizard';
+import { allTags } from '@/data/gradients';
+import type { WizardColor, GradientTypeFilter } from '@/types';
 
 interface MobileFilterSheetProps {
-  category: GradientCategory | 'All' | 'Favorites';
-  vibe: WizardVibe | null;
   colors: WizardColor[];
-  gradientType: GradientTypeFilter | null;
-  onCategoryChange: (category: GradientCategory | 'All' | 'Favorites') => void;
-  onVibeChange: (vibe: WizardVibe | null) => void;
+  tags: string[];
+  gradientType: GradientTypeFilter;
   onToggleColor: (color: WizardColor) => void;
-  onGradientTypeChange: (type: GradientTypeFilter | null) => void;
+  onToggleTag: (tag: string) => void;
+  onGradientTypeChange: (type: GradientTypeFilter) => void;
   onClearFilters: () => void;
   activeFilterCount: number;
 }
@@ -53,13 +51,11 @@ function OptionPill({
   selected,
   onClick,
   children,
-  preview,
   ariaLabel,
 }: {
   selected: boolean;
   onClick: () => void;
   children: React.ReactNode;
-  preview?: string;
   ariaLabel?: string;
 }) {
   return (
@@ -74,25 +70,17 @@ function OptionPill({
           : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
       )}
     >
-      {preview && (
-        <div
-          className="w-4 h-4 rounded border border-white/20"
-          style={{ background: preview }}
-        />
-      )}
       {children}
     </button>
   );
 }
 
 export function MobileFilterSheet({
-  category,
-  vibe,
   colors,
+  tags,
   gradientType,
-  onCategoryChange,
-  onVibeChange,
   onToggleColor,
+  onToggleTag,
   onGradientTypeChange,
   onClearFilters,
   activeFilterCount,
@@ -115,43 +103,6 @@ export function MobileFilterSheet({
         </SheetHeader>
 
         <div className="space-y-6 py-4 px-4">
-          {/* Category */}
-          <FilterSection title="Category">
-            <div className="flex flex-wrap gap-2">
-              {gradientCategories.map((cat) => (
-                <OptionPill
-                  key={cat}
-                  selected={category === cat}
-                  onClick={() => onCategoryChange(cat)}
-                >
-                  {cat}
-                </OptionPill>
-              ))}
-            </div>
-          </FilterSection>
-
-          {/* Vibe */}
-          <FilterSection title="Vibe">
-            <div className="flex flex-wrap gap-2">
-              <OptionPill
-                selected={vibe === null}
-                onClick={() => onVibeChange(null)}
-              >
-                Any
-              </OptionPill>
-              {VIBE_OPTIONS.map((opt) => (
-                <OptionPill
-                  key={opt.value}
-                  selected={vibe === opt.value}
-                  onClick={() => onVibeChange(opt.value)}
-                  preview={opt.previewGradient}
-                >
-                  {opt.label}
-                </OptionPill>
-              ))}
-            </div>
-          </FilterSection>
-
           {/* Colors */}
           <FilterSection title="Colors (select multiple)">
             <div className="flex flex-wrap gap-2">
@@ -181,15 +132,34 @@ export function MobileFilterSheet({
             </div>
           </FilterSection>
 
+          {/* Tags */}
+          <FilterSection title="Tags (select multiple)">
+            <div className="flex flex-wrap gap-2">
+              {allTags.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => onToggleTag(tag)}
+                  aria-label={`${tag} tag`}
+                  aria-pressed={tags.includes(tag)}
+                  className={cn(
+                    'flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors capitalize',
+                    tags.includes(tag)
+                      ? 'bg-white text-black font-medium'
+                      : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
+                  )}
+                >
+                  {tag}
+                  {tags.includes(tag) && (
+                    <Check className="w-3 h-3" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </FilterSection>
+
           {/* Gradient Type */}
           <FilterSection title="Type">
             <div className="flex flex-wrap gap-2">
-              <OptionPill
-                selected={gradientType === null}
-                onClick={() => onGradientTypeChange(null)}
-              >
-                Any
-              </OptionPill>
               {GRADIENT_TYPES.map((opt) => (
                 <OptionPill
                   key={opt.value}

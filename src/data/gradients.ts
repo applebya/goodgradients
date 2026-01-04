@@ -162,3 +162,8 @@ export function getRandomGradient(): Gradient {
   const index = Math.floor(Math.random() * gradients.length);
   return gradients[index] ?? gradients[0]!;
 }
+
+// Extract all unique tags from gradients, sorted alphabetically
+export const allTags: string[] = Array.from(
+  new Set(gradients.flatMap((g) => g.tags))
+).sort();

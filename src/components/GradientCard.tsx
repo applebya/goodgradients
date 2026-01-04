@@ -1,41 +1,26 @@
 import { memo } from 'react';
-import { motion } from 'framer-motion';
-import { Heart, Copy } from './icons';
-import { toast } from './Toast';
+import { Heart } from './icons';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { cn, copyToClipboard } from '@/lib/utils';
-import { getBestTextColor, getGradientAverageColor } from '@/lib/contrast';
-import type { GradientPreset } from '@/types';
+import { cn } from '@/lib/utils';
+import type { GradientPreset, UIPreviewMode } from '@/types';
 
 interface GradientCardProps {
   gradient: GradientPreset;
+  previewMode: UIPreviewMode;
   isFavorite: boolean;
   onToggleFavorite: () => void;
   onSelect: (gradient: GradientPreset) => void;
-  index?: number;
 }
 
 export const GradientCard = memo(function GradientCard({
   gradient,
+  previewMode,
   isFavorite,
   onToggleFavorite,
   onSelect,
-  index = 0,
 }: GradientCardProps) {
-  // Use the gradient CSS as-is from the preset
   const displayGradient = gradient.gradient;
-  const avgColor = getGradientAverageColor(gradient.colors);
-  const textColor = getBestTextColor(avgColor);
-  const buttonBg = textColor === '#ffffff' ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.9)';
-
-  const handleCopy = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const success = await copyToClipboard(displayGradient);
-    if (success) {
-      toast.success('CSS copied to clipboard');
-    }
-  };
 
   const handleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -49,63 +34,92 @@ export const GradientCard = memo(function GradientCard({
     }
   };
 
+  // Render the preview content based on mode
+  const renderPreviewContent = () => {
+    switch (previewMode) {
+      case 'button':
+        return (
+          <div className="flex items-center justify-center h-full">
+            <div
+              className="px-6 py-2.5 rounded-lg text-white font-medium text-sm shadow-lg"
+              style={{ background: displayGradient }}
+            >
+              Click me
+            </div>
+          </div>
+        );
+      case 'text':
+        return (
+          <div className="flex items-center justify-center h-full">
+            <span
+              className="text-3xl font-bold"
+              style={{
+                background: displayGradient,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              Gradient
+            </span>
+          </div>
+        );
+      case 'badge':
+        return (
+          <div className="flex items-center justify-center h-full gap-2">
+            <span
+              className="px-3 py-1 rounded-full text-white text-xs font-medium"
+              style={{ background: displayGradient }}
+            >
+              New
+            </span>
+            <span
+              className="px-3 py-1 rounded-full text-white text-xs font-medium"
+              style={{ background: displayGradient }}
+            >
+              Featured
+            </span>
+          </div>
+        );
+      case 'background':
+      default:
+        return null; // Background mode just uses the container background
+    }
+  };
+
   return (
-    <motion.article
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{
-        duration: 0.15,
-        delay: Math.min(index * 0.01, 0.2),
-      }}
+    <article
       data-testid="gradient-card"
       tabIndex={0}
       aria-label={`${gradient.name} gradient - ${gradient.description}`}
       className={cn(
-        'group bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden',
-        'hover:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors cursor-pointer'
+        'group bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden shimmer-border',
+        'hover:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors cursor-pointer'
       )}
       onClick={() => onSelect(gradient)}
       onKeyDown={handleKeyDown}
     >
       {/* Gradient Preview */}
-      <div className="relative aspect-video" style={{ background: displayGradient }}>
-        {/* Always-visible favorite indicator */}
-        {isFavorite && (
-          <div className="absolute top-3 right-3 z-10">
-            <div className="w-8 h-8 rounded-full bg-black/60 flex items-center justify-center">
-              <Heart className="w-4 h-4 text-red-400 fill-current" />
-            </div>
-          </div>
-        )}
-
-        {/* Hover overlay with actions */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="absolute bottom-3 left-3 right-3 flex gap-2">
-            <Button
-              size="sm"
-              style={{ backgroundColor: buttonBg, color: textColor }}
-              className="flex-1 shadow-lg hover:opacity-90"
-              onClick={handleCopy}
-              aria-label={`Copy ${gradient.name} CSS`}
-            >
-              <Copy className="w-3 h-3 mr-1" />
-              Copy CSS
-            </Button>
-            <Button
-              size="icon-sm"
-              style={{
-                backgroundColor: buttonBg,
-                color: isFavorite ? '#EF4444' : textColor,
-              }}
-              className="shadow-lg hover:opacity-90"
-              onClick={handleFavorite}
-              aria-label={isFavorite ? `Remove ${gradient.name} from favorites` : `Add ${gradient.name} to favorites`}
-            >
-              <Heart className={cn('w-4 h-4', isFavorite && 'fill-current')} />
-            </Button>
-          </div>
-        </div>
+      <div
+        className="relative aspect-video"
+        style={{ background: previewMode === 'background' ? displayGradient : '#171717' }}
+      >
+        {renderPreviewContent()}
+        {/* Favorite button - visible on hover/focus or when favorited */}
+        <Button
+          size="icon-sm"
+          variant="ghost"
+          className={cn(
+            'absolute top-2 right-2 z-10 h-8 w-8 rounded-full bg-black/40 hover:bg-black/60 transition-all',
+            isFavorite
+              ? 'text-red-400 opacity-100'
+              : 'text-white/70 hover:text-white opacity-0 group-hover:opacity-100 group-focus-within:opacity-100'
+          )}
+          onClick={handleFavorite}
+          aria-label={isFavorite ? `Remove ${gradient.name} from favorites` : `Add ${gradient.name} to favorites`}
+        >
+          <Heart className={cn('w-4 h-4', isFavorite && 'fill-current')} />
+        </Button>
       </div>
 
       {/* Card Content */}
@@ -143,6 +157,6 @@ export const GradientCard = memo(function GradientCard({
           ))}
         </div>
       </div>
-    </motion.article>
+    </article>
   );
 });

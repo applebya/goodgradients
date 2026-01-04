@@ -1,28 +1,21 @@
-import { X, ChevronDown, Check } from './icons';
+import { X, ChevronDown, Check, Tag } from './icons';
 import { Button } from './ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { cn } from '@/lib/utils';
-import { VIBE_OPTIONS, COLOR_OPTIONS } from '@/lib/wizard';
-import { gradientCategories } from '@/data/gradients';
-import type { GradientCategory, WizardVibe, WizardColor, GradientTypeFilter } from '@/types';
+import { COLOR_OPTIONS } from '@/lib/wizard';
+import { allTags } from '@/data/gradients';
+import type { WizardColor, GradientTypeFilter, UIPreviewMode } from '@/types';
 
 interface FilterBarProps {
-  category: GradientCategory | 'All' | 'Favorites';
-  vibe: WizardVibe | null;
   colors: WizardColor[];
-  gradientType: GradientTypeFilter | null;
-  onCategoryChange: (category: GradientCategory | 'All' | 'Favorites') => void;
-  onVibeChange: (vibe: WizardVibe | null) => void;
+  tags: string[];
+  gradientType: GradientTypeFilter;
+  previewMode: UIPreviewMode;
   onColorsChange: (colors: WizardColor[]) => void;
   onToggleColor: (color: WizardColor) => void;
-  onGradientTypeChange: (type: GradientTypeFilter | null) => void;
+  onToggleTag: (tag: string) => void;
+  onGradientTypeChange: (type: GradientTypeFilter) => void;
+  onPreviewModeChange: (mode: UIPreviewMode) => void;
   onClearFilters: () => void;
   hasActiveFilters: boolean;
 }
@@ -33,132 +26,202 @@ const GRADIENT_TYPES: { value: GradientTypeFilter; label: string }[] = [
   { value: 'conic', label: 'Conic' },
 ];
 
+const PREVIEW_MODES: { value: UIPreviewMode; label: string }[] = [
+  { value: 'background', label: 'Background' },
+  { value: 'button', label: 'Button' },
+  { value: 'text', label: 'Text' },
+  { value: 'badge', label: 'Badge' },
+];
+
 export function FilterBar({
-  category,
-  vibe,
   colors,
+  tags,
   gradientType,
-  onCategoryChange,
-  onVibeChange,
+  previewMode,
   onToggleColor,
+  onToggleTag,
   onGradientTypeChange,
+  onPreviewModeChange,
   onClearFilters,
   hasActiveFilters,
 }: FilterBarProps) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      {/* Category Select */}
-      <Select
-        value={category}
-        onValueChange={(val) => onCategoryChange(val as GradientCategory | 'All' | 'Favorites')}
-      >
-        <SelectTrigger className="w-[130px] h-8 text-xs" aria-label="Filter by category">
-          <SelectValue placeholder="Category" />
-        </SelectTrigger>
-        <SelectContent>
-          {gradientCategories.map((cat) => (
-            <SelectItem key={cat} value={cat}>
-              {cat}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+    <div className="flex items-center justify-between gap-4">
+      {/* Left: Filters */}
+      <div className="flex flex-wrap items-center gap-2">
+        {/* Colors Multi-Select Popover */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              className={cn(
+                'flex h-8 items-center justify-between gap-2 rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs text-white',
+                'hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600',
+                colors.length > 0 && 'border-white/30'
+              )}
+              aria-label="Filter by colors"
+            >
+              {colors.length === 0 ? (
+                <span className="text-neutral-400">All Colors</span>
+              ) : colors.length <= 2 ? (
+                <span>{colors.join(', ')}</span>
+              ) : (
+                <span>{colors.length} colors</span>
+              )}
+              <ChevronDown className="h-3 w-3 text-neutral-500" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-56 p-2" align="start">
+            <div className="space-y-1">
+              {COLOR_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => onToggleColor(opt.value)}
+                  className={cn(
+                    'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm',
+                    'hover:bg-neutral-800 transition-colors',
+                    colors.includes(opt.value) && 'bg-neutral-800'
+                  )}
+                >
+                  <div
+                    className="w-4 h-4 rounded border border-white/20"
+                    style={{ background: opt.previewGradient }}
+                  />
+                  <span className="flex-1 text-left">{opt.label}</span>
+                  {colors.includes(opt.value) && (
+                    <Check className="h-4 w-4 text-white" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
 
-      {/* Vibe Select */}
-      <Select
-        value={vibe ?? 'any'}
-        onValueChange={(val) => onVibeChange(val === 'any' ? null : (val as WizardVibe))}
-      >
-        <SelectTrigger className="w-[130px] h-8 text-xs" aria-label="Filter by vibe">
-          <SelectValue placeholder="Vibe" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="any">Any vibe</SelectItem>
-          {VIBE_OPTIONS.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value}>
-              {opt.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+        {/* Tags Multi-Select Popover */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              className={cn(
+                'flex h-8 items-center justify-between gap-2 rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs text-white',
+                'hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600',
+                tags.length > 0 && 'border-white/30'
+              )}
+              aria-label="Filter by tags"
+            >
+              <Tag className="h-3 w-3 text-neutral-500" />
+              {tags.length === 0 ? (
+                <span className="text-neutral-400">Tags</span>
+              ) : tags.length <= 2 ? (
+                <span>{tags.join(', ')}</span>
+              ) : (
+                <span>{tags.length} tags</span>
+              )}
+              <ChevronDown className="h-3 w-3 text-neutral-500" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-56 p-2 max-h-64 overflow-y-auto" align="start">
+            <div className="space-y-1">
+              {allTags.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => onToggleTag(tag)}
+                  className={cn(
+                    'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm',
+                    'hover:bg-neutral-800 transition-colors',
+                    tags.includes(tag) && 'bg-neutral-800'
+                  )}
+                >
+                  <span className="flex-1 text-left capitalize">{tag}</span>
+                  {tags.includes(tag) && (
+                    <Check className="h-4 w-4 text-white" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
 
-      {/* Colors Multi-Select Popover */}
-      <Popover>
-        <PopoverTrigger asChild>
-          <button
-            className={cn(
-              'flex h-8 items-center justify-between gap-2 rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs text-white',
-              'hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600',
-              colors.length > 0 && 'border-white/30'
-            )}
-            aria-label="Filter by colors"
+        {/* Clear Filters */}
+        {hasActiveFilters && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClearFilters}
+            className="h-8 px-2 text-xs text-neutral-400 hover:text-white"
           >
-            {colors.length === 0 ? (
-              <span className="text-neutral-400">Colors</span>
-            ) : colors.length <= 2 ? (
-              <span>{colors.join(', ')}</span>
-            ) : (
-              <span>{colors.length} colors</span>
-            )}
-            <ChevronDown className="h-3 w-3 text-neutral-500" />
-          </button>
-        </PopoverTrigger>
-        <PopoverContent className="w-56 p-2" align="start">
-          <div className="space-y-1">
-            {COLOR_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => onToggleColor(opt.value)}
-                className={cn(
-                  'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm',
-                  'hover:bg-neutral-800 transition-colors',
-                  colors.includes(opt.value) && 'bg-neutral-800'
-                )}
-              >
-                <div
-                  className="w-4 h-4 rounded border border-white/20"
-                  style={{ background: opt.previewGradient }}
-                />
-                <span className="flex-1 text-left">{opt.label}</span>
-                {colors.includes(opt.value) && (
-                  <Check className="h-4 w-4 text-white" />
-                )}
-              </button>
-            ))}
-          </div>
-        </PopoverContent>
-      </Popover>
+            <X className="h-3 w-3 mr-1" />
+            Clear
+          </Button>
+        )}
+      </div>
 
-      {/* Type Select */}
-      <Select
-        value={gradientType ?? 'any'}
-        onValueChange={(val) => onGradientTypeChange(val === 'any' ? null : (val as GradientTypeFilter))}
-      >
-        <SelectTrigger className="w-[110px] h-8 text-xs" aria-label="Filter by gradient type">
-          <SelectValue placeholder="Type" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="any">Any type</SelectItem>
-          {GRADIENT_TYPES.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value}>
-              {opt.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      {/* Right: Global Controls */}
+      <div className="flex items-center gap-2">
+        {/* Preview Mode Popover */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              className="flex h-8 items-center justify-between gap-2 rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600"
+              aria-label="Preview mode"
+            >
+              <span>{PREVIEW_MODES.find(m => m.value === previewMode)?.label ?? 'Background'}</span>
+              <ChevronDown className="h-3 w-3 text-neutral-500" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-40 p-2" align="end">
+            <div className="space-y-1">
+              {PREVIEW_MODES.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => onPreviewModeChange(opt.value)}
+                  className={cn(
+                    'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm',
+                    'hover:bg-neutral-800 transition-colors',
+                    previewMode === opt.value && 'bg-neutral-800'
+                  )}
+                >
+                  <span className="flex-1 text-left">{opt.label}</span>
+                  {previewMode === opt.value && (
+                    <Check className="h-4 w-4 text-white" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
 
-      {/* Clear Filters */}
-      {hasActiveFilters && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onClearFilters}
-          className="h-8 px-2 text-xs text-neutral-400 hover:text-white"
-        >
-          <X className="h-3 w-3 mr-1" />
-          Clear
-        </Button>
-      )}
+        {/* Gradient Type Popover */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              className="flex h-8 items-center justify-between gap-2 rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600"
+              aria-label="Gradient type"
+            >
+              <span>{GRADIENT_TYPES.find(t => t.value === gradientType)?.label ?? 'Linear'}</span>
+              <ChevronDown className="h-3 w-3 text-neutral-500" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-36 p-2" align="end">
+            <div className="space-y-1">
+              {GRADIENT_TYPES.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => onGradientTypeChange(opt.value)}
+                  className={cn(
+                    'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm',
+                    'hover:bg-neutral-800 transition-colors',
+                    gradientType === opt.value && 'bg-neutral-800'
+                  )}
+                >
+                  <span className="flex-1 text-left">{opt.label}</span>
+                  {gradientType === opt.value && (
+                    <Check className="h-4 w-4 text-white" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 import { toast } from './Toast';
 import {
   Copy,
@@ -13,8 +13,9 @@ import {
   Zap,
   Play,
   Pause,
+  X,
 } from './icons';
-import { animations, animationCategories, getAnimationById } from '@/data/animations';
+import { animations, getAnimationById } from '@/data/animations';
 import type { Animation } from '@/types';
 import {
   Dialog,
@@ -62,20 +63,13 @@ export function GradientDetail({
   const [showCode, setShowCode] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
-  const [animationCategory, setAnimationCategory] = useState<string>('All');
 
   // Get selected animation
   const selectedAnimation = selectedAnimationId ? getAnimationById(selectedAnimationId) : undefined;
 
-  // Filter animations by category
-  const filteredAnimations = useMemo(() => {
-    if (animationCategory === 'All') return animations;
-    return animations.filter(a => a.category === animationCategory);
-  }, [animationCategory]);
-
-  // Helper to get animation inline styles
-  const getAnimationStyle = useCallback((animation: Animation | undefined): React.CSSProperties => {
-    if (!animation || !isAnimating) {
+  // Helper to parse animation properties from the property string
+  const parseAnimationStyle = useCallback((animation: Animation | undefined): React.CSSProperties => {
+    if (!animation || !animation.property) {
       return {};
     }
 
@@ -91,7 +85,15 @@ export function GradientDetail({
       ...(bgSize ? { backgroundSize: bgSize } : {}),
       ...(animValue ? { animation: animValue } : {}),
     };
-  }, [isAnimating]);
+  }, []);
+
+  // Helper to get animation inline styles (respects isAnimating state)
+  const getAnimationStyle = useCallback((animation: Animation | undefined): React.CSSProperties => {
+    if (!animation || !isAnimating) {
+      return {};
+    }
+    return parseAnimationStyle(animation);
+  }, [isAnimating, parseAnimationStyle]);
 
   const handleCopy = useCallback(
     async (text: string, id: string) => {
@@ -234,17 +236,23 @@ style={{ background: '${displayGradient}' }}`;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl p-4 gap-3">
+      <DialogContent className="max-w-2xl p-4 gap-3" hideCloseButton>
         {/* Header */}
         <DialogHeader className="pb-2">
           <div className="flex items-center justify-between">
             <DialogTitle className="flex items-center gap-2 text-base">
               Gradient
-              <Badge variant="secondary" className="text-xs">
-                {gradientDef.type}
-              </Badge>
             </DialogTitle>
-            <div className="flex gap-1">
+            <div className="flex items-center gap-1">
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                className="h-8 w-8"
+                onClick={handleShare}
+                aria-label="Share gradient"
+              >
+                <Share2 className="w-4 h-4" />
+              </Button>
               <Button
                 size="icon-sm"
                 variant="ghost"
@@ -257,11 +265,11 @@ style={{ background: '${displayGradient}' }}`;
               <Button
                 size="icon-sm"
                 variant="ghost"
-                className="h-8 w-8"
-                onClick={handleShare}
-                aria-label="Share gradient"
+                className="h-8 w-8 text-neutral-400 hover:text-white"
+                onClick={onClose}
+                aria-label="Close"
               >
-                <Share2 className="w-4 h-4" />
+                <X className="w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -301,19 +309,42 @@ style={{ background: '${displayGradient}' }}`;
           >
             <Maximize2 className="w-3.5 h-3.5" />
           </Button>
+        </div>
 
-          {/* Recommended text colors */}
-          <div className="absolute bottom-2 left-2 flex gap-1.5">
+        {/* Recommended Text Color - Prominent */}
+        <div className="flex items-center gap-3 p-3 bg-neutral-800/60 rounded-lg border border-neutral-700">
+          <span className="text-sm text-neutral-300 font-medium whitespace-nowrap">Best text color:</span>
+          <div className="flex gap-2 flex-1">
             {bestTextColors.map((tc, i) => (
               <button
                 key={i}
-                onClick={(e) => { e.stopPropagation(); handleCopy(tc.color, `text-${i}`); }}
-                className="flex items-center gap-1 px-2 py-0.5 rounded bg-black/40 backdrop-blur-sm text-xs"
+                onClick={() => handleCopy(tc.color, `text-${i}`)}
+                className={cn(
+                  'flex items-center gap-2 px-3 py-1.5 rounded-md transition-all',
+                  'bg-neutral-900 border border-neutral-600 hover:border-neutral-400'
+                )}
                 title={`${tc.name}: ${formatContrastRatio(tc.ratio)} contrast`}
               >
-                <div className="w-2.5 h-2.5 rounded-full" style={{ background: tc.color }} />
-                <span className="font-mono" style={{ color: tc.color }}>{tc.color}</span>
-                {tc.meetsAAA && <Check className="w-2.5 h-2.5 text-green-400" />}
+                <div
+                  className="w-5 h-5 rounded-md border border-white/20 flex items-center justify-center"
+                  style={{ background: tc.color }}
+                >
+                  <span className="text-[9px] font-bold" style={{ color: tc.color === '#ffffff' ? '#000' : '#fff' }}>
+                    Aa
+                  </span>
+                </div>
+                <span className="text-sm font-mono font-medium" style={{ color: tc.color }}>{tc.color}</span>
+                {tc.meetsAAA && (
+                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-green-900/50 text-green-400 border-green-700">
+                    AAA
+                  </Badge>
+                )}
+                {!tc.meetsAAA && tc.meetsAA && (
+                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-yellow-900/50 text-yellow-400 border-yellow-700">
+                    AA
+                  </Badge>
+                )}
+                {copiedId === `text-${i}` && <Check className="w-3.5 h-3.5 text-green-500" />}
               </button>
             ))}
           </div>
@@ -463,55 +494,48 @@ style={{ background: '${displayGradient}' }}`;
         </button>
         {showAnimation && (
           <div className="space-y-3 pb-2">
-            {/* Category filter pills */}
-            <div className="flex gap-1.5 flex-wrap">
-              {animationCategories.map((cat) => (
-                <Button
-                  key={cat}
-                  size="sm"
-                  variant={animationCategory === cat ? 'default' : 'outline'}
-                  onClick={() => setAnimationCategory(cat)}
-                  className="text-xs px-2 py-0.5 h-6"
-                >
-                  {cat}
-                </Button>
-              ))}
-            </div>
+            {/* Animation options with B&W preview for clarity */}
+            <div className="grid grid-cols-3 gap-2">
+              {animations.map((anim) => {
+                const isSelected = anim.id === 'none'
+                  ? !selectedAnimationId
+                  : selectedAnimationId === anim.id;
 
-            {/* Animation grid */}
-            <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
-              {/* "None" option to clear animation */}
-              <button
-                onClick={() => onAnimationChange(null)}
-                className={cn(
-                  'p-2 rounded-lg border text-left transition-all',
-                  !selectedAnimationId
-                    ? 'border-white bg-neutral-800'
-                    : 'border-neutral-700 bg-neutral-800/50 hover:border-neutral-600'
-                )}
-              >
-                <p className="text-xs text-white font-medium">None</p>
-                <p className="text-[10px] text-neutral-400">Static gradient</p>
-              </button>
+                // B&W gradient for clear animation visibility
+                const previewGradient = 'linear-gradient(135deg, #000 0%, #fff 100%)';
 
-              {filteredAnimations.map((anim) => (
-                <button
-                  key={anim.id}
-                  onClick={() => {
-                    onAnimationChange(anim.id);
-                    if (!isAnimating) onToggleAnimating();
-                  }}
-                  className={cn(
-                    'p-2 rounded-lg border text-left transition-all',
-                    selectedAnimationId === anim.id
-                      ? 'border-white bg-neutral-800'
-                      : 'border-neutral-700 bg-neutral-800/50 hover:border-neutral-600'
-                  )}
-                >
-                  <p className="text-xs text-white font-medium">{anim.name}</p>
-                  <p className="text-[10px] text-neutral-400 line-clamp-1">{anim.description}</p>
-                </button>
-              ))}
+                return (
+                  <button
+                    key={anim.id}
+                    onClick={() => {
+                      if (anim.id === 'none') {
+                        onAnimationChange(null);
+                      } else {
+                        onAnimationChange(anim.id);
+                        if (!isAnimating) onToggleAnimating();
+                      }
+                    }}
+                    className={cn(
+                      'rounded-lg border overflow-hidden',
+                      isSelected
+                        ? 'border-white ring-2 ring-white/20'
+                        : 'border-neutral-700 hover:border-neutral-500'
+                    )}
+                  >
+                    <div
+                      className="h-14"
+                      style={{
+                        background: previewGradient,
+                        ...parseAnimationStyle(anim.id !== 'none' ? anim : undefined),
+                      }}
+                    />
+                    <div className="p-1.5 bg-neutral-900">
+                      <p className="text-[11px] text-white font-medium truncate">{anim.name}</p>
+                      <p className="text-[9px] text-neutral-500 truncate">{anim.description}</p>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}

@@ -77,20 +77,20 @@ export default function App() {
     : null;
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-white bg-page-gradient bg-grid-pattern">
+    <div className="min-h-screen bg-neutral-950 text-white">
       <Header
         searchQuery={state.searchQuery}
         onSearchChange={actions.setSearchQuery}
         searchInputRef={searchInputRef}
-        category={state.category}
-        vibe={state.vibe}
         colors={state.colors}
+        tags={state.tags}
         gradientType={state.gradientType}
-        onCategoryChange={actions.setCategory}
-        onVibeChange={actions.setVibe}
+        previewMode={state.previewMode}
         onColorsChange={actions.setColors}
         onToggleColor={actions.toggleColor}
+        onToggleTag={actions.toggleTag}
         onGradientTypeChange={actions.setGradientType}
+        onPreviewModeChange={actions.setPreviewMode}
         onClearFilters={actions.clearFilters}
         hasActiveFilters={actions.hasActiveFilters()}
         onRandomGradient={handleRandomGradient}
@@ -101,9 +101,10 @@ export default function App() {
           <GradientGallery
             category={state.category}
             searchQuery={state.searchQuery}
-            vibe={state.vibe}
             colors={state.colors}
+            tags={state.tags}
             gradientType={state.gradientType}
+            previewMode={state.previewMode}
             favorites={favorites}
             onSelectGradient={handleSelectGradient}
             onToggleFavorite={actions.toggleFavorite}

@@ -16,7 +16,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icon-192.svg', 'icon-512.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'GoodGradients',
+        name: 'Good Gradients',
         short_name: 'Gradients',
         description: 'CSS gradients for developers. Browse, customize, and export beautiful gradients.',
         theme_color: '#0a0a0a',

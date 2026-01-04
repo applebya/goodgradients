@@ -4,6 +4,7 @@
 OnlyGradients is a production-quality CSS gradient & animation tool for frontend engineers. It prioritizes interoperability (Tailwind + vanilla CSS exports), visual sophistication, and URL-based shareability.
 
 ## Tech Stack
+- **Package Manager**: bun
 - **Framework**: Vite + React 18 + TypeScript (strict mode)
 - **Styling**: Tailwind CSS 3 for UI, custom CSS for gradients/animations
 - **State**: Custom state model with URL serialization
@@ -78,6 +79,20 @@ src/
 - Tailwind exports use actual color values
 - WCAG contrast information for accessibility
 
+## Animation Design Guidelines
+Animations must ONLY affect the gradient within the container, NOT the container itself.
+
+**ALLOWED (gradient-only):**
+- `background-position` changes (shift, wave, flow, sway, drift)
+- `background-size` changes (pulse, breathe)
+
+**NOT ALLOWED (affects container):**
+- `opacity` - affects entire element
+- `transform` - affects container position/size
+- `filter` - affects entire element (hue-rotate, brightness, etc.)
+
+Animation previews use black & white gradients for clear visibility.
+
 ## Keyboard Shortcuts
 - `/` - Focus search
 - `Esc` - Close modal / clear search
@@ -88,12 +103,12 @@ src/
 
 ## Commands
 ```bash
-npm run dev      # Development server (port 3000)
-npm run build    # Production build
-npm run preview  # Preview production build
-npm run test     # Run Playwright tests
-npm run test:ui  # Playwright with UI
-npm run deploy   # Deploy to GitHub Pages
+bun run dev      # Development server (port 3000)
+bun run build    # Production build
+bun run preview  # Preview production build
+bun run test     # Run Playwright tests
+bun run test:ui  # Playwright with UI
+bun run deploy   # Deploy to GitHub Pages
 ```
 
 ## Testing

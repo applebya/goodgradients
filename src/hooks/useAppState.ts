@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import type { AppState, GradientCategory, GradientPreset, WizardVibe, WizardColor, GradientTypeFilter } from '@/types';
+import type { AppState, GradientCategory, GradientPreset, WizardColor, GradientTypeFilter, UIPreviewMode } from '@/types';
 import { getInitialState, updateURL, getMinimalShareState, getShareableURL } from '@/lib/state';
 import { getFavorites, toggleFavorite as toggleFavoriteStorage, isFavorite as isFavoriteStorage } from '@/lib/favorites';
 import { encodeGradient, parseGradientCSS } from '@/lib/gradient-url';
@@ -10,10 +10,11 @@ const DEFAULT_STATE: AppState = {
   selectedAnimationId: null,
   category: 'All',
   searchQuery: '',
-  vibe: null,
   colors: [],
-  gradientType: null,
+  tags: [],
+  gradientType: 'linear',
   isAnimating: true,
+  previewMode: 'background',
 };
 
 const URL_DEBOUNCE_MS = 150;
@@ -87,15 +88,11 @@ export function useAppState() {
   }, []);
 
   const setCategory = useCallback((category: GradientCategory | 'All' | 'Favorites') => {
-    setState((prev) => ({ ...prev, category }));
+    setState((prev) => prev.category === category ? prev : { ...prev, category });
   }, []);
 
   const setSearchQuery = useCallback((searchQuery: string) => {
     setState((prev) => ({ ...prev, searchQuery }));
-  }, []);
-
-  const setVibe = useCallback((vibe: WizardVibe | null) => {
-    setState((prev) => ({ ...prev, vibe }));
   }, []);
 
   const setColors = useCallback((colors: WizardColor[]) => {
@@ -111,27 +108,44 @@ export function useAppState() {
     });
   }, []);
 
-  const setGradientType = useCallback((gradientType: GradientTypeFilter | null) => {
-    setState((prev) => ({ ...prev, gradientType }));
+  const setTags = useCallback((tags: string[]) => {
+    setState((prev) => ({ ...prev, tags }));
+  }, []);
+
+  const toggleTag = useCallback((tag: string) => {
+    setState((prev) => {
+      const newTags = prev.tags.includes(tag)
+        ? prev.tags.filter((t) => t !== tag)
+        : [...prev.tags, tag];
+      return { ...prev, tags: newTags };
+    });
+  }, []);
+
+  const setGradientType = useCallback((gradientType: GradientTypeFilter) => {
+    setState((prev) => prev.gradientType === gradientType ? prev : { ...prev, gradientType });
   }, []);
 
   const clearFilters = useCallback(() => {
     setState((prev) => ({
       ...prev,
-      vibe: null,
       colors: [],
-      gradientType: null,
+      tags: [],
+      gradientType: 'linear',
       category: 'All',
       searchQuery: '',
     }));
   }, []);
 
   const hasActiveFilters = useCallback(() => {
-    return state.vibe !== null || state.colors.length > 0 || state.gradientType !== null;
-  }, [state.vibe, state.colors, state.gradientType]);
+    return state.colors.length > 0 || state.tags.length > 0;
+  }, [state.colors, state.tags]);
 
   const toggleAnimating = useCallback(() => {
     setState((prev) => ({ ...prev, isAnimating: !prev.isAnimating }));
+  }, []);
+
+  const setPreviewMode = useCallback((previewMode: UIPreviewMode) => {
+    setState((prev) => prev.previewMode === previewMode ? prev : { ...prev, previewMode });
   }, []);
 
   const toggleFavorite = useCallback((gradientDef: string) => {
@@ -181,10 +195,12 @@ export function useAppState() {
       selectAnimation,
       setCategory,
       setSearchQuery,
-      setVibe,
       setColors,
       toggleColor,
+      setTags,
+      toggleTag,
       setGradientType,
+      setPreviewMode,
       clearFilters,
       hasActiveFilters,
       toggleAnimating,
