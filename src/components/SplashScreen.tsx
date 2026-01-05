@@ -6,181 +6,151 @@ interface SplashScreenProps {
   minDuration?: number;
 }
 
-// Curated gradient names - diverse colors for maximum blend impact
+// Hand-picked vibrant multi-color gradients for maximum impact
 const splashGradientNames = [
-  // Warm spectrum
-  'Sunset Fire',
-  'Hot Pink',
-  'Fuchsia',
-  'Tangerine',
-  // Cool spectrum
-  'Ocean Depth',
-  'Electric Blue',
-  'Deep Teal',
-  'Aqua Teal',
-  // Purple/violet spectrum
-  'Velvet Dream',
-  'Cosmic Purple',
-  'Violet Storm',
-  // Accent colors
-  'Emerald',
-  'Lime Zest',
-  'Coral Sunset',
+  'Cyberpunk',      // cyan → pink
+  'Vaporwave',      // pink → cyan
+  'Sunset Beach',   // purple → pink
+  'Northern Lights', // green → blue
+  'Dusk',           // orange → pink
+  'Candy Pop',      // pink → purple
+  'Ocean Breeze',   // teal → blue
+  'Fuchsia',        // bold fuchsia
+  'Electric Blue',  // vibrant blue
+  'Coral Sunset',   // coral warmth
 ];
 
-// 14 panels with aggressive positioning for full coverage
-const panelConfigs = [
-  // Corner anchors - large and bold
-  { gradient: 0, rotate: -25, x: -40, y: -50, scale: 2.2 },
-  { gradient: 1, rotate: 30, x: 50, y: -45, scale: 2.0 },
-  { gradient: 2, rotate: -20, x: -45, y: 55, scale: 2.1 },
-  { gradient: 3, rotate: 25, x: 55, y: 50, scale: 2.0 },
-  // Mid-layer fills
-  { gradient: 4, rotate: 15, x: 0, y: -35, scale: 1.9 },
-  { gradient: 5, rotate: -12, x: -30, y: 0, scale: 1.8 },
-  { gradient: 6, rotate: 18, x: 35, y: 0, scale: 1.8 },
-  { gradient: 7, rotate: -8, x: 0, y: 40, scale: 1.9 },
-  // Inner intense layer
-  { gradient: 8, rotate: -35, x: -15, y: -20, scale: 1.7 },
-  { gradient: 9, rotate: 40, x: 20, y: -15, scale: 1.6 },
-  { gradient: 10, rotate: -30, x: -20, y: 25, scale: 1.7 },
-  { gradient: 11, rotate: 35, x: 15, y: 20, scale: 1.6 },
-  // Center pop
-  { gradient: 12, rotate: 5, x: 0, y: 0, scale: 1.5 },
-  { gradient: 13, rotate: -5, x: 5, y: -5, scale: 1.4 },
-];
+export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenProps) {
+  const [phase, setPhase] = useState<'entrance' | 'hold' | 'exit'>('entrance');
 
-export function SplashScreen({ onComplete, minDuration = 1500 }: SplashScreenProps) {
-  const [isSettling, setIsSettling] = useState(false);
-  const [isFadingOut, setIsFadingOut] = useState(false);
-  const [isReady, setIsReady] = useState(false);
-
-  // Get actual gradient CSS from the database
-  const splashGradients = useMemo(() => {
+  // Get gradient CSS strings from database
+  const gradientStyles = useMemo(() => {
     return splashGradientNames.map((name) => {
       const preset = gradients.find((g) => g.name === name);
-      return preset?.gradient ?? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+      return preset?.gradient ?? 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)';
     });
   }, []);
 
   useEffect(() => {
-    // Start settling animation after initial dramatic phase
-    const settleTimer = setTimeout(() => {
-      setIsSettling(true);
-    }, 800);
-
-    // Mark as ready after minimum duration
-    const readyTimer = setTimeout(() => {
-      setIsReady(true);
-    }, minDuration);
+    // Entrance animation complete
+    const holdTimer = setTimeout(() => setPhase('hold'), 600);
+    // Begin exit
+    const exitTimer = setTimeout(() => setPhase('exit'), minDuration);
+    // Complete
+    const completeTimer = setTimeout(() => onComplete(), minDuration + 400);
 
     return () => {
-      clearTimeout(settleTimer);
-      clearTimeout(readyTimer);
+      clearTimeout(holdTimer);
+      clearTimeout(exitTimer);
+      clearTimeout(completeTimer);
     };
-  }, [minDuration]);
+  }, [minDuration, onComplete]);
 
-  useEffect(() => {
-    if (isReady) {
-      setIsFadingOut(true);
-      const fadeTimer = setTimeout(() => {
-        onComplete();
-      }, 500); // Fade out duration
-      return () => clearTimeout(fadeTimer);
-    }
-  }, [isReady, onComplete]);
-
-  // Create animated gradient for text
-  const textGradient = `linear-gradient(
-    135deg,
-    #f472b6 0%,
-    #c084fc 25%,
-    #60a5fa 50%,
-    #34d399 75%,
-    #fbbf24 100%
-  )`;
+  const isEntrance = phase === 'entrance';
+  const isExit = phase === 'exit';
 
   return (
     <div
-      className={`fixed inset-0 z-50 overflow-hidden bg-black transition-opacity duration-500 ${
-        isFadingOut ? 'opacity-0' : 'opacity-100'
+      className={`fixed inset-0 z-50 overflow-hidden transition-opacity duration-400 ${
+        isExit ? 'opacity-0' : 'opacity-100'
       }`}
     >
-      {/* Gradient panels with screen blend for color mixing */}
-      {panelConfigs.map((config, index) => (
-        <div
-          key={index}
-          className={`absolute inset-0 transition-all ${
-            isSettling ? 'duration-[2000ms] ease-out' : 'duration-0'
-          }`}
-          style={{
-            background: splashGradients[config.gradient],
-            mixBlendMode: 'screen',
-            opacity: isSettling ? 0.7 : 0.9,
-            transform: isSettling
-              ? `rotate(${config.rotate * 0.2}deg) translate(${config.x * 0.2}%, ${config.y * 0.2}%) scale(${1 + (config.scale - 1) * 0.3})`
-              : `rotate(${config.rotate}deg) translate(${config.x}%, ${config.y}%) scale(${config.scale})`,
-            transformOrigin: 'center center',
-            animation: isSettling ? 'none' : `splash-drift-${index % 3} ${2.5 + index * 0.3}s ease-in-out infinite`,
-          }}
-        />
-      ))}
-
-      {/* Glow overlay for bloom effect */}
+      {/* Base layer - rich dark gradient */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="absolute inset-0"
         style={{
-          background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.15) 0%, transparent 60%)',
-          mixBlendMode: 'overlay',
+          background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)',
+        }}
+      />
+
+      {/* Gradient orbs - positioned blobs of color */}
+      {gradientStyles.map((gradient, i) => {
+        // Position each gradient as a large orb in different areas
+        const positions = [
+          { top: '-20%', left: '-10%', size: '80vmax' },
+          { top: '-30%', right: '-20%', size: '90vmax' },
+          { bottom: '-25%', left: '-15%', size: '85vmax' },
+          { bottom: '-20%', right: '-10%', size: '75vmax' },
+          { top: '10%', left: '20%', size: '60vmax' },
+          { top: '20%', right: '15%', size: '55vmax' },
+          { bottom: '15%', left: '25%', size: '50vmax' },
+          { bottom: '10%', right: '20%', size: '45vmax' },
+          { top: '40%', left: '-5%', size: '70vmax' },
+          { top: '30%', right: '-10%', size: '65vmax' },
+        ];
+        const pos = positions[i] || positions[0];
+
+        return (
+          <div
+            key={i}
+            className="absolute rounded-full transition-all duration-1000 ease-out"
+            style={{
+              ...pos,
+              width: pos.size,
+              height: pos.size,
+              background: gradient,
+              opacity: isEntrance ? 0 : isExit ? 0.3 : 0.7,
+              filter: 'blur(60px)',
+              transform: isEntrance
+                ? `scale(0.5) rotate(${i * 36}deg)`
+                : `scale(1) rotate(${i * 36 + 10}deg)`,
+              animation: !isEntrance && !isExit ? `splash-float-${i % 3} ${8 + i}s ease-in-out infinite` : 'none',
+            }}
+          />
+        );
+      })}
+
+      {/* Noise texture overlay for depth */}
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
         }}
       />
 
       {/* Center content */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        {/* Glow behind text */}
+        {/* Text glow */}
         <div
-          className="absolute w-[600px] h-[200px] blur-3xl opacity-60"
+          className={`absolute transition-all duration-700 ${
+            isEntrance ? 'opacity-0 scale-90' : 'opacity-100 scale-100'
+          }`}
           style={{
-            background: 'radial-gradient(ellipse, rgba(255,255,255,0.4) 0%, transparent 70%)',
+            width: '600px',
+            height: '150px',
+            background: 'radial-gradient(ellipse, rgba(139,92,246,0.4) 0%, rgba(236,72,153,0.2) 40%, transparent 70%)',
+            filter: 'blur(40px)',
           }}
         />
 
-        {/* Gradient text */}
+        {/* Main title */}
         <h1
-          className={`relative text-6xl sm:text-8xl lg:text-9xl font-black tracking-tighter ${
-            isSettling ? 'splash-text-settle' : 'splash-text-pulse'
+          className={`relative text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight text-white transition-all duration-700 ${
+            isEntrance ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'
           }`}
           style={{
-            background: textGradient,
-            backgroundSize: '200% 200%',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            color: 'transparent',
-            WebkitTextStroke: '1px rgba(255,255,255,0.1)',
-            filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.3)) drop-shadow(0 0 60px rgba(168,85,247,0.4))',
-            animation: isSettling ? 'none' : 'gradient-shift 4s ease infinite',
+            textShadow: '0 0 80px rgba(139,92,246,0.5), 0 0 40px rgba(236,72,153,0.3)',
           }}
         >
           Good Gradients
         </h1>
 
-        {/* Loading indicator */}
+        {/* Loading dots */}
         <div
-          className={`mt-8 flex items-center gap-3 transition-opacity duration-1000 ${
-            isSettling ? 'opacity-40' : 'opacity-80'
+          className={`mt-8 flex gap-2 transition-all duration-500 delay-200 ${
+            isEntrance ? 'opacity-0' : isExit ? 'opacity-0' : 'opacity-100'
           }`}
         >
-          <div className="flex gap-1">
-            {[0, 1, 2].map((i) => (
-              <div
-                key={i}
-                className="w-2 h-2 rounded-full bg-white"
-                style={{
-                  animation: `splash-dot 1s ease-in-out ${i * 0.15}s infinite`,
-                }}
-              />
-            ))}
-          </div>
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className="w-2 h-2 rounded-full bg-white/60"
+              style={{
+                animation: 'splash-dot 1.2s ease-in-out infinite',
+                animationDelay: `${i * 0.15}s`,
+              }}
+            />
+          ))}
         </div>
       </div>
     </div>

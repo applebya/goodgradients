@@ -223,60 +223,30 @@
 }
 
 /* Splash screen animations */
-@keyframes splash-drift-0 {
+@keyframes splash-float-0 {
   0%, 100% {
-    transform: rotate(-15deg) translate(-20%, -30%) scale(1.8);
+    transform: scale(1) rotate(0deg) translate(0, 0);
   }
   50% {
-    transform: rotate(-12deg) translate(-18%, -28%) scale(1.85);
+    transform: scale(1.05) rotate(5deg) translate(2%, 3%);
   }
 }
 
-@keyframes splash-drift-1 {
+@keyframes splash-float-1 {
   0%, 100% {
-    transform: rotate(25deg) translate(40%, -20%) scale(1.6);
+    transform: scale(1) rotate(36deg) translate(0, 0);
   }
   50% {
-    transform: rotate(28deg) translate(42%, -18%) scale(1.65);
+    transform: scale(1.08) rotate(40deg) translate(-3%, 2%);
   }
 }
 
-@keyframes splash-drift-2 {
+@keyframes splash-float-2 {
   0%, 100% {
-    transform: rotate(-8deg) translate(-30%, 40%) scale(1.7);
+    transform: scale(1) rotate(72deg) translate(0, 0);
   }
   50% {
-    transform: rotate(-5deg) translate(-28%, 42%) scale(1.75);
-  }
-}
-
-.splash-text-pulse {
-  animation: splash-pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes splash-pulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.85;
-    transform: scale(1.02);
-  }
-}
-
-.splash-text-settle {
-  animation: splash-settle 2s ease-out forwards;
-}
-
-@keyframes splash-settle {
-  0% {
-    opacity: 1;
-    transform: scale(1.02);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
+    transform: scale(1.03) rotate(68deg) translate(2%, -2%);
   }
 }
 
