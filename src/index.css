@@ -174,52 +174,79 @@
   display: none;
 }
 
-/* Shimmering border effect for cards */
-@keyframes border-shimmer {
+/* Card shimmer effect - single sweep on hover */
+@keyframes card-shimmer-sweep {
   0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
+    transform: translateX(-100%) skewX(-15deg);
   }
   100% {
-    background-position: 0% 50%;
+    transform: translateX(200%) skewX(-15deg);
   }
 }
 
-.shimmer-border {
+.card-shimmer {
   position: relative;
 }
 
-.shimmer-border::before {
+/* Border shimmer - sweeps once on hover */
+.card-shimmer::before {
   content: '';
   position: absolute;
   inset: -1px;
   border-radius: inherit;
   padding: 1px;
   background: linear-gradient(
-    90deg,
+    105deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.1) 25%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.15) 45%,
     rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0.1) 75%,
+    rgba(255, 255, 255, 0.15) 55%,
+    transparent 60%,
     transparent 100%
   );
-  background-size: 200% 100%;
-  animation: border-shimmer 2s ease-in-out infinite;
+  background-size: 100% 100%;
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   opacity: 0;
-  transition: opacity 0.3s ease;
   pointer-events: none;
   z-index: 1;
+  transform: translateX(-100%) skewX(-15deg);
 }
 
-.shimmer-border:hover::before,
-.shimmer-border:focus-within::before {
+.card-shimmer:hover::before,
+.card-shimmer:focus-within::before {
   opacity: 1;
+  animation: card-shimmer-sweep 0.5s ease-out forwards;
+}
+
+/* Content area shimmer overlay */
+.card-shimmer-content::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.08) 45%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.08) 55%,
+    transparent 60%,
+    transparent 100%
+  );
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+  transform: translateX(-100%) skewX(-15deg);
+}
+
+.card-shimmer:hover .card-shimmer-content::before,
+.card-shimmer:focus-within .card-shimmer-content::before {
+  opacity: 1;
+  animation: card-shimmer-sweep 0.5s ease-out forwards;
 }
 
 /* Splash screen animations */

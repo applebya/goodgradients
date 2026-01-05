@@ -93,7 +93,7 @@ export const GradientCard = memo(function GradientCard({
       tabIndex={0}
       aria-label={`${gradient.name} gradient - ${gradient.description}`}
       className={cn(
-        'group bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden shimmer-border',
+        'group bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden card-shimmer',
         'hover:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors cursor-pointer'
       )}
       onClick={() => onSelect(gradient)}
@@ -122,8 +122,8 @@ export const GradientCard = memo(function GradientCard({
         </Button>
       </div>
 
-      {/* Card Content */}
-      <div className="p-4">
+      {/* Card Content - with shimmer overlay */}
+      <div className="p-4 relative card-shimmer-content">
         <div className="flex items-start justify-between mb-2">
           <h3 className="text-white font-medium">{gradient.name}</h3>
           <Badge variant="secondary">{gradient.category}</Badge>
