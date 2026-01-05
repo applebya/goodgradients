@@ -251,10 +251,16 @@ test.describe('GoodGradients - Favorites', () => {
     const heartButton = firstCard.locator('button[aria-label*="to favorites"]');
     await expect(heartButton).toBeVisible();
 
-    // Click to add to favorites
+    // Click to add to favorites (aria-label will change)
     await heartButton.click();
 
-    // Heart button should reflect favorited state (aria-label changes to "Remove {name} from favorites")
+    // Wait a moment for state to update
+    await page.waitForTimeout(200);
+
+    // Hover again to reveal the button
+    await firstCard.hover();
+
+    // Heart button should now show "Remove...from favorites" aria-label
     await expect(firstCard.locator('button[aria-label*="from favorites"]')).toBeVisible();
   });
 });
