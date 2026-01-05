@@ -55,37 +55,37 @@ export function Header({
 
   return (
     <header className="bg-neutral-950 border-b border-neutral-800">
-      <div className="max-w-7xl mx-auto px-4 py-3">
+      <div className="max-w-7xl mx-auto px-4 py-2">
         {/* Top row: Logo + Search + Actions */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-2 flex-shrink-0 hover:opacity-80 transition-opacity">
-            <div className="w-7 h-7 rounded-md bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center">
-              <span className="text-white font-bold text-xs">GG</span>
+          <a href="/" className="flex items-center gap-1.5 flex-shrink-0 hover:opacity-80 transition-opacity">
+            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center">
+              <span className="text-white font-bold text-[10px]">GG</span>
             </div>
-            <span className="text-base font-medium text-white hidden sm:block">
+            <span className="text-sm font-medium text-white hidden sm:block">
               Good Gradients
             </span>
           </a>
 
           {/* Search */}
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+          <div className="relative flex-1 max-w-xs">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-500" />
             <input
               ref={inputRef}
               type="text"
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full h-9 pl-9 pr-8 bg-neutral-900 border border-neutral-800 rounded-lg text-sm text-white caret-white placeholder:text-neutral-500 focus:outline-none focus:border-neutral-600 focus:bg-neutral-800"
+              className="w-full h-7 pl-8 pr-6 bg-neutral-900 border border-neutral-800 rounded-md text-xs text-white caret-white placeholder:text-neutral-500 focus:outline-none focus:border-neutral-600 focus:bg-neutral-800"
             />
-            <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 hidden sm:inline text-[10px] text-neutral-600">
+            <kbd className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:inline text-[10px] text-neutral-600">
               /
             </kbd>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-1.5 flex-shrink-0">
+          <div className="flex items-center gap-1 flex-shrink-0">
             {/* Mobile: Filter sheet trigger */}
             {isMobile && (
               <MobileFilterSheet
@@ -113,7 +113,7 @@ export function Header({
 
         {/* Desktop: Filter bar */}
         {!isMobile && (
-          <div className="mt-3">
+          <div className="mt-2">
             <FilterBar
               colors={colors}
               tags={tags}

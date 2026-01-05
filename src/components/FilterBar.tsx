@@ -54,7 +54,7 @@ export function FilterBar({
           <PopoverTrigger asChild>
             <button
               className={cn(
-                'flex h-8 items-center justify-between gap-2 rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs text-white',
+                'flex h-7 items-center justify-between gap-1.5 rounded-md border border-neutral-700 bg-neutral-900 px-2.5 py-1.5 text-xs text-white',
                 'hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600',
                 colors.length > 0 && 'border-white/30'
               )}
@@ -101,7 +101,7 @@ export function FilterBar({
           <PopoverTrigger asChild>
             <button
               className={cn(
-                'flex h-8 items-center justify-between gap-2 rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs text-white',
+                'flex h-7 items-center justify-between gap-1.5 rounded-md border border-neutral-700 bg-neutral-900 px-2.5 py-1.5 text-xs text-white',
                 'hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600',
                 tags.length > 0 && 'border-white/30'
               )}
@@ -146,7 +146,7 @@ export function FilterBar({
             variant="ghost"
             size="sm"
             onClick={onClearFilters}
-            className="h-8 px-2 text-xs text-neutral-400 hover:text-white"
+            className="h-7 px-2 text-xs text-neutral-400 hover:text-white"
           >
             <X className="h-3 w-3 mr-1" />
             Clear
@@ -155,12 +155,12 @@ export function FilterBar({
       </div>
 
       {/* Right: Global Controls */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5">
         {/* Preview Mode Popover */}
         <Popover>
           <PopoverTrigger asChild>
             <button
-              className="flex h-8 items-center justify-between gap-2 rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600"
+              className="flex h-7 items-center justify-between gap-1.5 rounded-md border border-neutral-700 bg-neutral-900 px-2.5 py-1.5 text-xs text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600"
               aria-label="Preview mode"
             >
               <span>{PREVIEW_MODES.find(m => m.value === previewMode)?.label ?? 'Background'}</span>
@@ -193,7 +193,7 @@ export function FilterBar({
         <Popover>
           <PopoverTrigger asChild>
             <button
-              className="flex h-8 items-center justify-between gap-2 rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600"
+              className="flex h-7 items-center justify-between gap-1.5 rounded-md border border-neutral-700 bg-neutral-900 px-2.5 py-1.5 text-xs text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600"
               aria-label="Gradient type"
             >
               <span>{GRADIENT_TYPES.find(t => t.value === gradientType)?.label ?? 'Linear'}</span>
