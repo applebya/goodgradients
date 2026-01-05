@@ -221,3 +221,61 @@
 .shimmer-border:focus-within::before {
   opacity: 1;
 }
+
+/* Splash screen animations */
+@keyframes splash-drift-0 {
+  0%, 100% {
+    transform: rotate(-15deg) translate(-20%, -30%) scale(1.8);
+  }
+  50% {
+    transform: rotate(-12deg) translate(-18%, -28%) scale(1.85);
+  }
+}
+
+@keyframes splash-drift-1 {
+  0%, 100% {
+    transform: rotate(25deg) translate(40%, -20%) scale(1.6);
+  }
+  50% {
+    transform: rotate(28deg) translate(42%, -18%) scale(1.65);
+  }
+}
+
+@keyframes splash-drift-2 {
+  0%, 100% {
+    transform: rotate(-8deg) translate(-30%, 40%) scale(1.7);
+  }
+  50% {
+    transform: rotate(-5deg) translate(-28%, 42%) scale(1.75);
+  }
+}
+
+.splash-text-pulse {
+  animation: splash-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes splash-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.02);
+  }
+}
+
+.splash-text-settle {
+  animation: splash-settle 2s ease-out forwards;
+}
+
+@keyframes splash-settle {
+  0% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

@@ -1,9 +1,10 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { toast, useToastRegister } from './components/Toast';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { GradientGallery } from './components/GradientGallery';
 import { GradientDetail } from './components/GradientDetail';
+import { SplashScreen } from './components/SplashScreen';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { useAppState } from './hooks/useAppState';
 import { useKeyboard } from './hooks/useKeyboard';
@@ -12,6 +13,7 @@ import { decodeGradient, gradientToCSS } from './lib/gradient-url';
 import type { GradientPreset } from './types';
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true);
   const { state, favorites, actions } = useAppState();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -78,6 +80,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white">
+      {showSplash && (
+        <SplashScreen onComplete={() => setShowSplash(false)} minDuration={2000} />
+      )}
       <Header
         searchQuery={state.searchQuery}
         onSearchChange={actions.setSearchQuery}
