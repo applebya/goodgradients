@@ -8,7 +8,10 @@ test.describe('GoodGradients - Gallery', () => {
   });
 
   test('should display the header with branding', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: 'GoodGradients' })).toBeVisible();
+    // Logo text "GG" is visible
+    await expect(page.locator('span').filter({ hasText: /^GG$/ })).toBeVisible();
+    // The h1 heading with the brand name
+    await expect(page.getByRole('heading', { level: 1, name: 'Good Gradients' })).toBeVisible();
   });
 
   test('should display gradient cards in the gallery', async ({ page }) => {
@@ -17,12 +20,19 @@ test.describe('GoodGradients - Gallery', () => {
     expect(count).toBeGreaterThan(0);
   });
 
-  test('should filter gradients by category', async ({ page }) => {
-    // Open the category select
-    await page.locator('button').filter({ hasText: /^All$/ }).first().click();
+  test('should filter gradients by color', async ({ page }) => {
+    // Skip on mobile viewport (filters are in sheet)
+    const viewportSize = page.viewportSize();
+    if (viewportSize && viewportSize.width < 640) {
+      test.skip();
+      return;
+    }
+
+    // Open the colors filter
+    await page.locator('button[aria-label="Filter by colors"]').first().click();
 
     // Select Purple
-    await page.getByRole('option', { name: 'Purple' }).click();
+    await page.locator('button').filter({ hasText: 'Purple' }).first().click();
 
     // Wait for state to update
     await page.waitForTimeout(500);
@@ -87,11 +97,14 @@ test.describe('GoodGradients - Gradient Detail', () => {
     await page.locator('[data-testid="gradient-card"]').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
 
-    // Should show use case labels
-    await expect(page.getByRole('dialog').getByText('Background')).toBeVisible();
-    await expect(page.getByRole('dialog').getByText('Button')).toBeVisible();
-    await expect(page.getByRole('dialog').getByText('Text')).toBeVisible();
-    await expect(page.getByRole('dialog').getByText('Badge')).toBeVisible();
+    // Should show gradient preview with recommended text color info
+    await expect(page.getByRole('dialog').getByText('Recommended text:')).toBeVisible();
+
+    // Should show use case preview labels
+    await expect(page.getByRole('dialog').locator('span').filter({ hasText: 'Background' })).toBeVisible();
+    await expect(page.getByRole('dialog').locator('span').filter({ hasText: /^Button$/ })).toBeVisible();
+    await expect(page.getByRole('dialog').locator('span').filter({ hasText: /^Text$/ })).toBeVisible();
+    await expect(page.getByRole('dialog').locator('span').filter({ hasText: /^Badge$/ })).toBeVisible();
   });
 
   test('should show collapsible gradient settings', async ({ page }) => {
@@ -122,26 +135,22 @@ test.describe('GoodGradients - Gradient Detail', () => {
     await expect(radialButton).toHaveClass(/bg-white|bg-primary/);
   });
 
-  test('should show collapsible code export', async ({ page }) => {
+  test('should show code export tabs', async ({ page }) => {
     await page.locator('[data-testid="gradient-card"]').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
 
-    // Click to expand code section
-    await page.getByRole('dialog').getByText('Copy Code').click();
+    // Code section is always visible now - should show Copy Code header and format tabs
+    await expect(page.getByRole('dialog').getByText('Copy Code')).toBeVisible();
 
-    // Should show CSS and Tailwind buttons
-    await expect(page.getByRole('dialog').getByText('CSS')).toBeVisible();
-    await expect(page.getByRole('dialog').getByText('Tailwind')).toBeVisible();
+    // Should show export format tabs (CSS, SwiftUI, Kotlin, AI Agent)
+    await expect(page.getByRole('dialog').locator('button').filter({ hasText: 'CSS' })).toBeVisible();
   });
 
   test('should copy CSS code', async ({ page }) => {
     await page.locator('[data-testid="gradient-card"]').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
 
-    // Expand code section
-    await page.getByRole('dialog').getByText('Copy Code').click();
-
-    // Click CSS copy button
+    // Click CSS copy button (no need to expand, it's always visible)
     await page.getByRole('dialog').locator('button').filter({ hasText: 'CSS' }).click();
 
     // Toast should appear
@@ -229,15 +238,22 @@ test.describe('GoodGradients - Favorites', () => {
     await heartButton.click();
   });
 
-  test('should show favorites filter option', async ({ page }) => {
+  test('should toggle favorite on card', async ({ page }) => {
     await page.goto('/');
     await page.waitForSelector('[data-testid="gradient-card"]', { timeout: 15000 });
 
-    // Open the category select
-    await page.locator('button').filter({ hasText: /^All$/ }).first().click();
+    // Hover on first card and click heart button to favorite
+    const firstCard = page.locator('[data-testid="gradient-card"]').first();
+    await firstCard.hover();
 
-    // Favorites option should exist in the dropdown
-    await expect(page.getByRole('option', { name: 'Favorites' })).toBeVisible();
+    const heartButton = firstCard.locator('button[aria-label*="favorites"]');
+    await expect(heartButton).toBeVisible();
+
+    // Click to add to favorites
+    await heartButton.click();
+
+    // Heart button should reflect favorited state (aria-label changes)
+    await expect(firstCard.locator('button[aria-label="Remove from favorites"]')).toBeVisible();
   });
 });
 
@@ -279,17 +295,14 @@ test.describe('GoodGradients - Filter Bar', () => {
       return;
     }
 
-    // Category dropdown should be visible
-    await expect(page.locator('button').filter({ hasText: /^All$/ }).first()).toBeVisible();
-
-    // Vibe dropdown should be visible
-    await expect(page.locator('button').filter({ hasText: /Any vibe/i })).toBeVisible();
-
     // Colors dropdown should be visible
-    await expect(page.locator('button').filter({ hasText: /Colors/i })).toBeVisible();
+    await expect(page.locator('button[aria-label="Filter by colors"]')).toBeVisible();
 
-    // Type dropdown should be visible
-    await expect(page.locator('button').filter({ hasText: /Any type/i })).toBeVisible();
+    // Vibes dropdown should be visible
+    await expect(page.locator('button[aria-label="Filter by vibes"]')).toBeVisible();
+
+    // Gradient type dropdown should be visible
+    await expect(page.locator('button[aria-label="Filter by gradient type"]')).toBeVisible();
   });
 
   test('should filter by vibe', async ({ page }) => {
@@ -303,8 +316,8 @@ test.describe('GoodGradients - Filter Bar', () => {
     const initialCount = await cards.count();
 
     // Open vibe dropdown and select "Bold"
-    await page.locator('button').filter({ hasText: /Any vibe/i }).click();
-    await page.getByRole('option', { name: 'Bold' }).click();
+    await page.locator('button[aria-label="Filter by vibes"]').click();
+    await page.locator('button').filter({ hasText: 'Bold' }).first().click();
 
     // Wait for filter to apply
     await page.waitForTimeout(500);
@@ -326,8 +339,8 @@ test.describe('GoodGradients - Filter Bar', () => {
     const initialCount = await cards.count();
 
     // Open type dropdown and select "Radial"
-    await page.locator('button').filter({ hasText: /Any type/i }).click();
-    await page.getByRole('option', { name: 'Radial' }).click();
+    await page.locator('button[aria-label="Filter by gradient type"]').click();
+    await page.locator('button').filter({ hasText: 'Radial' }).first().click();
 
     // Wait for filter to apply
     await page.waitForTimeout(500);
@@ -345,7 +358,7 @@ test.describe('GoodGradients - Filter Bar', () => {
     }
 
     // Open colors popover
-    await page.locator('button').filter({ hasText: /Colors/i }).click();
+    await page.locator('button[aria-label="Filter by colors"]').click();
 
     // Select Purple
     await page.locator('button').filter({ hasText: 'Purple' }).first().click();
@@ -368,12 +381,16 @@ test.describe('GoodGradients - Filter Bar', () => {
       return;
     }
 
-    // Apply a filter first
-    await page.locator('button').filter({ hasText: /Any vibe/i }).click();
-    await page.getByRole('option', { name: 'Bold' }).click();
+    // Apply a color filter first
+    await page.locator('button[aria-label="Filter by colors"]').click();
+    await page.locator('button').filter({ hasText: 'Purple' }).first().click();
     await page.waitForTimeout(300);
 
-    // Clear button should appear
+    // Close popover by pressing Escape
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(300);
+
+    // Clear button should appear when filters are active
     const clearButton = page.locator('button').filter({ hasText: /Clear/i });
     await expect(clearButton).toBeVisible();
 
@@ -381,7 +398,7 @@ test.describe('GoodGradients - Filter Bar', () => {
     await clearButton.click();
     await page.waitForTimeout(300);
 
-    // Vibe should be reset to "Any vibe"
-    await expect(page.locator('button').filter({ hasText: /Any vibe/i })).toBeVisible();
+    // Clear button should disappear
+    await expect(clearButton).not.toBeVisible();
   });
 });

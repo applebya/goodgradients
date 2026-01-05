@@ -67,9 +67,9 @@ export function Header({
             <div className="w-6 h-6 rounded-md bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center">
               <span className="text-white font-bold text-[10px]">GG</span>
             </div>
-            <span className="text-sm font-medium text-white hidden sm:block">
+            <h1 className="text-sm font-medium text-white hidden sm:block">
               Good Gradients
-            </span>
+            </h1>
           </a>
 
           {/* Search */}
