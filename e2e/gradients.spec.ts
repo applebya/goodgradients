@@ -97,12 +97,13 @@ test.describe('GoodGradients - Gradient Detail', () => {
     await page.locator('[data-testid="gradient-card"]').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
 
-    // Should show gradient preview with recommended text color info
-    await expect(page.getByRole('dialog').getByText('Recommended text:')).toBeVisible();
+    // Should show text color recommendations
+    await expect(page.getByRole('dialog').getByText('Best text color:')).toBeVisible();
 
     // Should show use case preview labels
     await expect(page.getByRole('dialog').locator('span').filter({ hasText: 'Background' })).toBeVisible();
-    await expect(page.getByRole('dialog').locator('span').filter({ hasText: /^Button$/ })).toBeVisible();
+    // Button text is inside a button element, not span
+    await expect(page.getByRole('dialog').locator('button').filter({ hasText: /^Button$/ })).toBeVisible();
     await expect(page.getByRole('dialog').locator('span').filter({ hasText: /^Text$/ })).toBeVisible();
     await expect(page.getByRole('dialog').locator('span').filter({ hasText: /^Badge$/ })).toBeVisible();
   });
@@ -150,8 +151,8 @@ test.describe('GoodGradients - Gradient Detail', () => {
     await page.locator('[data-testid="gradient-card"]').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
 
-    // Click CSS copy button (no need to expand, it's always visible)
-    await page.getByRole('dialog').locator('button').filter({ hasText: 'CSS' }).click();
+    // CSS tab is selected by default, click the copy button
+    await page.getByRole('dialog').locator('button[aria-label="Copy code"]').click();
 
     // Toast should appear
     await expect(page.getByText('Copied to clipboard')).toBeVisible({ timeout: 3000 });
@@ -246,14 +247,15 @@ test.describe('GoodGradients - Favorites', () => {
     const firstCard = page.locator('[data-testid="gradient-card"]').first();
     await firstCard.hover();
 
-    const heartButton = firstCard.locator('button[aria-label*="favorites"]');
+    // Heart button has aria-label like "Add {name} to favorites"
+    const heartButton = firstCard.locator('button[aria-label*="to favorites"]');
     await expect(heartButton).toBeVisible();
 
     // Click to add to favorites
     await heartButton.click();
 
-    // Heart button should reflect favorited state (aria-label changes)
-    await expect(firstCard.locator('button[aria-label="Remove from favorites"]')).toBeVisible();
+    // Heart button should reflect favorited state (aria-label changes to "Remove {name} from favorites")
+    await expect(firstCard.locator('button[aria-label*="from favorites"]')).toBeVisible();
   });
 });
 
@@ -298,14 +300,14 @@ test.describe('GoodGradients - Filter Bar', () => {
     // Colors dropdown should be visible
     await expect(page.locator('button[aria-label="Filter by colors"]')).toBeVisible();
 
-    // Vibes dropdown should be visible
-    await expect(page.locator('button[aria-label="Filter by vibes"]')).toBeVisible();
+    // Tags/vibes dropdown should be visible
+    await expect(page.locator('button[aria-label="Filter by tags"]')).toBeVisible();
 
     // Gradient type dropdown should be visible
-    await expect(page.locator('button[aria-label="Filter by gradient type"]')).toBeVisible();
+    await expect(page.locator('button[aria-label="Gradient type"]')).toBeVisible();
   });
 
-  test('should filter by vibe', async ({ page }) => {
+  test('should filter by tag', async ({ page }) => {
     const viewportSize = page.viewportSize();
     if (viewportSize && viewportSize.width < 640) {
       test.skip();
@@ -315,8 +317,8 @@ test.describe('GoodGradients - Filter Bar', () => {
     const cards = page.locator('[data-testid="gradient-card"]');
     const initialCount = await cards.count();
 
-    // Open vibe dropdown and select "Bold"
-    await page.locator('button[aria-label="Filter by vibes"]').click();
+    // Open tags dropdown and select "Bold"
+    await page.locator('button[aria-label="Filter by tags"]').click();
     await page.locator('button').filter({ hasText: 'Bold' }).first().click();
 
     // Wait for filter to apply
@@ -339,7 +341,7 @@ test.describe('GoodGradients - Filter Bar', () => {
     const initialCount = await cards.count();
 
     // Open type dropdown and select "Radial"
-    await page.locator('button[aria-label="Filter by gradient type"]').click();
+    await page.locator('button[aria-label="Gradient type"]').click();
     await page.locator('button').filter({ hasText: 'Radial' }).first().click();
 
     // Wait for filter to apply
