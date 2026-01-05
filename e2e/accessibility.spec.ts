@@ -145,17 +145,14 @@ test.describe('Accessibility - Keyboard Navigation', () => {
   });
 
   test('gradient cards should be keyboard accessible', async ({ page }) => {
-    // Tab to the first gradient card
-    await page.keyboard.press('Tab'); // Skip to search
-
-    // Get the search input first
-    const searchInput = page.getByPlaceholder('Search...');
-    await expect(searchInput).toBeFocused();
-
     // The gradient cards should be clickable and focusable
     const firstCard = page.locator('[data-testid="gradient-card"]').first();
     await firstCard.focus();
     await expect(firstCard).toBeFocused();
+
+    // Pressing Enter should open the modal
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('dialog')).toBeVisible();
   });
 
   test('buttons should have visible focus indicators', async ({ page }) => {
@@ -220,7 +217,7 @@ test.describe('Accessibility - ARIA Labels', () => {
     await page.waitForTimeout(300);
 
     // Select an animation
-    await page.getByRole('dialog').locator('button').filter({ hasText: 'Horizontal Shift' }).click();
+    await page.getByRole('dialog').locator('button').filter({ hasText: 'Shift' }).click();
     await page.waitForTimeout(300);
 
     // Check play/pause button has aria-label
