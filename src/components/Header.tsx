@@ -4,7 +4,7 @@ import { Button } from './ui/button';
 import { FilterBar } from './FilterBar';
 import { MobileFilterSheet } from './MobileFilterSheet';
 import { useIsMobile } from '@/hooks/useMediaQuery';
-import type { WizardColor, GradientTypeFilter, UIPreviewMode } from '@/types';
+import type { WizardColor, GradientTypeFilter, UIPreviewMode, ColorFormat } from '@/types';
 
 interface HeaderProps {
   // Search
@@ -17,11 +17,13 @@ interface HeaderProps {
   tags: string[];
   gradientType: GradientTypeFilter;
   previewMode: UIPreviewMode;
+  colorFormat: ColorFormat;
   onColorsChange: (colors: WizardColor[]) => void;
   onToggleColor: (color: WizardColor) => void;
   onToggleTag: (tag: string) => void;
   onGradientTypeChange: (type: GradientTypeFilter) => void;
   onPreviewModeChange: (mode: UIPreviewMode) => void;
+  onColorFormatChange: (format: ColorFormat) => void;
   onClearFilters: () => void;
   hasActiveFilters: boolean;
 
@@ -37,11 +39,13 @@ export function Header({
   tags,
   gradientType,
   previewMode,
+  colorFormat,
   onColorsChange,
   onToggleColor,
   onToggleTag,
   onGradientTypeChange,
   onPreviewModeChange,
+  onColorFormatChange,
   onClearFilters,
   hasActiveFilters,
   onRandomGradient,
@@ -119,11 +123,13 @@ export function Header({
               tags={tags}
               gradientType={gradientType}
               previewMode={previewMode}
+              colorFormat={colorFormat}
               onColorsChange={onColorsChange}
               onToggleColor={onToggleColor}
               onToggleTag={onToggleTag}
               onGradientTypeChange={onGradientTypeChange}
               onPreviewModeChange={onPreviewModeChange}
+              onColorFormatChange={onColorFormatChange}
               onClearFilters={onClearFilters}
               hasActiveFilters={hasActiveFilters}
             />

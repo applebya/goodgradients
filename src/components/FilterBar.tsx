@@ -1,21 +1,24 @@
-import { X, ChevronDown, Check, Tag } from './icons';
+import { X, ChevronDown, Check, Tag, Layout, Blend, Palette } from './icons';
 import { Button } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { cn } from '@/lib/utils';
 import { COLOR_OPTIONS } from '@/lib/wizard';
+import { COLOR_FORMAT_OPTIONS } from '@/lib/color-format';
 import { allTags } from '@/data/gradients';
-import type { WizardColor, GradientTypeFilter, UIPreviewMode } from '@/types';
+import type { WizardColor, GradientTypeFilter, UIPreviewMode, ColorFormat } from '@/types';
 
 interface FilterBarProps {
   colors: WizardColor[];
   tags: string[];
   gradientType: GradientTypeFilter;
   previewMode: UIPreviewMode;
+  colorFormat: ColorFormat;
   onColorsChange: (colors: WizardColor[]) => void;
   onToggleColor: (color: WizardColor) => void;
   onToggleTag: (tag: string) => void;
   onGradientTypeChange: (type: GradientTypeFilter) => void;
   onPreviewModeChange: (mode: UIPreviewMode) => void;
+  onColorFormatChange: (format: ColorFormat) => void;
   onClearFilters: () => void;
   hasActiveFilters: boolean;
 }
@@ -27,10 +30,10 @@ const GRADIENT_TYPES: { value: GradientTypeFilter; label: string }[] = [
 ];
 
 const PREVIEW_MODES: { value: UIPreviewMode; label: string }[] = [
-  { value: 'background', label: 'Background' },
-  { value: 'button', label: 'Button' },
-  { value: 'text', label: 'Text' },
-  { value: 'badge', label: 'Badge' },
+  { value: 'background', label: 'Background UI' },
+  { value: 'button', label: 'Button UI' },
+  { value: 'text', label: 'Text UI' },
+  { value: 'badge', label: 'Badge UI' },
 ];
 
 export function FilterBar({
@@ -38,10 +41,12 @@ export function FilterBar({
   tags,
   gradientType,
   previewMode,
+  colorFormat,
   onToggleColor,
   onToggleTag,
   onGradientTypeChange,
   onPreviewModeChange,
+  onColorFormatChange,
   onClearFilters,
   hasActiveFilters,
 }: FilterBarProps) {
@@ -163,11 +168,12 @@ export function FilterBar({
               className="flex h-7 items-center justify-between gap-1.5 rounded-md border border-neutral-700 bg-neutral-900 px-2.5 py-1.5 text-xs text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600"
               aria-label="Preview mode"
             >
-              <span>{PREVIEW_MODES.find(m => m.value === previewMode)?.label ?? 'Background'}</span>
+              <Layout className="h-3 w-3 text-neutral-500" />
+              <span>{PREVIEW_MODES.find(m => m.value === previewMode)?.label ?? 'Background UI'}</span>
               <ChevronDown className="h-3 w-3 text-neutral-500" />
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-40 p-2" align="end">
+          <PopoverContent className="w-44 p-2" align="end">
             <div className="space-y-1">
               {PREVIEW_MODES.map((opt) => (
                 <button
@@ -196,6 +202,7 @@ export function FilterBar({
               className="flex h-7 items-center justify-between gap-1.5 rounded-md border border-neutral-700 bg-neutral-900 px-2.5 py-1.5 text-xs text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600"
               aria-label="Gradient type"
             >
+              <Blend className="h-3 w-3 text-neutral-500" />
               <span>{GRADIENT_TYPES.find(t => t.value === gradientType)?.label ?? 'Linear'}</span>
               <ChevronDown className="h-3 w-3 text-neutral-500" />
             </button>
@@ -214,6 +221,40 @@ export function FilterBar({
                 >
                   <span className="flex-1 text-left">{opt.label}</span>
                   {gradientType === opt.value && (
+                    <Check className="h-4 w-4 text-white" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
+
+        {/* Color Format Popover */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              className="flex h-7 items-center justify-between gap-1.5 rounded-md border border-neutral-700 bg-neutral-900 px-2.5 py-1.5 text-xs text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600"
+              aria-label="Color format"
+            >
+              <Palette className="h-3 w-3 text-neutral-500" />
+              <span>{COLOR_FORMAT_OPTIONS.find(f => f.value === colorFormat)?.label ?? 'HEX'}</span>
+              <ChevronDown className="h-3 w-3 text-neutral-500" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-32 p-2" align="end">
+            <div className="space-y-1">
+              {COLOR_FORMAT_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => onColorFormatChange(opt.value)}
+                  className={cn(
+                    'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm',
+                    'hover:bg-neutral-800 transition-colors',
+                    colorFormat === opt.value && 'bg-neutral-800'
+                  )}
+                >
+                  <span className="flex-1 text-left">{opt.label}</span>
+                  {colorFormat === opt.value && (
                     <Check className="h-4 w-4 text-white" />
                   )}
                 </button>

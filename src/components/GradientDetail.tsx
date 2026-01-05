@@ -14,21 +14,25 @@ import {
   Play,
   Pause,
   X,
+  ChevronDown,
+  Palette,
 } from './icons';
 import { animations, getAnimationById } from '@/data/animations';
-import type { Animation } from '@/types';
+import type { Animation, ColorFormat } from '@/types';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from './ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { cn, copyToClipboard } from '@/lib/utils';
 import { getGradientAverageColor, getContrastInfoForBackground, formatContrastRatio } from '@/lib/contrast';
 import { encodeGradient, gradientToCSS, getGradientColors } from '@/lib/gradient-url';
 import type { GradientDefinition, GradientType } from '@/lib/gradient-url';
+import { convertColor, convertGradientColors, COLOR_FORMAT_OPTIONS } from '@/lib/color-format';
 
 interface GradientDetailProps {
   gradientDef: GradientDefinition | null;
@@ -38,10 +42,12 @@ interface GradientDetailProps {
   selectedAnimationId: string | null;
   isAnimating: boolean;
   isFavorite: boolean;
+  colorFormat: ColorFormat;
   onGradientChange: (encoded: string) => void;
   onAnimationChange: (id: string | null) => void;
   onToggleAnimating: () => void;
   onToggleFavorite: () => void;
+  onColorFormatChange: (format: ColorFormat) => void;
   onShare: () => string;
 }
 
@@ -52,15 +58,17 @@ export function GradientDetail({
   selectedAnimationId,
   isAnimating,
   isFavorite,
+  colorFormat,
   onGradientChange,
   onAnimationChange,
   onToggleAnimating,
   onToggleFavorite,
+  onColorFormatChange,
   onShare,
 }: GradientDetailProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showCode, setShowCode] = useState(false);
+  const [codeTab, setCodeTab] = useState<'css' | 'swift' | 'kotlin' | 'ai'>('css');
   const [showSettings, setShowSettings] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
 
@@ -140,23 +148,42 @@ export function GradientDetail({
     .sort((a, b) => b.ratio - a.ratio)
     .slice(0, 2);
 
+  // Convert gradient to selected color format
+  const formattedGradient = convertGradientColors(displayGradient, colorFormat);
+  const formattedColors = colors.map(c => convertColor(c, colorFormat));
+
   // Generate export code
   const cssCode = selectedAnimation
-    ? `background: ${displayGradient};\n${selectedAnimation.property}`
-    : `background: ${displayGradient};`;
+    ? `background: ${formattedGradient};\n${selectedAnimation.property}`
+    : `background: ${formattedGradient};`;
 
   const fullCSSCode = selectedAnimation
-    ? `/* Gradient with Animation */\n${selectedAnimation.keyframes}\n\n.animated-gradient {\n  background: ${displayGradient};\n  ${selectedAnimation.property}\n}`
+    ? `/* Gradient with Animation */\n${selectedAnimation.keyframes}\n\n.animated-gradient {\n  background: ${formattedGradient};\n  ${selectedAnimation.property}\n}`
     : cssCode;
 
-  // Tailwind: Use CSS variable approach or provide inline style
-  const tailwindCode = `/* Add to your CSS/Tailwind config */
-.bg-gradient-custom {
-  background: ${displayGradient};
-}
+  // SwiftUI code
+  const swiftUICode = `LinearGradient(
+  gradient: Gradient(colors: [
+    ${formattedColors.map(c => `Color(hex: "${c}")`).join(',\n    ')}
+  ]),
+  startPoint: .topLeading,
+  endPoint: .bottomTrailing
+)`;
 
-/* Or use inline style */
-style={{ background: '${displayGradient}' }}`;
+  // Kotlin/Jetpack Compose code
+  const kotlinCode = `Brush.linearGradient(
+  colors = listOf(
+    ${formattedColors.map(c => `Color(0xFF${c.replace('#', '').toUpperCase()})`).join(',\n    ')}
+  ),
+  start = Offset(0f, 0f),
+  end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+)`;
+
+  // AI Agent description
+  const aiAgentCode = `A ${gradientDef.type} gradient with the following colors:
+${formattedColors.map((c, i) => `- ${c} at ${gradientDef.stops[i]?.position ?? i * 100}%`).join('\n')}
+${gradientDef.type === 'linear' || gradientDef.type === 'conic' ? `Angle: ${gradientDef.angle}°` : 'Radiates from center'}
+${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimation.description}` : ''}`.trim();
 
   // Fullscreen preview
   if (isFullscreen) {
@@ -333,7 +360,11 @@ style={{ background: '${displayGradient}' }}`;
                     Aa
                   </span>
                 </div>
-                <span className="text-sm font-mono font-medium" style={{ color: tc.color }}>{tc.color}</span>
+                <div
+                  className="w-3 h-3 rounded-full border border-white/30"
+                  style={{ background: tc.color }}
+                />
+                <span className="text-sm font-mono font-medium text-neutral-200">{tc.color}</span>
                 {tc.meetsAAA && (
                   <Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-green-900/50 text-green-400 border-green-700">
                     AAA
@@ -399,17 +430,20 @@ style={{ background: '${displayGradient}' }}`;
 
         {/* Color chips - quick copy */}
         <div className="flex gap-1.5 flex-wrap">
-          {colors.map((color, i) => (
-            <button
-              key={i}
-              onClick={() => handleCopy(color, `color-${i}`)}
-              className="flex items-center gap-1.5 px-2 py-1 bg-neutral-800/50 border border-neutral-700 rounded hover:border-neutral-500 transition-colors"
-            >
-              <div className="w-4 h-4 rounded" style={{ background: color }} />
-              <span className="text-xs font-mono text-neutral-300">{color}</span>
-              {copiedId === `color-${i}` && <Check className="w-3 h-3 text-green-500" />}
-            </button>
-          ))}
+          {colors.map((color, i) => {
+            const formattedColor = convertColor(color, colorFormat);
+            return (
+              <button
+                key={i}
+                onClick={() => handleCopy(formattedColor, `color-${i}`)}
+                className="flex items-center gap-1.5 px-2 py-1 bg-neutral-800/50 border border-neutral-700 rounded hover:border-neutral-500 transition-colors"
+              >
+                <div className="w-4 h-4 rounded" style={{ background: color }} />
+                <span className="text-xs font-mono text-neutral-300">{formattedColor}</span>
+                {copiedId === `color-${i}` && <Check className="w-3 h-3 text-green-500" />}
+              </button>
+            );
+          })}
         </div>
 
         {/* Collapsible: Gradient Settings */}
@@ -540,48 +574,79 @@ style={{ background: '${displayGradient}' }}`;
           </div>
         )}
 
-        {/* Collapsible: Code Export */}
-        <button
-          onClick={() => setShowCode(!showCode)}
-          className="flex items-center justify-between w-full py-2 text-sm text-neutral-400 hover:text-white transition-colors border-t border-neutral-800 pt-3"
-        >
-          <span>Copy Code</span>
-          <ChevronRight className={cn('w-4 h-4 transition-transform', showCode && 'rotate-90')} />
-        </button>
-        {showCode && (
-          <div className="space-y-2 pb-2">
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={() => handleCopy(cssCode, 'css')}
-                className="flex items-center justify-between px-3 py-2 bg-neutral-800 rounded-lg hover:bg-neutral-700 transition-colors"
-              >
-                <span className="text-sm text-white">CSS</span>
-                {copiedId === 'css' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-neutral-400" />}
-              </button>
-              <button
-                onClick={() => handleCopy(tailwindCode, 'tailwind')}
-                className="flex items-center justify-between px-3 py-2 bg-neutral-800 rounded-lg hover:bg-neutral-700 transition-colors"
-              >
-                <span className="text-sm text-white">Tailwind</span>
-                {copiedId === 'tailwind' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-neutral-400" />}
-              </button>
-            </div>
-
-            {/* Show full CSS with animation when animation is selected */}
-            {selectedAnimation && (
-              <button
-                onClick={() => handleCopy(fullCSSCode, 'full-css')}
-                className="w-full flex items-center justify-between px-3 py-2 bg-neutral-700 rounded-lg hover:bg-neutral-600 transition-colors"
-              >
-                <span className="text-sm text-white flex items-center gap-2">
-                  <Zap className="w-3 h-3" />
-                  Full CSS with Animation
-                </span>
-                {copiedId === 'full-css' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-neutral-400" />}
-              </button>
-            )}
+        {/* Code Export - Always Visible Tabs */}
+        <div className="border-t border-neutral-800 pt-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-neutral-400">Copy Code</span>
+            {/* Color Format Dropdown */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  className="flex h-6 items-center gap-1.5 rounded border border-neutral-700 bg-neutral-900 px-2 text-xs text-white hover:bg-neutral-800"
+                  aria-label="Color format"
+                >
+                  <Palette className="h-3 w-3 text-neutral-500" />
+                  <span>{COLOR_FORMAT_OPTIONS.find(f => f.value === colorFormat)?.label ?? 'HEX'}</span>
+                  <ChevronDown className="h-3 w-3 text-neutral-500" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-28 p-1" align="end">
+                {COLOR_FORMAT_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => onColorFormatChange(opt.value)}
+                    className={cn(
+                      'flex w-full items-center gap-2 rounded px-2 py-1 text-xs',
+                      'hover:bg-neutral-800 transition-colors',
+                      colorFormat === opt.value && 'bg-neutral-800'
+                    )}
+                  >
+                    <span className="flex-1 text-left">{opt.label}</span>
+                    {colorFormat === opt.value && <Check className="h-3 w-3 text-white" />}
+                  </button>
+                ))}
+              </PopoverContent>
+            </Popover>
           </div>
-        )}
+          {/* Tab Buttons */}
+          <div className="flex gap-1 mb-2">
+            {(['css', 'swift', 'kotlin', 'ai'] as const).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setCodeTab(tab)}
+                className={cn(
+                  'px-3 py-1.5 text-xs rounded transition-colors',
+                  codeTab === tab
+                    ? 'bg-neutral-700 text-white'
+                    : 'bg-neutral-800/50 text-neutral-400 hover:text-white hover:bg-neutral-800'
+                )}
+              >
+                {tab === 'css' ? 'CSS' : tab === 'swift' ? 'SwiftUI' : tab === 'kotlin' ? 'Kotlin' : 'AI Agent'}
+              </button>
+            ))}
+          </div>
+          {/* Tab Content */}
+          <div className="relative">
+            <pre className="p-3 bg-neutral-900 rounded-lg text-xs font-mono text-neutral-300 overflow-x-auto max-h-32">
+              {codeTab === 'css' && (selectedAnimation ? fullCSSCode : cssCode)}
+              {codeTab === 'swift' && swiftUICode}
+              {codeTab === 'kotlin' && kotlinCode}
+              {codeTab === 'ai' && aiAgentCode}
+            </pre>
+            <button
+              onClick={() => handleCopy(
+                codeTab === 'css' ? (selectedAnimation ? fullCSSCode : cssCode) :
+                codeTab === 'swift' ? swiftUICode :
+                codeTab === 'kotlin' ? kotlinCode : aiAgentCode,
+                codeTab
+              )}
+              className="absolute top-2 right-2 p-1.5 bg-neutral-800 rounded hover:bg-neutral-700 transition-colors"
+              aria-label="Copy code"
+            >
+              {copiedId === codeTab ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5 text-neutral-400" />}
+            </button>
+          </div>
+        </div>
 
         {/* Accessibility - Compact */}
         <div className="flex items-center gap-2 pt-2 border-t border-neutral-800">

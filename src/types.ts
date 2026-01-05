@@ -54,6 +54,9 @@ export type GradientTypeFilter = 'linear' | 'radial' | 'conic';
 // UI preview mode for cards
 export type UIPreviewMode = 'background' | 'button' | 'text' | 'badge';
 
+// Color format for display/export
+export type ColorFormat = 'hex' | 'rgb' | 'rgba' | 'hsl' | 'hsla';
+
 // App state - now uses gradient definition instead of ID
 export interface AppState {
   // View state
@@ -74,6 +77,7 @@ export interface AppState {
   // UI state
   isAnimating: boolean;
   previewMode: UIPreviewMode;       // How to display gradients in cards
+  colorFormat: ColorFormat;         // Color format for display/export
 }
 
 // URL state (serialized subset of AppState)
@@ -90,6 +94,8 @@ export interface URLState {
   colors?: string;
   // Gradient type filter
   t?: string;
+  // Color format (hex, rgb, rgba, hsl, hsla)
+  cf?: string;
 }
 
 // Export formats

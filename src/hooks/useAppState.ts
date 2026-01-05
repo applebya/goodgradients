@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import type { AppState, GradientCategory, GradientPreset, WizardColor, GradientTypeFilter, UIPreviewMode } from '@/types';
+import type { AppState, GradientCategory, GradientPreset, WizardColor, GradientTypeFilter, UIPreviewMode, ColorFormat } from '@/types';
 import { getInitialState, updateURL, getMinimalShareState, getShareableURL } from '@/lib/state';
 import { getFavorites, toggleFavorite as toggleFavoriteStorage, isFavorite as isFavoriteStorage } from '@/lib/favorites';
 import { encodeGradient, parseGradientCSS } from '@/lib/gradient-url';
@@ -15,6 +15,7 @@ const DEFAULT_STATE: AppState = {
   gradientType: 'linear',
   isAnimating: true,
   previewMode: 'background',
+  colorFormat: 'hex',
 };
 
 const URL_DEBOUNCE_MS = 150;
@@ -148,6 +149,10 @@ export function useAppState() {
     setState((prev) => prev.previewMode === previewMode ? prev : { ...prev, previewMode });
   }, []);
 
+  const setColorFormat = useCallback((colorFormat: ColorFormat) => {
+    setState((prev) => prev.colorFormat === colorFormat ? prev : { ...prev, colorFormat });
+  }, []);
+
   const toggleFavorite = useCallback((gradientDef: string) => {
     const { favorites: newFavorites, added } = toggleFavoriteStorage(gradientDef);
     setFavorites(newFavorites);
@@ -201,6 +206,7 @@ export function useAppState() {
       toggleTag,
       setGradientType,
       setPreviewMode,
+      setColorFormat,
       clearFilters,
       hasActiveFilters,
       toggleAnimating,

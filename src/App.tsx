@@ -91,11 +91,13 @@ export default function App() {
         tags={state.tags}
         gradientType={state.gradientType}
         previewMode={state.previewMode}
+        colorFormat={state.colorFormat}
         onColorsChange={actions.setColors}
         onToggleColor={actions.toggleColor}
         onToggleTag={actions.toggleTag}
         onGradientTypeChange={actions.setGradientType}
         onPreviewModeChange={actions.setPreviewMode}
+        onColorFormatChange={actions.setColorFormat}
         onClearFilters={actions.clearFilters}
         hasActiveFilters={actions.hasActiveFilters()}
         onRandomGradient={handleRandomGradient}
@@ -130,10 +132,12 @@ export default function App() {
           selectedAnimationId={state.selectedAnimationId}
           isAnimating={state.isAnimating}
           isFavorite={state.selectedGradient ? actions.isFavorite(state.selectedGradient) : false}
+          colorFormat={state.colorFormat}
           onGradientChange={actions.updateGradient}
           onAnimationChange={actions.selectAnimation}
           onToggleAnimating={actions.toggleAnimating}
           onToggleFavorite={() => state.selectedGradient && actions.toggleFavorite(state.selectedGradient)}
+          onColorFormatChange={actions.setColorFormat}
           onShare={handleShare}
         />
       </ErrorBoundary>

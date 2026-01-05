@@ -1,4 +1,4 @@
-import type { AppState, URLState, GradientCategory, WizardColor, GradientTypeFilter } from '@/types';
+import type { AppState, URLState, GradientCategory, WizardColor, GradientTypeFilter, ColorFormat } from '@/types';
 import { decodeGradient } from './gradient-url';
 
 const DEFAULT_STATE: AppState = {
@@ -12,11 +12,13 @@ const DEFAULT_STATE: AppState = {
   gradientType: 'linear',
   isAnimating: true,
   previewMode: 'background',
+  colorFormat: 'hex',
 };
 
 // Valid values for validation
 const VALID_COLORS: WizardColor[] = ['Purple', 'Blue', 'Green', 'Pink', 'Orange', 'Teal', 'Neutral', 'Multi'];
 const VALID_GRADIENT_TYPES: GradientTypeFilter[] = ['linear', 'radial', 'conic'];
+const VALID_COLOR_FORMATS: ColorFormat[] = ['hex', 'rgb', 'rgba', 'hsl', 'hsla'];
 
 /**
  * Parse URL search params into app state
@@ -29,6 +31,7 @@ export function parseURLState(searchParams: URLSearchParams): Partial<AppState> 
     q: searchParams.get('q') ?? undefined,
     colors: searchParams.get('colors') ?? undefined,
     t: searchParams.get('t') ?? undefined,
+    cf: searchParams.get('cf') ?? undefined,
   };
 
   const state: Partial<AppState> = {};
@@ -59,6 +62,11 @@ export function parseURLState(searchParams: URLSearchParams): Partial<AppState> 
     state.gradientType = urlState.t as GradientTypeFilter;
   }
 
+  // Parse color format
+  if (urlState.cf && VALID_COLOR_FORMATS.includes(urlState.cf as ColorFormat)) {
+    state.colorFormat = urlState.cf as ColorFormat;
+  }
+
   return state;
 }
 
@@ -74,6 +82,7 @@ export function serializeStateToURL(state: Partial<AppState>): URLSearchParams {
   if (state.searchQuery) params.set('q', state.searchQuery);
   if (state.colors && state.colors.length > 0) params.set('colors', state.colors.join(','));
   if (state.gradientType) params.set('t', state.gradientType);
+  if (state.colorFormat && state.colorFormat !== 'hex') params.set('cf', state.colorFormat);
 
   return params;
 }

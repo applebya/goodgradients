@@ -247,3 +247,34 @@ export function Tag(props: IconProps) {
     </svg>
   );
 }
+
+export function Layout(props: IconProps) {
+  return (
+    <svg {...iconProps} {...props}>
+      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+      <line x1="3" x2="21" y1="9" y2="9" />
+      <line x1="9" x2="9" y1="21" y2="9" />
+    </svg>
+  );
+}
+
+export function Blend(props: IconProps) {
+  return (
+    <svg {...iconProps} {...props}>
+      <circle cx="9" cy="9" r="7" />
+      <circle cx="15" cy="15" r="7" />
+    </svg>
+  );
+}
+
+export function Palette(props: IconProps) {
+  return (
+    <svg {...iconProps} {...props}>
+      <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+      <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+      <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+      <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+      <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z" />
+    </svg>
+  );
+}
