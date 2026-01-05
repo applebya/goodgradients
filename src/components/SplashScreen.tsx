@@ -6,24 +6,48 @@ interface SplashScreenProps {
   minDuration?: number;
 }
 
-// Curated gradient names for maximum visual impact
+// Curated gradient names - diverse colors for maximum blend impact
 const splashGradientNames = [
-  'Velvet Dream',
-  'Ocean Depth',
+  // Warm spectrum
   'Sunset Fire',
-  'Cyberpunk',
-  'Northern Lights',
-  'Vaporwave',
+  'Hot Pink',
+  'Fuchsia',
+  'Tangerine',
+  // Cool spectrum
+  'Ocean Depth',
+  'Electric Blue',
+  'Deep Teal',
+  'Aqua Teal',
+  // Purple/violet spectrum
+  'Velvet Dream',
+  'Cosmic Purple',
+  'Violet Storm',
+  // Accent colors
+  'Emerald',
+  'Lime Zest',
+  'Coral Sunset',
 ];
 
-// Panel configurations for dramatic layering
+// 14 panels with aggressive positioning for full coverage
 const panelConfigs = [
-  { gradient: 0, rotate: -15, x: -20, y: -30, scale: 1.8, opacity: 0.9 },
-  { gradient: 1, rotate: 25, x: 40, y: -20, scale: 1.6, opacity: 0.85 },
-  { gradient: 2, rotate: -8, x: -30, y: 40, scale: 1.7, opacity: 0.8 },
-  { gradient: 3, rotate: 18, x: 30, y: 20, scale: 1.5, opacity: 0.85 },
-  { gradient: 4, rotate: -22, x: 10, y: -40, scale: 1.9, opacity: 0.75 },
-  { gradient: 5, rotate: 12, x: -15, y: 35, scale: 1.6, opacity: 0.8 },
+  // Corner anchors - large and bold
+  { gradient: 0, rotate: -25, x: -40, y: -50, scale: 2.2 },
+  { gradient: 1, rotate: 30, x: 50, y: -45, scale: 2.0 },
+  { gradient: 2, rotate: -20, x: -45, y: 55, scale: 2.1 },
+  { gradient: 3, rotate: 25, x: 55, y: 50, scale: 2.0 },
+  // Mid-layer fills
+  { gradient: 4, rotate: 15, x: 0, y: -35, scale: 1.9 },
+  { gradient: 5, rotate: -12, x: -30, y: 0, scale: 1.8 },
+  { gradient: 6, rotate: 18, x: 35, y: 0, scale: 1.8 },
+  { gradient: 7, rotate: -8, x: 0, y: 40, scale: 1.9 },
+  // Inner intense layer
+  { gradient: 8, rotate: -35, x: -15, y: -20, scale: 1.7 },
+  { gradient: 9, rotate: 40, x: 20, y: -15, scale: 1.6 },
+  { gradient: 10, rotate: -30, x: -20, y: 25, scale: 1.7 },
+  { gradient: 11, rotate: 35, x: 15, y: 20, scale: 1.6 },
+  // Center pop
+  { gradient: 12, rotate: 5, x: 0, y: 0, scale: 1.5 },
+  { gradient: 13, rotate: -5, x: 5, y: -5, scale: 1.4 },
 ];
 
 export function SplashScreen({ onComplete, minDuration = 1500 }: SplashScreenProps) {
@@ -66,13 +90,23 @@ export function SplashScreen({ onComplete, minDuration = 1500 }: SplashScreenPro
     }
   }, [isReady, onComplete]);
 
+  // Create animated gradient for text
+  const textGradient = `linear-gradient(
+    135deg,
+    #f472b6 0%,
+    #c084fc 25%,
+    #60a5fa 50%,
+    #34d399 75%,
+    #fbbf24 100%
+  )`;
+
   return (
     <div
-      className={`fixed inset-0 z-50 overflow-hidden bg-neutral-950 transition-opacity duration-500 ${
+      className={`fixed inset-0 z-50 overflow-hidden bg-black transition-opacity duration-500 ${
         isFadingOut ? 'opacity-0' : 'opacity-100'
       }`}
     >
-      {/* Gradient panels */}
+      {/* Gradient panels with screen blend for color mixing */}
       {panelConfigs.map((config, index) => (
         <div
           key={index}
@@ -81,38 +115,72 @@ export function SplashScreen({ onComplete, minDuration = 1500 }: SplashScreenPro
           }`}
           style={{
             background: splashGradients[config.gradient],
-            opacity: isSettling ? config.opacity * 0.6 : config.opacity,
+            mixBlendMode: 'screen',
+            opacity: isSettling ? 0.7 : 0.9,
             transform: isSettling
-              ? `rotate(${config.rotate * 0.3}deg) translate(${config.x * 0.3}%, ${config.y * 0.3}%) scale(${1 + (config.scale - 1) * 0.5})`
+              ? `rotate(${config.rotate * 0.2}deg) translate(${config.x * 0.2}%, ${config.y * 0.2}%) scale(${1 + (config.scale - 1) * 0.3})`
               : `rotate(${config.rotate}deg) translate(${config.x}%, ${config.y}%) scale(${config.scale})`,
             transformOrigin: 'center center',
-            animation: isSettling ? 'none' : `splash-drift-${index % 3} ${3 + index * 0.5}s ease-in-out infinite`,
+            animation: isSettling ? 'none' : `splash-drift-${index % 3} ${2.5 + index * 0.3}s ease-in-out infinite`,
           }}
         />
       ))}
 
-      {/* Overlay for better text contrast */}
-      <div className="absolute inset-0 bg-black/30" />
+      {/* Glow overlay for bloom effect */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.15) 0%, transparent 60%)',
+          mixBlendMode: 'overlay',
+        }}
+      />
 
       {/* Center content */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
+        {/* Glow behind text */}
+        <div
+          className="absolute w-[600px] h-[200px] blur-3xl opacity-60"
+          style={{
+            background: 'radial-gradient(ellipse, rgba(255,255,255,0.4) 0%, transparent 70%)',
+          }}
+        />
+
+        {/* Gradient text */}
         <h1
-          className={`text-5xl sm:text-7xl font-bold text-white tracking-tight drop-shadow-2xl ${
+          className={`relative text-6xl sm:text-8xl lg:text-9xl font-black tracking-tighter ${
             isSettling ? 'splash-text-settle' : 'splash-text-pulse'
           }`}
           style={{
-            textShadow: '0 4px 30px rgba(0,0,0,0.5), 0 0 60px rgba(255,255,255,0.1)',
+            background: textGradient,
+            backgroundSize: '200% 200%',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            color: 'transparent',
+            WebkitTextStroke: '1px rgba(255,255,255,0.1)',
+            filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.3)) drop-shadow(0 0 60px rgba(168,85,247,0.4))',
+            animation: isSettling ? 'none' : 'gradient-shift 4s ease infinite',
           }}
         >
           Good Gradients
         </h1>
+
+        {/* Loading indicator */}
         <div
-          className={`mt-6 flex items-center gap-2 text-white/70 text-sm transition-opacity duration-1000 ${
-            isSettling ? 'opacity-60' : 'opacity-100'
+          className={`mt-8 flex items-center gap-3 transition-opacity duration-1000 ${
+            isSettling ? 'opacity-40' : 'opacity-80'
           }`}
         >
-          <div className="w-1.5 h-1.5 rounded-full bg-white/70 animate-pulse" />
-          <span>Loading</span>
+          <div className="flex gap-1">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className="w-2 h-2 rounded-full bg-white"
+                style={{
+                  animation: `splash-dot 1s ease-in-out ${i * 0.15}s infinite`,
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
