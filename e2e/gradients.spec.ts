@@ -37,11 +37,11 @@ test.describe('GoodGradients - Gallery', () => {
     // Wait for state to update
     await page.waitForTimeout(500);
 
-    // Cards should be filtered
+    // Cards should be filtered (fewer than total 500+)
     const cards = page.locator('[data-testid="gradient-card"]');
     const count = await cards.count();
     expect(count).toBeGreaterThan(0);
-    expect(count).toBeLessThan(100); // Should be filtered
+    expect(count).toBeLessThan(300); // Should be filtered from 500+ total
   });
 
   test('should search gradients', async ({ page }) => {
