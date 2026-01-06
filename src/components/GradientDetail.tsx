@@ -188,7 +188,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
   // Fullscreen preview
   if (isFullscreen) {
     return (
-      <div className="fixed inset-0 z-[100]" onClick={() => setIsFullscreen(false)}>
+      <div className="fixed inset-0 z-[100] animate-fullscreen-fade-in" onClick={() => setIsFullscreen(false)}>
         {/* Inject animation keyframes */}
         {selectedAnimation && (
           <style dangerouslySetInnerHTML={{ __html: selectedAnimation.keyframes }} />

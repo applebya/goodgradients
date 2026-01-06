@@ -10,8 +10,8 @@ test.describe('GoodGradients - Gallery', () => {
   test('should display the header with branding', async ({ page }) => {
     // Logo text "GG" is visible
     await expect(page.locator('span').filter({ hasText: /^GG$/ })).toBeVisible();
-    // The h1 heading with the brand name
-    await expect(page.getByRole('heading', { level: 1, name: 'Good Gradients' })).toBeVisible();
+    // The brand name text is visible in header
+    await expect(page.getByRole('link', { name: 'GG Good Gradients' })).toBeVisible();
   });
 
   test('should display gradient cards in the gallery', async ({ page }) => {

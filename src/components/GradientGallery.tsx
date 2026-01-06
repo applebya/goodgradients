@@ -67,10 +67,10 @@ export function GradientGallery({
       result = filterGradientsByColors(result, colors);
     }
 
-    // Apply tags filter (gradient must have ALL selected tags)
+    // Apply tags filter (gradient must have ANY selected tag - OR logic)
     if (tags.length > 0) {
       result = result.filter((g) =>
-        tags.every((tag) => g.tags.includes(tag))
+        tags.some((tag) => g.tags.includes(tag))
       );
     }
 

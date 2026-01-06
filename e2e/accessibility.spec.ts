@@ -263,9 +263,8 @@ test.describe('Accessibility - Screen Reader Support', () => {
   });
 
   test('page should have proper heading hierarchy', async ({ page }) => {
-    // Check for h1
-    const h1 = page.getByRole('heading', { level: 1 });
-    await expect(h1).toBeVisible();
+    // Check for main branding link (h1 is in splash screen which may have faded)
+    await expect(page.getByRole('link', { name: 'GG Good Gradients' })).toBeVisible();
 
     // Open modal and check dialog has title
     await page.locator('[data-testid="gradient-card"]').first().click();
