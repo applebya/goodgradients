@@ -66,7 +66,7 @@ export function FilterBar({
               aria-label="Filter by colors"
             >
               {colors.length === 0 ? (
-                <span className="text-neutral-400">All Colors</span>
+                <span className="text-neutral-400">Any Colors</span>
               ) : colors.length <= 2 ? (
                 <span>{colors.join(', ')}</span>
               ) : (
