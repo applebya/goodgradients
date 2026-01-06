@@ -22,6 +22,11 @@ const splashGradientNames = [
 
 // Check if we should skip splash (cached/returning user)
 function shouldSkipSplash(): boolean {
+  // Always show splash on localhost for development
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return false;
+  }
+
   const CACHE_KEY = 'goodgradients_splash_seen';
   const CACHE_DURATION = 1000 * 60 * 30; // 30 minutes
 
@@ -138,7 +143,7 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
               filter: 'blur(80px)',
               transform: isEntrance ? 'scale(0.6)' : 'scale(1)',
               transition: 'opacity 800ms ease-out, transform 1000ms ease-out',
-              animation: !isEntrance ? `${animations[i % 3]} ${12 + i * 2}s ease-in-out infinite, splash-gradient ${8 + i}s ease-in-out infinite` : 'none',
+              animation: !isEntrance ? `${animations[i % 3]} ${8 + i}s ease-in-out infinite, splash-gradient ${4 + i * 0.5}s ease-in-out infinite` : 'none',
             }}
           />
         );
@@ -166,7 +171,7 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
               filter: 'blur(50px)',
               transform: isEntrance ? 'scale(0.5)' : 'scale(1)',
               transition: 'opacity 600ms ease-out 100ms, transform 800ms ease-out 100ms',
-              animation: !isEntrance ? `${animations[(i + 2) % 5]} ${10 + i * 1.5}s ease-in-out infinite, splash-gradient ${6 + i}s ease-in-out infinite reverse` : 'none',
+              animation: !isEntrance ? `${animations[(i + 2) % 5]} ${6 + i}s ease-in-out infinite, splash-gradient ${3 + i * 0.5}s ease-in-out infinite reverse` : 'none',
             }}
           />
         );
@@ -194,7 +199,7 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
               filter: 'blur(35px)',
               transform: isEntrance ? 'scale(0.4)' : 'scale(1)',
               transition: 'opacity 500ms ease-out 200ms, transform 700ms ease-out 200ms',
-              animation: !isEntrance ? `${animations[(i + 4) % 5]} ${7 + i}s ease-in-out infinite, splash-gradient ${5 + i}s ease-in-out infinite` : 'none',
+              animation: !isEntrance ? `${animations[(i + 4) % 5]} ${5 + i * 0.5}s ease-in-out infinite, splash-gradient ${2.5 + i * 0.3}s ease-in-out infinite` : 'none',
             }}
           />
         );

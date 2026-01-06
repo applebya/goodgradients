@@ -75,25 +75,25 @@ export function FilterBar({
               <ChevronDown className="h-3 w-3 text-neutral-500" />
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-56 p-2" align="start">
+          <PopoverContent className="p-2" align="start">
             <div className="space-y-1">
               {COLOR_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
                   onClick={() => onToggleColor(opt.value)}
                   className={cn(
-                    'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm',
+                    'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm whitespace-nowrap',
                     'hover:bg-neutral-800 transition-colors',
                     colors.includes(opt.value) && 'bg-neutral-800'
                   )}
                 >
                   <div
-                    className="w-4 h-4 rounded border border-white/20"
+                    className="w-4 h-4 rounded border border-white/20 shrink-0"
                     style={{ background: opt.previewGradient }}
                   />
-                  <span className="flex-1 text-left">{opt.label}</span>
+                  <span className="text-left">{opt.label}</span>
                   {colors.includes(opt.value) && (
-                    <Check className="h-4 w-4 text-white" />
+                    <Check className="h-4 w-4 text-white shrink-0" />
                   )}
                 </button>
               ))}
@@ -123,21 +123,21 @@ export function FilterBar({
               <ChevronDown className="h-3 w-3 text-neutral-500" />
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-56 p-2 max-h-64 overflow-y-auto" align="start">
+          <PopoverContent className="p-2 max-h-64 overflow-y-auto" align="start">
             <div className="space-y-1">
               {allTags.map((tag) => (
                 <button
                   key={tag}
                   onClick={() => onToggleTag(tag)}
                   className={cn(
-                    'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm',
+                    'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm whitespace-nowrap',
                     'hover:bg-neutral-800 transition-colors',
                     tags.includes(tag) && 'bg-neutral-800'
                   )}
                 >
-                  <span className="flex-1 text-left capitalize">{tag}</span>
+                  <span className="text-left capitalize">{tag}</span>
                   {tags.includes(tag) && (
-                    <Check className="h-4 w-4 text-white" />
+                    <Check className="h-4 w-4 text-white shrink-0" />
                   )}
                 </button>
               ))}
@@ -173,21 +173,21 @@ export function FilterBar({
               <ChevronDown className="h-3 w-3 text-neutral-500" />
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-44 p-2" align="end">
+          <PopoverContent className="p-2" align="end">
             <div className="space-y-1">
               {PREVIEW_MODES.map((opt) => (
                 <button
                   key={opt.value}
                   onClick={() => onPreviewModeChange(opt.value)}
                   className={cn(
-                    'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm',
+                    'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm whitespace-nowrap',
                     'hover:bg-neutral-800 transition-colors',
                     previewMode === opt.value && 'bg-neutral-800'
                   )}
                 >
-                  <span className="flex-1 text-left">{opt.label}</span>
+                  <span className="text-left">{opt.label}</span>
                   {previewMode === opt.value && (
-                    <Check className="h-4 w-4 text-white" />
+                    <Check className="h-4 w-4 text-white shrink-0" />
                   )}
                 </button>
               ))}
@@ -207,21 +207,21 @@ export function FilterBar({
               <ChevronDown className="h-3 w-3 text-neutral-500" />
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-36 p-2" align="end">
+          <PopoverContent className="p-2" align="end">
             <div className="space-y-1">
               {GRADIENT_TYPES.map((opt) => (
                 <button
                   key={opt.value}
                   onClick={() => onGradientTypeChange(opt.value)}
                   className={cn(
-                    'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm',
+                    'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm whitespace-nowrap',
                     'hover:bg-neutral-800 transition-colors',
                     gradientType === opt.value && 'bg-neutral-800'
                   )}
                 >
-                  <span className="flex-1 text-left">{opt.label}</span>
+                  <span className="text-left">{opt.label}</span>
                   {gradientType === opt.value && (
-                    <Check className="h-4 w-4 text-white" />
+                    <Check className="h-4 w-4 text-white shrink-0" />
                   )}
                 </button>
               ))}
@@ -241,21 +241,21 @@ export function FilterBar({
               <ChevronDown className="h-3 w-3 text-neutral-500" />
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-32 p-2" align="end">
+          <PopoverContent className="p-2" align="end">
             <div className="space-y-1">
               {COLOR_FORMAT_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
                   onClick={() => onColorFormatChange(opt.value)}
                   className={cn(
-                    'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm',
+                    'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm whitespace-nowrap',
                     'hover:bg-neutral-800 transition-colors',
                     colorFormat === opt.value && 'bg-neutral-800'
                   )}
                 >
-                  <span className="flex-1 text-left">{opt.label}</span>
+                  <span className="text-left">{opt.label}</span>
                   {colorFormat === opt.value && (
-                    <Check className="h-4 w-4 text-white" />
+                    <Check className="h-4 w-4 text-white shrink-0" />
                   )}
                 </button>
               ))}
