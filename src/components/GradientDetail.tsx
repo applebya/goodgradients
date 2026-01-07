@@ -263,7 +263,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl p-4 gap-3" hideCloseButton>
+      <DialogContent className="max-w-2xl p-3 sm:p-4 gap-2 sm:gap-3" hideCloseButton>
         {/* Header */}
         <DialogHeader className="pb-2">
           <div className="flex items-center justify-between">
@@ -339,9 +339,9 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
         </div>
 
         {/* Recommended Text Color - Prominent */}
-        <div className="flex items-center gap-3 p-3 bg-neutral-800/60 rounded-lg border border-neutral-700">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 p-3 bg-neutral-800/60 rounded-lg border border-neutral-700">
           <span className="text-sm text-neutral-300 font-medium whitespace-nowrap">Best text color:</span>
-          <div className="flex gap-2 flex-1">
+          <div className="flex flex-wrap gap-2 flex-1">
             {bestTextColors.map((tc, i) => (
               <button
                 key={i}
@@ -361,7 +361,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                   </span>
                 </div>
                 <div
-                  className="w-3 h-3 rounded-full border border-white/30"
+                  className="w-3 h-3 rounded-full border border-white/30 hidden sm:block"
                   style={{ background: tc.color }}
                 />
                 <span className="text-sm font-mono font-medium text-neutral-200">{tc.color}</span>
@@ -382,7 +382,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
         </div>
 
         {/* Use Cases - Most Prominent */}
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {/* Background */}
           <div
             className="rounded-lg p-3 flex flex-col items-center justify-center min-h-[70px] cursor-pointer hover:scale-[1.02] transition-transform"
@@ -456,7 +456,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
         </button>
         {showSettings && (
           <div className="space-y-3 pb-2">
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
               <Button
                 variant={gradientDef.type === 'linear' ? 'default' : 'outline'}
                 onClick={() => handleTypeChange('linear')}
@@ -529,7 +529,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
         {showAnimation && (
           <div className="space-y-3 pb-2">
             {/* Animation options with B&W preview for clarity */}
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {animations.map((anim) => {
                 const isSelected = anim.id === 'none'
                   ? !selectedAnimationId
@@ -609,13 +609,13 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
             </Popover>
           </div>
           {/* Tab Buttons */}
-          <div className="flex gap-1 mb-2">
+          <div className="flex gap-1 mb-2 overflow-x-auto pb-1 -mx-1 px-1">
             {(['css', 'swift', 'kotlin', 'ai'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setCodeTab(tab)}
                 className={cn(
-                  'px-3 py-1.5 text-xs rounded transition-colors',
+                  'px-2.5 sm:px-3 py-1.5 text-xs rounded transition-colors whitespace-nowrap flex-shrink-0',
                   codeTab === tab
                     ? 'bg-neutral-700 text-white'
                     : 'bg-neutral-800/50 text-neutral-400 hover:text-white hover:bg-neutral-800'
@@ -649,7 +649,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
         </div>
 
         {/* Accessibility - Compact */}
-        <div className="flex items-center gap-2 pt-2 border-t border-neutral-800">
+        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-neutral-800">
           <span className="text-xs text-neutral-400">Accessibility:</span>
           {contrastInfo.slice(0, 2).map((info) => (
             <div

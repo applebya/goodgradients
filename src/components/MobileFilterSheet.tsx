@@ -13,6 +13,18 @@ import { COLOR_OPTIONS } from '@/lib/wizard';
 import { allTags } from '@/data/gradients';
 import type { WizardColor, GradientTypeFilter } from '@/types';
 
+// Priority tags for mobile - most useful/common ones
+const MOBILE_PRIORITY_TAGS = [
+  'elegant', 'modern', 'bold', 'soft', 'vibrant',
+  'professional', 'nature', 'tech', 'calm', 'dark',
+  'warm', 'cool', 'minimal', 'luxury', 'creative',
+];
+
+const getMobileFilteredTags = (): string[] => {
+  // Show priority tags that exist in the actual tag list
+  return MOBILE_PRIORITY_TAGS.filter(t => allTags.includes(t));
+};
+
 interface MobileFilterSheetProps {
   colors: WizardColor[];
   tags: string[];
@@ -132,10 +144,25 @@ export function MobileFilterSheet({
             </div>
           </FilterSection>
 
-          {/* Tags */}
-          <FilterSection title="Tags (select multiple)">
+          {/* Gradient Type - Moved up for mobile */}
+          <FilterSection title="Type">
             <div className="flex flex-wrap gap-2">
-              {allTags.map((tag) => (
+              {GRADIENT_TYPES.map((opt) => (
+                <OptionPill
+                  key={opt.value}
+                  selected={gradientType === opt.value}
+                  onClick={() => onGradientTypeChange(opt.value)}
+                >
+                  {opt.label}
+                </OptionPill>
+              ))}
+            </div>
+          </FilterSection>
+
+          {/* Tags - Moved to last, with reduced set for mobile */}
+          <FilterSection title="Style">
+            <div className="flex flex-wrap gap-2">
+              {getMobileFilteredTags().map((tag) => (
                 <button
                   key={tag}
                   onClick={() => onToggleTag(tag)}
@@ -153,21 +180,6 @@ export function MobileFilterSheet({
                     <Check className="w-3 h-3" />
                   )}
                 </button>
-              ))}
-            </div>
-          </FilterSection>
-
-          {/* Gradient Type */}
-          <FilterSection title="Type">
-            <div className="flex flex-wrap gap-2">
-              {GRADIENT_TYPES.map((opt) => (
-                <OptionPill
-                  key={opt.value}
-                  selected={gradientType === opt.value}
-                  onClick={() => onGradientTypeChange(opt.value)}
-                >
-                  {opt.label}
-                </OptionPill>
               ))}
             </div>
           </FilterSection>
