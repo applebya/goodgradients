@@ -1,6 +1,7 @@
 import { X, ChevronDown, Check, Tag, Layout, Blend, Palette } from './icons';
 import { Button } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { AnimationPicker } from './AnimationPicker';
 import { cn } from '@/lib/utils';
 import { COLOR_OPTIONS } from '@/lib/wizard';
 import { COLOR_FORMAT_OPTIONS } from '@/lib/color-format';
@@ -13,12 +14,14 @@ interface FilterBarProps {
   gradientType: GradientTypeFilter;
   previewMode: UIPreviewMode;
   colorFormat: ColorFormat;
+  selectedAnimationId: string | null;
   onColorsChange: (colors: WizardColor[]) => void;
   onToggleColor: (color: WizardColor) => void;
   onToggleTag: (tag: string) => void;
   onGradientTypeChange: (type: GradientTypeFilter) => void;
   onPreviewModeChange: (mode: UIPreviewMode) => void;
   onColorFormatChange: (format: ColorFormat) => void;
+  onAnimationChange: (id: string | null) => void;
   onClearFilters: () => void;
   hasActiveFilters: boolean;
 }
@@ -34,6 +37,7 @@ const PREVIEW_MODES: { value: UIPreviewMode; label: string }[] = [
   { value: 'button', label: 'Button UI' },
   { value: 'text', label: 'Text UI' },
   { value: 'badge', label: 'Badge UI' },
+  { value: 'border', label: 'Border UI' },
 ];
 
 export function FilterBar({
@@ -42,11 +46,13 @@ export function FilterBar({
   gradientType,
   previewMode,
   colorFormat,
+  selectedAnimationId,
   onToggleColor,
   onToggleTag,
   onGradientTypeChange,
   onPreviewModeChange,
   onColorFormatChange,
+  onAnimationChange,
   onClearFilters,
   hasActiveFilters,
 }: FilterBarProps) {
@@ -262,6 +268,12 @@ export function FilterBar({
             </div>
           </PopoverContent>
         </Popover>
+
+        {/* Animation Picker */}
+        <AnimationPicker
+          selectedAnimationId={selectedAnimationId}
+          onAnimationChange={onAnimationChange}
+        />
       </div>
     </div>
   );

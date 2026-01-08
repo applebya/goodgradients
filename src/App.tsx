@@ -92,12 +92,14 @@ export default function App() {
         gradientType={state.gradientType}
         previewMode={state.previewMode}
         colorFormat={state.colorFormat}
+        selectedAnimationId={state.selectedAnimationId}
         onColorsChange={actions.setColors}
         onToggleColor={actions.toggleColor}
         onToggleTag={actions.toggleTag}
         onGradientTypeChange={actions.setGradientType}
         onPreviewModeChange={actions.setPreviewMode}
         onColorFormatChange={actions.setColorFormat}
+        onAnimationChange={actions.selectAnimation}
         onClearFilters={actions.clearFilters}
         hasActiveFilters={actions.hasActiveFilters()}
         onRandomGradient={handleRandomGradient}
@@ -113,6 +115,7 @@ export default function App() {
             gradientType={state.gradientType}
             previewMode={state.previewMode}
             colorFormat={state.colorFormat}
+            selectedAnimationId={state.selectedAnimationId}
             favorites={favorites}
             onSelectGradient={handleSelectGradient}
             onToggleFavorite={actions.toggleFavorite}

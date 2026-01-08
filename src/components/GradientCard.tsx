@@ -1,10 +1,11 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { Heart } from './icons';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
 import { transformGradient } from '@/lib/gradient';
 import { convertColor } from '@/lib/color-format';
+import { getAnimationById } from '@/data/animations';
 import type { GradientPreset, UIPreviewMode, GradientTypeFilter, ColorFormat } from '@/types';
 
 interface GradientCardProps {
@@ -12,6 +13,7 @@ interface GradientCardProps {
   gradientType: GradientTypeFilter;
   previewMode: UIPreviewMode;
   colorFormat: ColorFormat;
+  selectedAnimationId: string | null;
   isFavorite: boolean;
   onToggleFavorite: () => void;
   onSelect: (gradient: GradientPreset) => void;
@@ -22,12 +24,31 @@ export const GradientCard = memo(function GradientCard({
   gradientType,
   previewMode,
   colorFormat,
+  selectedAnimationId,
   isFavorite,
   onToggleFavorite,
   onSelect,
 }: GradientCardProps) {
   // Transform gradient to the selected type (linear/radial/conic)
   const displayGradient = transformGradient(gradient.gradient, gradientType, 135);
+
+  // Get animation and parse its styles
+  const selectedAnimation = selectedAnimationId ? getAnimationById(selectedAnimationId) : undefined;
+
+  const animationStyle = useMemo((): React.CSSProperties => {
+    if (!selectedAnimation || !selectedAnimation.property) {
+      return {};
+    }
+    const animMatch = selectedAnimation.property.match(/animation:\s*([^;]+);?/);
+    const animValue = animMatch ? animMatch[1] : undefined;
+    const bgSizeMatch = selectedAnimation.property.match(/background-size:\s*([^;]+);?/);
+    const bgSize = bgSizeMatch ? bgSizeMatch[1] : undefined;
+
+    return {
+      ...(bgSize ? { backgroundSize: bgSize } : {}),
+      ...(animValue ? { animation: animValue } : {}),
+    };
+  }, [selectedAnimation]);
 
   const handleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -55,7 +76,7 @@ export const GradientCard = memo(function GradientCard({
           <div className="flex items-center justify-center h-full">
             <div
               className="px-6 py-2.5 rounded-lg text-white font-medium text-sm shadow-lg"
-              style={{ background: displayGradient }}
+              style={{ background: displayGradient, ...animationStyle }}
             >
               Click me
             </div>
@@ -71,6 +92,7 @@ export const GradientCard = memo(function GradientCard({
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
+                ...animationStyle,
               }}
             >
               Gradient
@@ -82,16 +104,29 @@ export const GradientCard = memo(function GradientCard({
           <div className="flex items-center justify-center h-full gap-2">
             <span
               className="px-3 py-1 rounded-full text-white text-xs font-medium"
-              style={{ background: displayGradient }}
+              style={{ background: displayGradient, ...animationStyle }}
             >
               New
             </span>
             <span
               className="px-3 py-1 rounded-full text-white text-xs font-medium"
-              style={{ background: displayGradient }}
+              style={{ background: displayGradient, ...animationStyle }}
             >
               Featured
             </span>
+          </div>
+        );
+      case 'border':
+        return (
+          <div className="flex items-center justify-center h-full">
+            <div
+              className="relative rounded-xl p-[3px]"
+              style={{ background: displayGradient, ...animationStyle }}
+            >
+              <div className="bg-neutral-900 rounded-[9px] px-6 py-3">
+                <span className="text-white text-sm font-medium">Card</span>
+              </div>
+            </div>
           </div>
         );
       case 'background':
@@ -112,10 +147,18 @@ export const GradientCard = memo(function GradientCard({
       onClick={() => onSelect(gradient)}
       onKeyDown={handleKeyDown}
     >
+      {/* Inject animation keyframes - sourced from internal animations.ts, safe */}
+      {selectedAnimation?.keyframes && (
+        <style dangerouslySetInnerHTML={{ __html: selectedAnimation.keyframes }} />
+      )}
+
       {/* Gradient Preview */}
       <div
         className="relative aspect-video"
-        style={{ background: previewMode === 'background' ? displayGradient : '#171717' }}
+        style={{
+          background: previewMode === 'background' ? displayGradient : '#171717',
+          ...(previewMode === 'background' ? animationStyle : {}),
+        }}
       >
         {renderPreviewContent()}
         {/* Favorite button - visible on hover/focus or when favorited */}

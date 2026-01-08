@@ -18,12 +18,14 @@ interface HeaderProps {
   gradientType: GradientTypeFilter;
   previewMode: UIPreviewMode;
   colorFormat: ColorFormat;
+  selectedAnimationId: string | null;
   onColorsChange: (colors: WizardColor[]) => void;
   onToggleColor: (color: WizardColor) => void;
   onToggleTag: (tag: string) => void;
   onGradientTypeChange: (type: GradientTypeFilter) => void;
   onPreviewModeChange: (mode: UIPreviewMode) => void;
   onColorFormatChange: (format: ColorFormat) => void;
+  onAnimationChange: (id: string | null) => void;
   onClearFilters: () => void;
   hasActiveFilters: boolean;
 
@@ -40,12 +42,14 @@ export function Header({
   gradientType,
   previewMode,
   colorFormat,
+  selectedAnimationId,
   onColorsChange,
   onToggleColor,
   onToggleTag,
   onGradientTypeChange,
   onPreviewModeChange,
   onColorFormatChange,
+  onAnimationChange,
   onClearFilters,
   hasActiveFilters,
   onRandomGradient,
@@ -124,12 +128,14 @@ export function Header({
               gradientType={gradientType}
               previewMode={previewMode}
               colorFormat={colorFormat}
+              selectedAnimationId={selectedAnimationId}
               onColorsChange={onColorsChange}
               onToggleColor={onToggleColor}
               onToggleTag={onToggleTag}
               onGradientTypeChange={onGradientTypeChange}
               onPreviewModeChange={onPreviewModeChange}
               onColorFormatChange={onColorFormatChange}
+              onAnimationChange={onAnimationChange}
               onClearFilters={onClearFilters}
               hasActiveFilters={hasActiveFilters}
             />

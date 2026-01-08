@@ -52,7 +52,7 @@ export type AnimationCategory = 'Movement' | 'Rotation' | 'Pulse' | 'Morph' | 'W
 export type GradientTypeFilter = 'linear' | 'radial' | 'conic';
 
 // UI preview mode for cards
-export type UIPreviewMode = 'background' | 'button' | 'text' | 'badge';
+export type UIPreviewMode = 'background' | 'button' | 'text' | 'badge' | 'border';
 
 // Color format for display/export
 export type ColorFormat = 'hex' | 'rgb' | 'rgba' | 'hsl' | 'hsla';

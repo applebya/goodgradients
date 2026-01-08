@@ -30,7 +30,7 @@ export function Footer() {
               rel="noopener noreferrer"
               className="text-neutral-400 hover:text-white transition-colors"
             >
-              Appleby Consulting
+              Appleby Web Services
             </a>
           </p>
         </div>

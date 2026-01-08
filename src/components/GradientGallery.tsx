@@ -13,6 +13,7 @@ interface GradientGalleryProps {
   gradientType: GradientTypeFilter;
   previewMode: UIPreviewMode;
   colorFormat: ColorFormat;
+  selectedAnimationId: string | null;
   favorites: string[]; // Encoded gradient definitions
   onSelectGradient: (gradient: GradientPreset) => void;
   onToggleFavorite: (encodedGradient: string) => void;
@@ -35,6 +36,7 @@ export function GradientGallery({
   gradientType,
   previewMode,
   colorFormat,
+  selectedAnimationId,
   favorites,
   onSelectGradient,
   onToggleFavorite,
@@ -112,6 +114,7 @@ export function GradientGallery({
             gradientType={gradientType}
             previewMode={previewMode}
             colorFormat={colorFormat}
+            selectedAnimationId={selectedAnimationId}
             isFavorite={encoded ? isFavorite(encoded) : false}
             onToggleFavorite={() => encoded && onToggleFavorite(encoded)}
             onSelect={onSelectGradient}
