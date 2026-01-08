@@ -3,7 +3,7 @@ import { GradientCard } from './GradientCard';
 import { gradients } from '@/data/gradients';
 import { encodeGradient, parseGradientCSS } from '@/lib/gradient-url';
 import { filterGradientsByColors } from '@/lib/wizard';
-import type { GradientPreset, GradientCategory, WizardColor, GradientTypeFilter, UIPreviewMode } from '@/types';
+import type { GradientPreset, GradientCategory, WizardColor, GradientTypeFilter, UIPreviewMode, ColorFormat } from '@/types';
 
 interface GradientGalleryProps {
   category: GradientCategory | 'All' | 'Favorites';
@@ -12,6 +12,7 @@ interface GradientGalleryProps {
   tags: string[];
   gradientType: GradientTypeFilter;
   previewMode: UIPreviewMode;
+  colorFormat: ColorFormat;
   favorites: string[]; // Encoded gradient definitions
   onSelectGradient: (gradient: GradientPreset) => void;
   onToggleFavorite: (encodedGradient: string) => void;
@@ -26,16 +27,6 @@ function getEncodedGradient(preset: GradientPreset): string | null {
   return def ? encodeGradient(def) : null;
 }
 
-/**
- * Detect gradient type from CSS string
- */
-function getGradientType(css: string): GradientTypeFilter | null {
-  if (css.includes('linear-gradient')) return 'linear';
-  if (css.includes('radial-gradient')) return 'radial';
-  if (css.includes('conic-gradient')) return 'conic';
-  return null;
-}
-
 export function GradientGallery({
   category,
   searchQuery,
@@ -43,6 +34,7 @@ export function GradientGallery({
   tags,
   gradientType,
   previewMode,
+  colorFormat,
   favorites,
   onSelectGradient,
   onToggleFavorite,
@@ -74,8 +66,7 @@ export function GradientGallery({
       );
     }
 
-    // Apply gradient type filter (always applied, defaults to 'linear')
-    result = result.filter((g) => getGradientType(g.gradient) === gradientType);
+    // Note: gradientType is used to transform previews, not filter
 
     // Apply search filter
     if (searchQuery.trim()) {
@@ -90,7 +81,7 @@ export function GradientGallery({
     }
 
     return result;
-  }, [category, searchQuery, colors, tags, gradientType, favorites]);
+  }, [category, searchQuery, colors, tags, favorites]);
 
   if (filteredGradients.length === 0) {
     return (
@@ -118,7 +109,9 @@ export function GradientGallery({
           <GradientCard
             key={gradient.id}
             gradient={gradient}
+            gradientType={gradientType}
             previewMode={previewMode}
+            colorFormat={colorFormat}
             isFavorite={encoded ? isFavorite(encoded) : false}
             onToggleFavorite={() => encoded && onToggleFavorite(encoded)}
             onSelect={onSelectGradient}

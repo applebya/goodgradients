@@ -112,6 +112,7 @@ export default function App() {
             tags={state.tags}
             gradientType={state.gradientType}
             previewMode={state.previewMode}
+            colorFormat={state.colorFormat}
             favorites={favorites}
             onSelectGradient={handleSelectGradient}
             onToggleFavorite={actions.toggleFavorite}

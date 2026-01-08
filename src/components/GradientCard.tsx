@@ -1,13 +1,17 @@
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { Heart } from './icons';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
-import type { GradientPreset, UIPreviewMode } from '@/types';
+import { transformGradient } from '@/lib/gradient';
+import { convertColor } from '@/lib/color-format';
+import type { GradientPreset, UIPreviewMode, GradientTypeFilter, ColorFormat } from '@/types';
 
 interface GradientCardProps {
   gradient: GradientPreset;
+  gradientType: GradientTypeFilter;
   previewMode: UIPreviewMode;
+  colorFormat: ColorFormat;
   isFavorite: boolean;
   onToggleFavorite: () => void;
   onSelect: (gradient: GradientPreset) => void;
@@ -15,12 +19,15 @@ interface GradientCardProps {
 
 export const GradientCard = memo(function GradientCard({
   gradient,
+  gradientType,
   previewMode,
+  colorFormat,
   isFavorite,
   onToggleFavorite,
   onSelect,
 }: GradientCardProps) {
-  const displayGradient = gradient.gradient;
+  // Transform gradient to the selected type (linear/radial/conic)
+  const displayGradient = transformGradient(gradient.gradient, gradientType, 135);
 
   const handleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -33,6 +40,12 @@ export const GradientCard = memo(function GradientCard({
       onSelect(gradient);
     }
   };
+
+  const handleCopyColor = useCallback((e: React.MouseEvent, color: string) => {
+    e.stopPropagation();
+    const formattedColor = convertColor(color, colorFormat);
+    navigator.clipboard.writeText(formattedColor);
+  }, [colorFormat]);
 
   // Render the preview content based on mode
   const renderPreviewContent = () => {
@@ -133,18 +146,23 @@ export const GradientCard = memo(function GradientCard({
           {gradient.description}
         </p>
 
-        {/* Color Swatches */}
+        {/* Color Swatches - clickable to copy */}
         <div className="flex gap-2 mb-3">
           {gradient.colors.slice(0, 3).map((color, i) => (
-            <div key={i} className="flex items-center gap-1.5 flex-1 min-w-0">
+            <button
+              key={i}
+              onClick={(e) => handleCopyColor(e, color)}
+              className="flex items-center gap-1.5 flex-1 min-w-0 group/color hover:bg-white/5 rounded-md p-1 -m-1 transition-colors"
+              title={`Copy ${convertColor(color, colorFormat)}`}
+            >
               <div
-                className="w-5 h-5 rounded-md border border-white/20 flex-shrink-0"
+                className="w-5 h-5 rounded-md border border-white/20 flex-shrink-0 group-hover/color:border-white/40 transition-colors"
                 style={{ background: color }}
               />
-              <span className="text-xs text-neutral-400 font-mono truncate">
-                {color}
+              <span className="text-xs text-neutral-400 font-mono truncate group-hover/color:text-neutral-300 transition-colors">
+                {convertColor(color, colorFormat)}
               </span>
-            </div>
+            </button>
           ))}
         </div>
 
