@@ -1,4 +1,5 @@
 import { memo, useCallback, useMemo } from 'react';
+import { toast } from './Toast';
 import { Heart } from './icons';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -67,6 +68,7 @@ export const GradientCard = memo(function GradientCard({
     e.stopPropagation();
     const formattedColor = convertColor(color, colorFormat);
     navigator.clipboard.writeText(formattedColor);
+    toast.success('Copied to clipboard');
   }, [colorFormat]);
 
   // Calculate best text color for contrast
