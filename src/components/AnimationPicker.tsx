@@ -50,7 +50,7 @@ export function AnimationPicker({
           aria-label="Select animation"
         >
           <Zap className="h-3 w-3 text-neutral-500" />
-          <span>{selectedAnimation?.name ?? 'None'}</span>
+          <span>{selectedAnimation?.name ?? 'Static'}</span>
           <ChevronDown className="h-3 w-3 text-neutral-500" />
         </button>
       </PopoverTrigger>

@@ -7,8 +7,8 @@ import type { Animation } from '@/types';
 export const animations: Animation[] = [
   {
     id: 'none',
-    name: 'None',
-    description: 'Static',
+    name: 'Static',
+    description: 'No animation',
     category: 'Movement',
     keyframes: '',
     property: '',
