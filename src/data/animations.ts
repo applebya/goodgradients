@@ -19,7 +19,10 @@ export const animations: Animation[] = [
     name: 'Shift',
     description: 'Horizontal slide',
     category: 'Movement',
-    keyframes: 'gradient-shift',
+    keyframes: `@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}`,
     property: 'background-size: 200% 200%; animation: gradient-shift 3s ease infinite;',
     preview: { duration: '3s', timing: 'ease' },
   },
@@ -28,7 +31,10 @@ export const animations: Animation[] = [
     name: 'Wave',
     description: 'Smooth back & forth',
     category: 'Wave',
-    keyframes: 'gradient-wave',
+    keyframes: `@keyframes gradient-wave {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}`,
     property: 'background-size: 300% 100%; animation: gradient-wave 3s ease-in-out infinite;',
     preview: { duration: '3s', timing: 'ease-in-out' },
   },
@@ -37,7 +43,11 @@ export const animations: Animation[] = [
     name: 'Flow',
     description: 'Diagonal motion',
     category: 'Movement',
-    keyframes: 'gradient-flow',
+    keyframes: `@keyframes gradient-flow {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}`,
     property: 'background-size: 200% 200%; animation: gradient-flow 4s ease infinite;',
     preview: { duration: '4s', timing: 'ease' },
   },
@@ -46,7 +56,10 @@ export const animations: Animation[] = [
     name: 'Shimmer',
     description: 'Quick sweep',
     category: 'Movement',
-    keyframes: 'gradient-shimmer',
+    keyframes: `@keyframes gradient-shimmer {
+  0% { background-position: -100% 0; }
+  100% { background-position: 100% 0; }
+}`,
     property: 'background-size: 200% 100%; animation: gradient-shimmer 1.5s linear infinite;',
     preview: { duration: '1.5s', timing: 'linear' },
   },
@@ -55,7 +68,12 @@ export const animations: Animation[] = [
     name: 'Sway',
     description: 'Circular motion',
     category: 'Movement',
-    keyframes: 'gradient-sway',
+    keyframes: `@keyframes gradient-sway {
+  0%, 100% { background-position: 0% 50%; }
+  25% { background-position: 50% 0%; }
+  50% { background-position: 100% 50%; }
+  75% { background-position: 50% 100%; }
+}`,
     property: 'background-size: 200% 200%; animation: gradient-sway 5s ease-in-out infinite;',
     preview: { duration: '5s', timing: 'ease-in-out' },
   },
@@ -64,7 +82,10 @@ export const animations: Animation[] = [
     name: 'Drift',
     description: 'Vertical float',
     category: 'Movement',
-    keyframes: 'gradient-drift',
+    keyframes: `@keyframes gradient-drift {
+  0%, 100% { background-position: 50% 0%; }
+  50% { background-position: 50% 100%; }
+}`,
     property: 'background-size: 100% 200%; animation: gradient-drift 4s ease-in-out infinite;',
     preview: { duration: '4s', timing: 'ease-in-out' },
   },
@@ -73,7 +94,10 @@ export const animations: Animation[] = [
     name: 'Pulse',
     description: 'Size pulse',
     category: 'Pulse',
-    keyframes: 'gradient-pulse-move',
+    keyframes: `@keyframes gradient-pulse-move {
+  0%, 100% { background-position: 50% 50%; background-size: 200% 200%; }
+  50% { background-position: 50% 50%; background-size: 150% 150%; }
+}`,
     property: 'background-size: 200% 200%; animation: gradient-pulse-move 2s ease-in-out infinite;',
     preview: { duration: '2s', timing: 'ease-in-out' },
   },
@@ -82,7 +106,10 @@ export const animations: Animation[] = [
     name: 'Breathe',
     description: 'Slow inhale/exhale',
     category: 'Pulse',
-    keyframes: 'gradient-breathe-move',
+    keyframes: `@keyframes gradient-breathe-move {
+  0%, 100% { background-position: 50% 50%; background-size: 300% 300%; }
+  50% { background-position: 50% 50%; background-size: 200% 200%; }
+}`,
     property: 'background-size: 300% 300%; animation: gradient-breathe-move 6s ease-in-out infinite;',
     preview: { duration: '6s', timing: 'ease-in-out' },
   },

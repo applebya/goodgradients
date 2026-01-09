@@ -29,7 +29,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { cn, copyToClipboard } from '@/lib/utils';
-import { getGradientAverageColor, getContrastInfoForBackground, formatContrastRatio } from '@/lib/contrast';
+import { getGradientAverageColor, getContrastInfoForBackground, getDiverseTextColors, formatContrastRatio } from '@/lib/contrast';
 import { encodeGradient, gradientToCSS, getGradientColors } from '@/lib/gradient-url';
 import type { GradientDefinition, GradientType } from '@/lib/gradient-url';
 import { convertColor, convertGradientColors, COLOR_FORMAT_OPTIONS } from '@/lib/color-format';
@@ -142,11 +142,8 @@ export function GradientDetail({
   const avgColor = getGradientAverageColor(colors);
   const contrastInfo = getContrastInfoForBackground(avgColor);
 
-  // Get best text colors
-  const bestTextColors = contrastInfo
-    .filter(c => c.meetsAA)
-    .sort((a, b) => b.ratio - a.ratio)
-    .slice(0, 2);
+  // Get best text colors - picks diverse options (one light, one dark)
+  const bestTextColors = getDiverseTextColors(avgColor);
 
   // Convert gradient to selected color format
   const formattedGradient = convertGradientColors(displayGradient, colorFormat);
@@ -340,7 +337,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
 
         {/* Recommended Text Color - Prominent */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 p-3 bg-neutral-800/60 rounded-lg border border-neutral-700">
-          <span className="text-sm text-neutral-300 font-medium whitespace-nowrap">Best text color:</span>
+          <span className="text-sm text-neutral-300 font-medium whitespace-nowrap">Best text colors:</span>
           <div className="flex flex-wrap gap-2 flex-1">
             {bestTextColors.map((tc, i) => (
               <button

@@ -139,3 +139,44 @@ export function getContrastInfoForBackground(backgroundColor: string): ContrastI
     };
   });
 }
+
+/**
+ * Get diverse text color suggestions - picks best from light and dark categories
+ * Returns visually distinct options rather than similar colors like #000000 and #171717
+ */
+export function getDiverseTextColors(backgroundColor: string): ContrastInfo[] {
+  const lightColors = [
+    { color: '#ffffff', name: 'White' },
+    { color: '#f5f5f5', name: 'Off-White' },
+  ];
+
+  const darkColors = [
+    { color: '#000000', name: 'Black' },
+    { color: '#171717', name: 'Near Black' },
+  ];
+
+  const getColorInfo = (c: { color: string; name: string }): ContrastInfo => {
+    const ratio = getContrastRatio(backgroundColor, c.color);
+    return {
+      color: c.color,
+      name: c.name,
+      ratio,
+      meetsAA: meetsWCAG(ratio, 'AA'),
+      meetsAAA: meetsWCAG(ratio, 'AAA'),
+      meetsAALarge: meetsWCAG(ratio, 'AA', true),
+    };
+  };
+
+  // Get best from each category that meets AA
+  const lightOptions = lightColors.map(getColorInfo).filter(c => c.meetsAA).sort((a, b) => b.ratio - a.ratio);
+  const darkOptions = darkColors.map(getColorInfo).filter(c => c.meetsAA).sort((a, b) => b.ratio - a.ratio);
+
+  const results: ContrastInfo[] = [];
+
+  // Pick the best light and best dark that meet AA
+  if (lightOptions[0]) results.push(lightOptions[0]);
+  if (darkOptions[0]) results.push(darkOptions[0]);
+
+  // Sort by contrast ratio (best first)
+  return results.sort((a, b) => b.ratio - a.ratio);
+}
