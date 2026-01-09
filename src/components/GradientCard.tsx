@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { transformGradient } from '@/lib/gradient';
 import { convertColor } from '@/lib/color-format';
 import { getAnimationById } from '@/data/animations';
+import { getGradientAverageColor, getBestTextColor } from '@/lib/contrast';
 import type { GradientPreset, UIPreviewMode, GradientTypeFilter, ColorFormat } from '@/types';
 
 interface GradientCardProps {
@@ -68,6 +69,12 @@ export const GradientCard = memo(function GradientCard({
     navigator.clipboard.writeText(formattedColor);
   }, [colorFormat]);
 
+  // Calculate best text color for contrast
+  const textColor = useMemo(() => {
+    const avgColor = getGradientAverageColor(gradient.colors);
+    return getBestTextColor(avgColor);
+  }, [gradient.colors]);
+
   // Render the preview content based on mode
   const renderPreviewContent = () => {
     switch (previewMode) {
@@ -75,8 +82,8 @@ export const GradientCard = memo(function GradientCard({
         return (
           <div className="flex items-center justify-center h-full">
             <div
-              className="px-6 py-2.5 rounded-lg text-white font-medium text-sm shadow-lg"
-              style={{ background: displayGradient, ...animationStyle }}
+              className="px-6 py-2.5 rounded-lg font-medium text-sm shadow-lg"
+              style={{ background: displayGradient, color: textColor, ...animationStyle }}
             >
               Click me
             </div>
@@ -103,14 +110,14 @@ export const GradientCard = memo(function GradientCard({
         return (
           <div className="flex items-center justify-center h-full gap-2">
             <span
-              className="px-3 py-1 rounded-full text-white text-xs font-medium"
-              style={{ background: displayGradient, ...animationStyle }}
+              className="px-3 py-1 rounded-full text-xs font-medium"
+              style={{ background: displayGradient, color: textColor, ...animationStyle }}
             >
               New
             </span>
             <span
-              className="px-3 py-1 rounded-full text-white text-xs font-medium"
-              style={{ background: displayGradient, ...animationStyle }}
+              className="px-3 py-1 rounded-full text-xs font-medium"
+              style={{ background: displayGradient, color: textColor, ...animationStyle }}
             >
               Featured
             </span>

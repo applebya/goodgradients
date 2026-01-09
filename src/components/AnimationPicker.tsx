@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { Zap, ChevronDown } from './icons';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Popover, PopoverContent, PopoverTrigger, PopoverClose } from './ui/popover';
 import { cn } from '@/lib/utils';
 import { animations, getAnimationById } from '@/data/animations';
 import type { Animation } from '@/types';
@@ -65,33 +65,34 @@ export function AnimationPicker({
               : selectedAnimationId === anim.id;
 
             return (
-              <button
-                key={anim.id}
-                onClick={() => {
-                  if (anim.id === 'none') {
-                    onAnimationChange(null);
-                  } else {
-                    onAnimationChange(anim.id);
-                  }
-                }}
-                className={cn(
-                  'rounded-lg border overflow-hidden transition-all',
-                  isSelected
-                    ? 'border-white ring-2 ring-white/20'
-                    : 'border-neutral-700 hover:border-neutral-500'
-                )}
-              >
-                <div
-                  className="h-12"
-                  style={{
-                    background: previewGradient,
-                    ...parseAnimationStyle(anim.id !== 'none' ? anim : undefined),
+              <PopoverClose key={anim.id} asChild>
+                <button
+                  onClick={() => {
+                    if (anim.id === 'none') {
+                      onAnimationChange(null);
+                    } else {
+                      onAnimationChange(anim.id);
+                    }
                   }}
-                />
-                <div className="p-1.5 bg-neutral-900">
-                  <p className="text-[10px] text-white font-medium truncate">{anim.name}</p>
-                </div>
-              </button>
+                  className={cn(
+                    'rounded-lg border overflow-hidden transition-all',
+                    isSelected
+                      ? 'border-white ring-2 ring-white/20'
+                      : 'border-neutral-700 hover:border-neutral-500'
+                  )}
+                >
+                  <div
+                    className="h-12"
+                    style={{
+                      background: previewGradient,
+                      ...parseAnimationStyle(anim.id !== 'none' ? anim : undefined),
+                    }}
+                  />
+                  <div className="p-1.5 bg-neutral-900">
+                    <p className="text-[10px] text-white font-medium truncate">{anim.name}</p>
+                  </div>
+                </button>
+              </PopoverClose>
             );
           })}
         </div>

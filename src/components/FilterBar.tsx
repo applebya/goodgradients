@@ -1,6 +1,6 @@
 import { X, ChevronDown, Check, Tag, Layout, Blend, Palette } from './icons';
 import { Button } from './ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Popover, PopoverContent, PopoverTrigger, PopoverClose } from './ui/popover';
 import { AnimationPicker } from './AnimationPicker';
 import { cn } from '@/lib/utils';
 import { COLOR_OPTIONS } from '@/lib/wizard';
@@ -182,20 +182,21 @@ export function FilterBar({
           <PopoverContent className="p-2" align="end">
             <div className="space-y-1">
               {PREVIEW_MODES.map((opt) => (
-                <button
-                  key={opt.value}
-                  onClick={() => onPreviewModeChange(opt.value)}
-                  className={cn(
-                    'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm whitespace-nowrap',
-                    'hover:bg-neutral-800 transition-colors',
-                    previewMode === opt.value && 'bg-neutral-800'
-                  )}
-                >
-                  <span className="text-left">{opt.label}</span>
-                  {previewMode === opt.value && (
-                    <Check className="h-4 w-4 text-white shrink-0" />
-                  )}
-                </button>
+                <PopoverClose key={opt.value} asChild>
+                  <button
+                    onClick={() => onPreviewModeChange(opt.value)}
+                    className={cn(
+                      'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm whitespace-nowrap',
+                      'hover:bg-neutral-800 transition-colors',
+                      previewMode === opt.value && 'bg-neutral-800'
+                    )}
+                  >
+                    <span className="text-left">{opt.label}</span>
+                    {previewMode === opt.value && (
+                      <Check className="h-4 w-4 text-white shrink-0" />
+                    )}
+                  </button>
+                </PopoverClose>
               ))}
             </div>
           </PopoverContent>
@@ -216,20 +217,21 @@ export function FilterBar({
           <PopoverContent className="p-2" align="end">
             <div className="space-y-1">
               {GRADIENT_TYPES.map((opt) => (
-                <button
-                  key={opt.value}
-                  onClick={() => onGradientTypeChange(opt.value)}
-                  className={cn(
-                    'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm whitespace-nowrap',
-                    'hover:bg-neutral-800 transition-colors',
-                    gradientType === opt.value && 'bg-neutral-800'
-                  )}
-                >
-                  <span className="text-left">{opt.label}</span>
-                  {gradientType === opt.value && (
-                    <Check className="h-4 w-4 text-white shrink-0" />
-                  )}
-                </button>
+                <PopoverClose key={opt.value} asChild>
+                  <button
+                    onClick={() => onGradientTypeChange(opt.value)}
+                    className={cn(
+                      'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm whitespace-nowrap',
+                      'hover:bg-neutral-800 transition-colors',
+                      gradientType === opt.value && 'bg-neutral-800'
+                    )}
+                  >
+                    <span className="text-left">{opt.label}</span>
+                    {gradientType === opt.value && (
+                      <Check className="h-4 w-4 text-white shrink-0" />
+                    )}
+                  </button>
+                </PopoverClose>
               ))}
             </div>
           </PopoverContent>
@@ -250,20 +252,21 @@ export function FilterBar({
           <PopoverContent className="p-2" align="end">
             <div className="space-y-1">
               {COLOR_FORMAT_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  onClick={() => onColorFormatChange(opt.value)}
-                  className={cn(
-                    'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm whitespace-nowrap',
-                    'hover:bg-neutral-800 transition-colors',
-                    colorFormat === opt.value && 'bg-neutral-800'
-                  )}
-                >
-                  <span className="text-left">{opt.label}</span>
-                  {colorFormat === opt.value && (
-                    <Check className="h-4 w-4 text-white shrink-0" />
-                  )}
-                </button>
+                <PopoverClose key={opt.value} asChild>
+                  <button
+                    onClick={() => onColorFormatChange(opt.value)}
+                    className={cn(
+                      'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm whitespace-nowrap',
+                      'hover:bg-neutral-800 transition-colors',
+                      colorFormat === opt.value && 'bg-neutral-800'
+                    )}
+                  >
+                    <span className="text-left">{opt.label}</span>
+                    {colorFormat === opt.value && (
+                      <Check className="h-4 w-4 text-white shrink-0" />
+                    )}
+                  </button>
+                </PopoverClose>
               ))}
             </div>
           </PopoverContent>
