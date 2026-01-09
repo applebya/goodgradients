@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { toast } from './Toast';
 import {
   Copy,
@@ -71,6 +71,13 @@ export function GradientDetail({
   const [codeTab, setCodeTab] = useState<'css' | 'swift' | 'kotlin' | 'ai'>('css');
   const [showSettings, setShowSettings] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
+
+  // Reset fullscreen state when modal closes or gradient changes
+  useEffect(() => {
+    if (!isOpen) {
+      setIsFullscreen(false);
+    }
+  }, [isOpen]);
 
   // Get selected animation
   const selectedAnimation = selectedAnimationId ? getAnimationById(selectedAnimationId) : undefined;
@@ -185,7 +192,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
   return (
     <>
       {/* Fullscreen preview overlay - renders on top of dialog */}
-      {isFullscreen && (
+      {isFullscreen && isOpen && (
         <div className="fixed inset-0 z-[100] animate-fullscreen-fade-in" onClick={() => setIsFullscreen(false)}>
           {/* Inject animation keyframes - sourced from internal animations.ts, safe */}
           {selectedAnimation && (

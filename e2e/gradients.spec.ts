@@ -98,7 +98,7 @@ test.describe('GoodGradients - Gradient Detail', () => {
     await expect(page.getByRole('dialog')).toBeVisible();
 
     // Should show text color recommendations
-    await expect(page.getByRole('dialog').getByText('Best text color:')).toBeVisible();
+    await expect(page.getByRole('dialog').getByText('Best text colors:')).toBeVisible();
 
     // Should show use case preview labels
     await expect(page.getByRole('dialog').locator('span').filter({ hasText: 'Background' })).toBeVisible();
@@ -184,6 +184,36 @@ test.describe('GoodGradients - Gradient Detail', () => {
     // Fullscreen should show sample content
     await expect(page.getByText('Your Headline Here')).toBeVisible();
     await expect(page.getByText('Click anywhere to close')).toBeVisible();
+  });
+
+  test('should close fullscreen preview when clicking anywhere and not persist across modals', async ({ page }) => {
+    // Open first gradient modal
+    await page.locator('[data-testid="gradient-card"]').first().click();
+    await expect(page.getByRole('dialog')).toBeVisible();
+
+    // Enter fullscreen preview
+    await page.getByText('Click to preview fullscreen').click();
+    await expect(page.getByText('Your Headline Here')).toBeVisible();
+    await expect(page.getByText('Click anywhere to close')).toBeVisible();
+
+    // Click anywhere to close fullscreen (click on the fullscreen overlay itself)
+    await page.getByText('Your Headline Here').click();
+
+    // Fullscreen should close, modal should still be visible
+    await expect(page.getByText('Your Headline Here')).not.toBeVisible();
+    await expect(page.getByRole('dialog')).toBeVisible();
+
+    // Close the modal
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog')).not.toBeVisible();
+
+    // Open a DIFFERENT gradient (second card)
+    await page.locator('[data-testid="gradient-card"]').nth(1).click();
+
+    // Should show the modal dialog, NOT fullscreen immediately
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await expect(page.getByText('Your Headline Here')).not.toBeVisible();
+    await expect(page.getByText('Click to preview fullscreen')).toBeVisible();
   });
 });
 
