@@ -182,84 +182,84 @@ ${formattedColors.map((c, i) => `- ${c} at ${gradientDef.stops[i]?.position ?? i
 ${gradientDef.type === 'linear' || gradientDef.type === 'conic' ? `Angle: ${gradientDef.angle}°` : 'Radiates from center'}
 ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimation.description}` : ''}`.trim();
 
-  // Fullscreen preview
-  if (isFullscreen) {
-    return (
-      <div className="fixed inset-0 z-[100] animate-fullscreen-fade-in" onClick={() => setIsFullscreen(false)}>
-        {/* Inject animation keyframes */}
-        {selectedAnimation && (
-          <style dangerouslySetInnerHTML={{ __html: selectedAnimation.keyframes }} />
-        )}
-        <div
-          className="w-full h-full flex flex-col items-center justify-center p-8"
-          style={{
-            background: displayGradient,
-            ...getAnimationStyle(selectedAnimation),
-          }}
-        >
-          {/* Sample content */}
-          <h1
-            className="text-5xl font-bold mb-4 drop-shadow-lg"
-            style={{ color: bestTextColors[0]?.color || '#ffffff' }}
+  return (
+    <>
+      {/* Fullscreen preview overlay - renders on top of dialog */}
+      {isFullscreen && (
+        <div className="fixed inset-0 z-[100] animate-fullscreen-fade-in" onClick={() => setIsFullscreen(false)}>
+          {/* Inject animation keyframes - sourced from internal animations.ts, safe */}
+          {selectedAnimation && (
+            <style dangerouslySetInnerHTML={{ __html: selectedAnimation.keyframes }} />
+          )}
+          <div
+            className="w-full h-full flex flex-col items-center justify-center p-8"
+            style={{
+              background: displayGradient,
+              ...getAnimationStyle(selectedAnimation),
+            }}
           >
-            Your Headline Here
-          </h1>
-          <p
-            className="text-xl opacity-80 mb-8 max-w-md text-center drop-shadow"
-            style={{ color: bestTextColors[0]?.color || '#ffffff' }}
-          >
-            This is how your content looks on this gradient background.
-          </p>
-          <div className="flex gap-4">
-            <button
-              className="px-6 py-3 rounded-lg font-medium shadow-lg"
-              style={{
-                background: bestTextColors[0]?.color || '#ffffff',
-                color: avgColor
-              }}
+            {/* Sample content */}
+            <h1
+              className="text-5xl font-bold mb-4 drop-shadow-lg"
+              style={{ color: bestTextColors[0]?.color || '#ffffff' }}
             >
-              Primary Button
-            </button>
-            <button
-              className="px-6 py-3 rounded-lg font-medium border-2"
-              style={{
-                borderColor: bestTextColors[0]?.color || '#ffffff',
-                color: bestTextColors[0]?.color || '#ffffff'
-              }}
+              Your Headline Here
+            </h1>
+            <p
+              className="text-xl opacity-80 mb-8 max-w-md text-center drop-shadow"
+              style={{ color: bestTextColors[0]?.color || '#ffffff' }}
             >
-              Secondary
-            </button>
-          </div>
-
-          {/* Text color suggestions */}
-          <div className="absolute bottom-6 left-6 flex gap-2">
-            <span className="text-xs opacity-60" style={{ color: bestTextColors[0]?.color || '#fff' }}>
-              Recommended text:
-            </span>
-            {bestTextColors.map((tc, i) => (
+              This is how your content looks on this gradient background.
+            </p>
+            <div className="flex gap-4">
               <button
-                key={i}
-                onClick={(e) => { e.stopPropagation(); handleCopy(tc.color, `text-${i}`); }}
-                className="flex items-center gap-1 px-2 py-1 rounded bg-black/30 backdrop-blur-sm"
+                className="px-6 py-3 rounded-lg font-medium shadow-lg"
+                style={{
+                  background: bestTextColors[0]?.color || '#ffffff',
+                  color: avgColor
+                }}
               >
-                <div className="w-3 h-3 rounded-full border border-white/30" style={{ background: tc.color }} />
-                <span className="text-xs font-mono" style={{ color: tc.color }}>{tc.color}</span>
+                Primary Button
               </button>
-            ))}
-          </div>
+              <button
+                className="px-6 py-3 rounded-lg font-medium border-2"
+                style={{
+                  borderColor: bestTextColors[0]?.color || '#ffffff',
+                  color: bestTextColors[0]?.color || '#ffffff'
+                }}
+              >
+                Secondary
+              </button>
+            </div>
 
-          <div className="absolute bottom-6 right-6">
-            <Badge className="bg-black/50 backdrop-blur-sm text-white border-0">
-              Click anywhere to close
-            </Badge>
+            {/* Text color suggestions */}
+            <div className="absolute bottom-6 left-6 flex gap-2">
+              <span className="text-xs opacity-60" style={{ color: bestTextColors[0]?.color || '#fff' }}>
+                Recommended text:
+              </span>
+              {bestTextColors.map((tc, i) => (
+                <button
+                  key={i}
+                  onClick={(e) => { e.stopPropagation(); handleCopy(tc.color, `text-${i}`); }}
+                  className="flex items-center gap-1 px-2 py-1 rounded bg-black/30 backdrop-blur-sm"
+                >
+                  <div className="w-3 h-3 rounded-full border border-white/30" style={{ background: tc.color }} />
+                  <span className="text-xs font-mono" style={{ color: tc.color }}>{tc.color}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="absolute bottom-6 right-6">
+              <Badge className="bg-black/50 backdrop-blur-sm text-white border-0">
+                Click anywhere to close
+              </Badge>
+            </div>
           </div>
         </div>
-      </div>
-    );
-  }
+      )}
 
-  return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      {/* Main dialog */}
+      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-2xl p-3 sm:p-4 gap-2 sm:gap-3" hideCloseButton>
         {/* Header */}
         <DialogHeader className="pb-2">
@@ -662,5 +662,6 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 }
