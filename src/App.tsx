@@ -73,6 +73,11 @@ export default function App() {
     return actions.getShareURL();
   }, [actions]);
 
+  // Toggle favorites filter
+  const handleToggleFavorites = useCallback(() => {
+    actions.setCategory(state.category === 'Favorites' ? 'All' : 'Favorites');
+  }, [actions, state.category]);
+
   // Get selected gradient definition (decoded from URL-encoded string)
   const selectedGradientDef = state.selectedGradient
     ? decodeGradient(state.selectedGradient)
@@ -93,6 +98,7 @@ export default function App() {
         previewMode={state.previewMode}
         colorFormat={state.colorFormat}
         selectedAnimationId={state.selectedAnimationId}
+        showFavoritesOnly={state.category === 'Favorites'}
         onColorsChange={actions.setColors}
         onToggleColor={actions.toggleColor}
         onToggleTag={actions.toggleTag}
@@ -100,6 +106,7 @@ export default function App() {
         onPreviewModeChange={actions.setPreviewMode}
         onColorFormatChange={actions.setColorFormat}
         onAnimationChange={actions.selectAnimation}
+        onToggleFavorites={handleToggleFavorites}
         onClearFilters={actions.clearFilters}
         hasActiveFilters={actions.hasActiveFilters()}
         onRandomGradient={handleRandomGradient}

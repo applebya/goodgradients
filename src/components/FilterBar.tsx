@@ -1,4 +1,4 @@
-import { X, ChevronDown, Check, Tag, Layout, Blend, Palette } from './icons';
+import { X, ChevronDown, Check, Tag, Layout, Blend, Palette, Heart } from './icons';
 import { Button } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger, PopoverClose } from './ui/popover';
 import { AnimationPicker } from './AnimationPicker';
@@ -15,6 +15,7 @@ interface FilterBarProps {
   previewMode: UIPreviewMode;
   colorFormat: ColorFormat;
   selectedAnimationId: string | null;
+  showFavoritesOnly: boolean;
   onColorsChange: (colors: WizardColor[]) => void;
   onToggleColor: (color: WizardColor) => void;
   onToggleTag: (tag: string) => void;
@@ -22,6 +23,7 @@ interface FilterBarProps {
   onPreviewModeChange: (mode: UIPreviewMode) => void;
   onColorFormatChange: (format: ColorFormat) => void;
   onAnimationChange: (id: string | null) => void;
+  onToggleFavorites: () => void;
   onClearFilters: () => void;
   hasActiveFilters: boolean;
 }
@@ -47,12 +49,14 @@ export function FilterBar({
   previewMode,
   colorFormat,
   selectedAnimationId,
+  showFavoritesOnly,
   onToggleColor,
   onToggleTag,
   onGradientTypeChange,
   onPreviewModeChange,
   onColorFormatChange,
   onAnimationChange,
+  onToggleFavorites,
   onClearFilters,
   hasActiveFilters,
 }: FilterBarProps) {
@@ -150,6 +154,21 @@ export function FilterBar({
             </div>
           </PopoverContent>
         </Popover>
+
+        {/* Favorites Toggle */}
+        <button
+          onClick={onToggleFavorites}
+          className={cn(
+            'flex h-7 items-center gap-1.5 rounded-md border border-neutral-700 bg-neutral-900 px-2.5 py-1.5 text-xs',
+            'hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600 transition-colors',
+            showFavoritesOnly ? 'border-red-500/50 text-red-400' : 'text-white'
+          )}
+          aria-label={showFavoritesOnly ? 'Show all gradients' : 'Show favorites only'}
+          aria-pressed={showFavoritesOnly}
+        >
+          <Heart className={cn('h-3 w-3', showFavoritesOnly ? 'fill-current' : 'text-neutral-500')} />
+          <span>{showFavoritesOnly ? 'Favorites' : 'Favorites'}</span>
+        </button>
 
         {/* Clear Filters */}
         {hasActiveFilters && (
