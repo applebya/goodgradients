@@ -114,7 +114,7 @@ export function GradientGallery({
             ? `Gradients matching "${searchQuery}"`
             : 'Beautiful CSS Gradients'}
         </h1>
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-neutral-400">
           {filteredGradients.length} gradient{filteredGradients.length !== 1 ? 's' : ''} available
           {colors.length > 0 && ` • Filtered by ${colors.join(', ')}`}
           {tags.length > 0 && ` • Tagged: ${tags.join(', ')}`}

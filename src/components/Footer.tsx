@@ -6,16 +6,16 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4">
         {/* SEO Content - visible to search engines */}
         <div className="mb-8 text-center">
-          <h2 className="text-lg font-semibold text-neutral-300 mb-3">
+          <h2 className="text-lg font-semibold text-neutral-200 mb-3">
             Free CSS Gradient Generator
           </h2>
-          <p className="text-sm text-neutral-500 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm text-neutral-400 max-w-2xl mx-auto leading-relaxed">
             Good Gradients is a free gradient generator tool with 500+ curated CSS gradients.
             Browse beautiful gradient backgrounds, linear gradients, radial gradients, and conic gradients.
             Export gradient code instantly for CSS, Tailwind CSS, SwiftUI, and Kotlin.
             Perfect for web designers, frontend developers, and UI/UX professionals.
           </p>
-          <nav className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-neutral-600">
+          <div className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-neutral-400" aria-label="Features">
             <span>CSS Gradients</span>
             <span aria-hidden="true">•</span>
             <span>Gradient Backgrounds</span>
@@ -25,7 +25,7 @@ export function Footer() {
             <span>Gradient Animations</span>
             <span aria-hidden="true">•</span>
             <span>Color Palettes</span>
-          </nav>
+          </div>
         </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-6 border-t border-neutral-800/50">
