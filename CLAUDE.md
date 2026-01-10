@@ -1,7 +1,7 @@
-# OnlyGradients - Claude Code Project Memory
+# Good Gradients - Claude Code Project Memory
 
 ## Project Overview
-OnlyGradients is a production-quality CSS gradient & animation tool for frontend engineers. It prioritizes interoperability (Tailwind + vanilla CSS exports), visual sophistication, and URL-based shareability.
+Good Gradients is a production-quality CSS gradient & animation tool for frontend engineers. It prioritizes interoperability (Tailwind + vanilla CSS exports), visual sophistication, and URL-based shareability.
 
 ## Tech Stack
 - **Package Manager**: bun
