@@ -1,0 +1,11 @@
+# Good Gradients - https://goodgradients.com
+# CSS Gradient Generator & Beautiful Gradient Backgrounds
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://goodgradients.com/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1

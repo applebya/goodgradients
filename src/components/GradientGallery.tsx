@@ -104,7 +104,23 @@ export function GradientGallery({
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <section aria-label="Gradient gallery">
+      {/* SEO H1 - visually subtle but important for search engines */}
+      <header className="mb-6">
+        <h1 className="text-2xl font-bold text-white mb-1">
+          {category === 'Favorites'
+            ? 'Your Favorite Gradients'
+            : searchQuery
+            ? `Gradients matching "${searchQuery}"`
+            : 'Beautiful CSS Gradients'}
+        </h1>
+        <p className="text-sm text-neutral-500">
+          {filteredGradients.length} gradient{filteredGradients.length !== 1 ? 's' : ''} available
+          {colors.length > 0 && ` • Filtered by ${colors.join(', ')}`}
+          {tags.length > 0 && ` • Tagged: ${tags.join(', ')}`}
+        </p>
+      </header>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {filteredGradients.map((gradient) => {
         const encoded = getEncodedGradient(gradient);
         return (
@@ -121,6 +137,7 @@ export function GradientGallery({
           />
         );
       })}
-    </div>
+      </div>
+    </section>
   );
 }
