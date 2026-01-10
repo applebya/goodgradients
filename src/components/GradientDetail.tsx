@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { toast } from './Toast';
 import {
   Copy,
@@ -189,26 +190,40 @@ ${formattedColors.map((c, i) => `- ${c} at ${gradientDef.stops[i]?.position ?? i
 ${gradientDef.type === 'linear' || gradientDef.type === 'conic' ? `Angle: ${gradientDef.angle}°` : 'Radiates from center'}
 ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimation.description}` : ''}`.trim();
 
-  return (
-    <>
-      {/* Fullscreen preview overlay - renders on top of dialog */}
-      {isFullscreen && isOpen && (
-        <div
-          data-testid="fullscreen-overlay"
-          className="fixed inset-0 z-[100] animate-fullscreen-fade-in"
-          onClick={() => setIsFullscreen(false)}
-        >
-          {/* Inject animation keyframes - sourced from internal animations.ts, safe */}
-          {selectedAnimation && (
-            <style dangerouslySetInnerHTML={{ __html: selectedAnimation.keyframes }} />
-          )}
-          <div
-            className="w-full h-full flex flex-col items-center justify-center p-8"
-            style={{
-              background: displayGradient,
-              ...getAnimationStyle(selectedAnimation),
-            }}
-          >
+  // Fullscreen overlay rendered via Portal to ensure it's above Dialog overlay
+  // Uses z-[9999] to guarantee it's above all Radix Dialog layers
+  // onPointerDown handlers prevent Radix Dialog from detecting "click outside"
+  const fullscreenOverlay = isFullscreen && isOpen && createPortal(
+    <div
+      data-testid="fullscreen-overlay"
+      className="fixed inset-0 z-[9999] animate-fullscreen-fade-in cursor-pointer"
+      style={{ pointerEvents: 'auto' }}
+      onClick={() => setIsFullscreen(false)}
+      onPointerDown={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
+    >
+      {/* Inject animation keyframes - sourced from internal animations.ts, safe */}
+      {selectedAnimation && (
+        <style dangerouslySetInnerHTML={{ __html: selectedAnimation.keyframes }} />
+      )}
+      {/* Close button - explicit target for reliable closing */}
+      <button
+        data-testid="fullscreen-close"
+        onClick={(e) => { e.stopPropagation(); setIsFullscreen(false); }}
+        className="absolute top-4 right-4 z-[10000] p-2 rounded-full bg-black/50 backdrop-blur-sm text-white hover:bg-black/70 transition-colors"
+        style={{ pointerEvents: 'auto' }}
+        aria-label="Close fullscreen preview"
+      >
+        <X className="w-6 h-6" />
+      </button>
+      <div
+        className="w-full h-full flex flex-col items-center justify-center p-8"
+        onClick={() => setIsFullscreen(false)}
+        style={{
+          background: displayGradient,
+          ...getAnimationStyle(selectedAnimation),
+        }}
+      >
             {/* Sample content */}
             <h1
               className="text-5xl font-bold mb-4 drop-shadow-lg"
@@ -266,8 +281,13 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               </Badge>
             </div>
           </div>
-        </div>
-      )}
+        </div>,
+    document.body
+  );
+
+  return (
+    <>
+      {fullscreenOverlay}
 
       {/* Main dialog */}
       <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>

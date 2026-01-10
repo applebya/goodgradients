@@ -196,8 +196,8 @@ test.describe('GoodGradients - Gradient Detail', () => {
     await expect(page.getByText('Your Headline Here')).toBeVisible();
     await expect(page.getByText('Click anywhere to close')).toBeVisible();
 
-    // Click the fullscreen overlay to close it
-    await page.locator('[data-testid="fullscreen-overlay"]').click({ force: true });
+    // Click the explicit close button to close fullscreen
+    await page.locator('[data-testid="fullscreen-close"]').click();
 
     // Fullscreen should close, modal should still be visible
     await expect(page.getByText('Your Headline Here')).not.toBeVisible();
