@@ -186,7 +186,7 @@ test.describe('GoodGradients - Gradient Detail', () => {
     await expect(page.getByText('Click anywhere to close')).toBeVisible();
   });
 
-  test('should close fullscreen preview when clicking anywhere and not persist across modals', async ({ page }) => {
+  test('should close fullscreen preview and not persist across modals', async ({ page }) => {
     // Open first gradient modal
     await page.locator('[data-testid="gradient-card"]').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
@@ -196,8 +196,8 @@ test.describe('GoodGradients - Gradient Detail', () => {
     await expect(page.getByText('Your Headline Here')).toBeVisible();
     await expect(page.getByText('Click anywhere to close')).toBeVisible();
 
-    // Click on the fullscreen overlay to close (use force to bypass dialog intercept)
-    await page.locator('.fixed.inset-0.z-\\[100\\]').click({ force: true });
+    // Click the fullscreen overlay to close it
+    await page.locator('[data-testid="fullscreen-overlay"]').click({ force: true });
 
     // Fullscreen should close, modal should still be visible
     await expect(page.getByText('Your Headline Here')).not.toBeVisible();

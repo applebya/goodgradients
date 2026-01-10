@@ -193,7 +193,11 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
     <>
       {/* Fullscreen preview overlay - renders on top of dialog */}
       {isFullscreen && isOpen && (
-        <div className="fixed inset-0 z-[100] animate-fullscreen-fade-in" onClick={() => setIsFullscreen(false)}>
+        <div
+          data-testid="fullscreen-overlay"
+          className="fixed inset-0 z-[100] animate-fullscreen-fade-in"
+          onClick={() => setIsFullscreen(false)}
+        >
           {/* Inject animation keyframes - sourced from internal animations.ts, safe */}
           {selectedAnimation && (
             <style dangerouslySetInnerHTML={{ __html: selectedAnimation.keyframes }} />
