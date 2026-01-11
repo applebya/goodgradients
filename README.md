@@ -1,6 +1,14 @@
 # Good Gradients
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![GitHub Stars](https://img.shields.io/github/stars/applebya/goodgradients?style=social)](https://github.com/applebya/goodgradients)
+
 A curated collection of 500+ beautiful CSS gradients with animations, ready to use in your projects. Export to CSS, Tailwind, SwiftUI, Kotlin, or get AI-friendly descriptions.
+
+**[Live Demo](https://goodgradients.com)** · **[Report Bug](https://github.com/applebya/goodgradients/issues/new?template=bug_report.md)** · **[Request Feature](https://github.com/applebya/goodgradients/issues/new?template=feature_request.md)** · **[Submit Gradient](https://github.com/applebya/goodgradients/issues/new?template=gradient_submission.md)**
+
+---
 
 ## Features
 
@@ -18,6 +26,7 @@ A curated collection of 500+ beautiful CSS gradients with animations, ready to u
 - **URL Sharing** - Share any gradient configuration via URL
 - **Fullscreen Preview** - See how gradients look as backgrounds with sample content
 - **Keyboard Shortcuts** - Quick navigation with `/`, `Esc`, arrow keys
+- **PWA Support** - Install as a desktop/mobile app
 
 ## Tech Stack
 
@@ -37,7 +46,7 @@ A curated collection of 500+ beautiful CSS gradients with animations, ready to u
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/goodgradients.git
+git clone https://github.com/applebya/goodgradients.git
 cd goodgradients
 
 # Install dependencies
@@ -93,17 +102,26 @@ src/
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+We love contributions! Whether it's:
+
+- Submitting new gradients
+- Fixing bugs
+- Improving documentation
+- Suggesting features
+
+Please read our [Contributing Guide](CONTRIBUTING.md) to get started.
+
+### Quick Links
+
+- [Contributing Guide](CONTRIBUTING.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security Policy](SECURITY.md)
 
 ### Adding New Gradients
 
-Gradients are defined in `src/data/gradients.ts`. Each gradient includes:
-- Name and description
-- Color stops with positions
-- Tags for filtering
-- Default angle
+Gradients are defined in `src/data/gradients.ts`. See our [gradient submission template](https://github.com/applebya/goodgradients/issues/new?template=gradient_submission.md) or check the [Contributing Guide](CONTRIBUTING.md#adding-gradients) for the format.
 
-### Running Tests
+## Running Tests
 
 ```bash
 # Run all tests
@@ -118,10 +136,22 @@ bunx playwright test e2e/gradients.spec.ts
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+Copyright (c) 2025 Appleby Web Services Ltd.
 
 ## Acknowledgments
 
 - Gradient inspiration from various design resources
 - Built with [Radix UI](https://www.radix-ui.com/) primitives
 - Icons from [Lucide](https://lucide.dev/)
+
+---
+
+<p align="center">
+  Made with ❤️ by <a href="https://github.com/applebya">Appleby Web Services Ltd.</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/applebya/goodgradients/stargazers">⭐ Star us on GitHub</a>
+</p>
