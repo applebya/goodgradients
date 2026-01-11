@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useMemo, useRef, useEffect, useState, useCallback } from 'react';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { GradientCard } from './GradientCard';
 import { gradients } from '@/data/gradients';
 import { encodeGradient, parseGradientCSS } from '@/lib/gradient-url';
@@ -20,13 +21,48 @@ interface GradientGalleryProps {
   isFavorite: (encodedGradient: string) => boolean;
 }
 
-/**
- * Get encoded gradient string from a preset for favorites comparison
- */
+// Pre-compute encoded gradients once at module load for performance
+const encodedGradientMap = new Map<string, string>();
+gradients.forEach((g) => {
+  const def = parseGradientCSS(g.gradient);
+  if (def) {
+    encodedGradientMap.set(g.id, encodeGradient(def));
+  }
+});
+
 function getEncodedGradient(preset: GradientPreset): string | null {
-  const def = parseGradientCSS(preset.gradient);
-  return def ? encodeGradient(def) : null;
+  return encodedGradientMap.get(preset.id) ?? null;
 }
+
+// Hook to get responsive column count
+function useColumnCount() {
+  const [columns, setColumns] = useState(() => {
+    if (typeof window === 'undefined') return 4;
+    const width = window.innerWidth;
+    if (width < 640) return 1;
+    if (width < 1024) return 2;
+    if (width < 1280) return 3;
+    return 4;
+  });
+
+  useEffect(() => {
+    const updateColumns = () => {
+      const width = window.innerWidth;
+      if (width < 640) setColumns(1);
+      else if (width < 1024) setColumns(2);
+      else if (width < 1280) setColumns(3);
+      else setColumns(4);
+    };
+
+    window.addEventListener('resize', updateColumns);
+    return () => window.removeEventListener('resize', updateColumns);
+  }, []);
+
+  return columns;
+}
+
+// Threshold for when to use virtualization (only for large lists)
+const VIRTUALIZATION_THRESHOLD = 100;
 
 export function GradientGallery({
   category,
@@ -42,12 +78,14 @@ export function GradientGallery({
   onToggleFavorite,
   isFavorite,
 }: GradientGalleryProps) {
+  const listRef = useRef<HTMLDivElement>(null);
+  const columns = useColumnCount();
+
   const filteredGradients = useMemo(() => {
     let result: GradientPreset[] = gradients;
 
     // Apply category filter first
     if (category === 'Favorites') {
-      // Filter by encoded gradient definitions in favorites
       result = result.filter((g) => {
         const encoded = getEncodedGradient(g);
         return encoded && favorites.includes(encoded);
@@ -68,8 +106,6 @@ export function GradientGallery({
       );
     }
 
-    // Note: gradientType is used to transform previews, not filter
-
     // Apply search filter
     if (searchQuery.trim()) {
       const searchLower = searchQuery.toLowerCase();
@@ -84,6 +120,19 @@ export function GradientGallery({
 
     return result;
   }, [category, searchQuery, colors, tags, favorites]);
+
+  // Calculate row count for virtualization
+  const rowCount = Math.ceil(filteredGradients.length / columns);
+  const useVirtualization = filteredGradients.length > VIRTUALIZATION_THRESHOLD;
+
+  // Window virtualizer for large lists
+  const virtualizer = useWindowVirtualizer({
+    count: rowCount,
+    estimateSize: useCallback(() => 220, []), // Row height estimate
+    overscan: 5,
+    scrollMargin: listRef.current?.offsetTop ?? 0,
+    enabled: useVirtualization,
+  });
 
   if (filteredGradients.length === 0) {
     return (
@@ -103,9 +152,51 @@ export function GradientGallery({
     );
   }
 
+  // For small lists, render without virtualization
+  if (!useVirtualization) {
+    return (
+      <section aria-label="Gradient gallery">
+        <header className="mb-6">
+          <h1 className="text-2xl font-bold text-white mb-1">
+            {category === 'Favorites'
+              ? 'Your Favorite Gradients'
+              : searchQuery
+              ? `Gradients matching "${searchQuery}"`
+              : 'Beautiful CSS Gradients'}
+          </h1>
+          <p className="text-sm text-neutral-400">
+            {filteredGradients.length} gradient{filteredGradients.length !== 1 ? 's' : ''} available
+            {colors.length > 0 && ` • Filtered by ${colors.join(', ')}`}
+            {tags.length > 0 && ` • Tagged: ${tags.join(', ')}`}
+          </p>
+        </header>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {filteredGradients.map((gradient) => {
+            const encoded = getEncodedGradient(gradient);
+            return (
+              <GradientCard
+                key={gradient.id}
+                gradient={gradient}
+                gradientType={gradientType}
+                previewMode={previewMode}
+                colorFormat={colorFormat}
+                selectedAnimationId={selectedAnimationId}
+                isFavorite={encoded ? isFavorite(encoded) : false}
+                onToggleFavorite={() => encoded && onToggleFavorite(encoded)}
+                onSelect={onSelectGradient}
+              />
+            );
+          })}
+        </div>
+      </section>
+    );
+  }
+
+  // Virtualized rendering for large lists
+  const virtualItems = virtualizer.getVirtualItems();
+
   return (
     <section aria-label="Gradient gallery">
-      {/* SEO H1 - visually subtle but important for search engines */}
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-white mb-1">
           {category === 'Favorites'
@@ -120,23 +211,54 @@ export function GradientGallery({
           {tags.length > 0 && ` • Tagged: ${tags.join(', ')}`}
         </p>
       </header>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      {filteredGradients.map((gradient) => {
-        const encoded = getEncodedGradient(gradient);
-        return (
-          <GradientCard
-            key={gradient.id}
-            gradient={gradient}
-            gradientType={gradientType}
-            previewMode={previewMode}
-            colorFormat={colorFormat}
-            selectedAnimationId={selectedAnimationId}
-            isFavorite={encoded ? isFavorite(encoded) : false}
-            onToggleFavorite={() => encoded && onToggleFavorite(encoded)}
-            onSelect={onSelectGradient}
-          />
-        );
-      })}
+
+      <div ref={listRef}>
+        <div
+          style={{
+            height: `${virtualizer.getTotalSize()}px`,
+            width: '100%',
+            position: 'relative',
+          }}
+        >
+          {virtualItems.map((virtualRow) => {
+            const startIndex = virtualRow.index * columns;
+            const rowGradients = filteredGradients.slice(startIndex, startIndex + columns);
+
+            return (
+              <div
+                key={virtualRow.key}
+                data-index={virtualRow.index}
+                ref={virtualizer.measureElement}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
+                }}
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-4">
+                  {rowGradients.map((gradient) => {
+                    const encoded = getEncodedGradient(gradient);
+                    return (
+                      <GradientCard
+                        key={gradient.id}
+                        gradient={gradient}
+                        gradientType={gradientType}
+                        previewMode={previewMode}
+                        colorFormat={colorFormat}
+                        selectedAnimationId={selectedAnimationId}
+                        isFavorite={encoded ? isFavorite(encoded) : false}
+                        onToggleFavorite={() => encoded && onToggleFavorite(encoded)}
+                        onSelect={onSelectGradient}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

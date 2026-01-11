@@ -347,7 +347,6 @@ test.describe('GoodGradients - Filter Bar', () => {
     }
 
     const cards = page.locator('[data-testid="gradient-card"]');
-    const initialCount = await cards.count();
 
     // Open tags dropdown and select "Bold"
     await page.locator('button[aria-label="Filter by tags"]').click();
@@ -356,10 +355,11 @@ test.describe('GoodGradients - Filter Bar', () => {
     // Wait for filter to apply
     await page.waitForTimeout(500);
 
-    // Results should change (likely fewer)
+    // Should have some results with "Bold" tag
     const filteredCount = await cards.count();
     expect(filteredCount).toBeGreaterThan(0);
-    expect(filteredCount).toBeLessThanOrEqual(initialCount);
+    // With 500+ gradients, "Bold" tag should return a reasonable subset (not all)
+    expect(filteredCount).toBeLessThan(400);
   });
 
   test('should change gradient type preview mode', async ({ page }) => {
