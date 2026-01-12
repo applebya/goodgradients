@@ -230,3 +230,48 @@ export const GradientCard = memo(function GradientCard({
     </article>
   );
 });
+
+// Skeleton card for loading states
+export function SkeletonCard() {
+  return (
+    <div
+      data-testid="skeleton-card"
+      className="bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden"
+    >
+      {/* Gradient Preview Skeleton */}
+      <div className="aspect-video loading-shimmer" />
+
+      {/* Card Content Skeleton */}
+      <div className="p-4">
+        {/* Title + Badge */}
+        <div className="flex items-start justify-between mb-2">
+          <div className="h-5 w-24 rounded loading-shimmer" />
+          <div className="h-5 w-16 rounded loading-shimmer" />
+        </div>
+
+        {/* Description */}
+        <div className="space-y-1.5 mb-3">
+          <div className="h-3.5 w-full rounded loading-shimmer" />
+          <div className="h-3.5 w-3/4 rounded loading-shimmer" />
+        </div>
+
+        {/* Color Swatches */}
+        <div className="flex gap-2 mb-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="flex items-center gap-1.5 flex-1">
+              <div className="w-5 h-5 rounded-md loading-shimmer" />
+              <div className="h-3 flex-1 rounded loading-shimmer" />
+            </div>
+          ))}
+        </div>
+
+        {/* Tags */}
+        <div className="flex gap-1.5">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="h-5 w-12 rounded-full loading-shimmer" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

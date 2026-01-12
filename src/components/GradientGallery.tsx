@@ -1,6 +1,6 @@
 import { useMemo, useRef, useEffect, useState, useCallback } from 'react';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
-import { GradientCard } from './GradientCard';
+import { GradientCard, SkeletonCard } from './GradientCard';
 import { gradients } from '@/data/gradients';
 import { encodeGradient, parseGradientCSS } from '@/lib/gradient-url';
 import { filterGradientsByColors } from '@/lib/wizard';
@@ -80,6 +80,16 @@ export function GradientGallery({
 }: GradientGalleryProps) {
   const listRef = useRef<HTMLDivElement>(null);
   const columns = useColumnCount();
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Brief skeleton display on initial mount for smooth perceived loading
+  useEffect(() => {
+    // Use requestAnimationFrame to ensure we show skeleton for at least one frame
+    const frame = requestAnimationFrame(() => {
+      setIsHydrated(true);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   const filteredGradients = useMemo(() => {
     let result: GradientPreset[] = gradients;
@@ -133,6 +143,24 @@ export function GradientGallery({
     scrollMargin: listRef.current?.offsetTop ?? 0,
     enabled: useVirtualization,
   });
+
+  // Show skeleton grid during initial hydration
+  if (!isHydrated) {
+    const skeletonCount = columns * 3; // 3 rows of skeletons
+    return (
+      <section aria-label="Loading gradients">
+        <header className="mb-6">
+          <div className="h-8 w-64 rounded loading-shimmer mb-2" />
+          <div className="h-4 w-32 rounded loading-shimmer" />
+        </header>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {Array.from({ length: skeletonCount }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   if (filteredGradients.length === 0) {
     return (
