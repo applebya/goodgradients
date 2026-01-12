@@ -1,6 +1,6 @@
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { toast } from './Toast';
-import { Heart } from './icons';
+import { Heart, Copy, Check } from './icons';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
@@ -60,10 +60,20 @@ export const GradientCard = memo(function GradientCard({
     };
   }, [selectedAnimation]);
 
+  const [copied, setCopied] = useState(false);
+
   const handleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
     onToggleFavorite();
   };
+
+  const handleQuickCopy = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(`background: ${displayGradient};`);
+    setCopied(true);
+    toast.success('CSS copied');
+    setTimeout(() => setCopied(false), 1500);
+  }, [displayGradient]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -180,21 +190,41 @@ export const GradientCard = memo(function GradientCard({
         }}
       >
         {renderPreviewContent()}
-        {/* Favorite button - visible on hover/focus or when favorited */}
-        <Button
-          size="icon-sm"
-          variant="ghost"
-          className={cn(
-            'absolute top-2 right-2 z-10 h-8 w-8 rounded-full bg-black/40 hover:bg-black/60 transition-all',
-            isFavorite
-              ? 'text-red-400 opacity-100'
-              : 'text-white/70 hover:text-white opacity-0 group-hover:opacity-100 group-focus-within:opacity-100'
-          )}
-          onClick={handleFavorite}
-          aria-label={isFavorite ? `Remove ${gradient.name} from favorites` : `Add ${gradient.name} to favorites`}
-        >
-          <Heart className={cn('w-4 h-4', isFavorite && 'fill-current')} />
-        </Button>
+        {/* Action buttons - visible on hover/focus */}
+        <div className="absolute top-2 right-2 z-10 flex gap-1">
+          {/* Quick copy button */}
+          <Button
+            size="icon-sm"
+            variant="ghost"
+            className={cn(
+              'h-8 w-8 rounded-full bg-black/40 hover:bg-black/60 transition-all',
+              'text-white/70 hover:text-white opacity-0 group-hover:opacity-100 group-focus-within:opacity-100'
+            )}
+            onClick={handleQuickCopy}
+            aria-label="Copy gradient CSS"
+          >
+            {copied ? (
+              <Check className="w-4 h-4 text-green-400" />
+            ) : (
+              <Copy className="w-4 h-4" />
+            )}
+          </Button>
+          {/* Favorite button */}
+          <Button
+            size="icon-sm"
+            variant="ghost"
+            className={cn(
+              'h-8 w-8 rounded-full bg-black/40 hover:bg-black/60 transition-all',
+              isFavorite
+                ? 'text-red-400 opacity-100'
+                : 'text-white/70 hover:text-white opacity-0 group-hover:opacity-100 group-focus-within:opacity-100'
+            )}
+            onClick={handleFavorite}
+            aria-label={isFavorite ? `Remove ${gradient.name} from favorites` : `Add ${gradient.name} to favorites`}
+          >
+            <Heart className={cn('w-4 h-4', isFavorite && 'fill-current')} />
+          </Button>
+        </div>
       </div>
 
       {/* Card Content - with shimmer overlay */}
