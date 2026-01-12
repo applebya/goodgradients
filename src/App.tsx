@@ -3,6 +3,7 @@ import { toast, useToastRegister } from './components/Toast';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { GradientGallery } from './components/GradientGallery';
+import { ScrollToTop } from './components/ScrollToTop';
 import { SplashScreen } from './components/SplashScreen';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
@@ -136,6 +137,8 @@ export default function App() {
       </main>
 
       <Footer />
+
+      <ScrollToTop />
 
       {/* Gradient Detail Modal - lazy loaded */}
       {selectedGradientDef && (
