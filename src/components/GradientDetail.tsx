@@ -4,7 +4,6 @@ import { toast } from './Toast';
 import {
   Copy,
   Heart,
-  Share2,
   Check,
   Layers,
   Circle,
@@ -18,6 +17,7 @@ import {
   ChevronDown,
   Palette,
 } from './icons';
+import { ShareMenu } from './ShareMenu';
 import { animations, getAnimationById } from '@/data/animations';
 import type { Animation, ColorFormat } from '@/types';
 import {
@@ -122,14 +122,6 @@ export function GradientDetail({
     },
     []
   );
-
-  const handleShare = useCallback(async () => {
-    const url = onShare();
-    const success = await copyToClipboard(url);
-    if (success) {
-      toast.success('Share URL copied');
-    }
-  }, [onShare]);
 
   const handleTypeChange = useCallback((type: GradientType) => {
     if (!gradientDef) return;
@@ -299,15 +291,10 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               Gradient
             </DialogTitle>
             <div className="flex items-center gap-1">
-              <Button
-                size="icon-sm"
-                variant="ghost"
-                className="h-8 w-8"
-                onClick={handleShare}
-                aria-label="Share gradient"
-              >
-                <Share2 className="w-4 h-4" />
-              </Button>
+              <ShareMenu
+                getShareUrl={onShare}
+                gradientName={`${gradientDef.type} gradient`}
+              />
               <Button
                 size="icon-sm"
                 variant="ghost"
