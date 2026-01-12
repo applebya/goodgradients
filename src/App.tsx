@@ -4,6 +4,7 @@ import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { GradientGallery } from './components/GradientGallery';
 import { ScrollToTop } from './components/ScrollToTop';
+import { GitHubCorner } from './components/GitHubCorner';
 import { SplashScreen } from './components/SplashScreen';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
@@ -139,6 +140,7 @@ export default function App() {
       <Footer />
 
       <ScrollToTop />
+      <GitHubCorner />
 
       {/* Gradient Detail Modal - lazy loaded */}
       {selectedGradientDef && (
