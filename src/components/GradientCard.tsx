@@ -10,6 +10,14 @@ import { getAnimationById } from '@/data/animations';
 import { getGradientAverageColor, getBestTextColor } from '@/lib/contrast';
 import type { GradientPreset, UIPreviewMode, GradientTypeFilter, ColorFormat } from '@/types';
 
+// Preload the GradientDetail chunk on hover for instant modal opening
+let detailPreloaded = false;
+function preloadGradientDetail() {
+  if (detailPreloaded) return;
+  detailPreloaded = true;
+  import('./GradientDetail');
+}
+
 interface GradientCardProps {
   gradient: GradientPreset;
   gradientType: GradientTypeFilter;
@@ -155,6 +163,8 @@ export const GradientCard = memo(function GradientCard({
       )}
       onClick={() => onSelect(gradient)}
       onKeyDown={handleKeyDown}
+      onMouseEnter={preloadGradientDetail}
+      onFocus={preloadGradientDetail}
     >
       {/* Inject animation keyframes - sourced from internal animations.ts, safe */}
       {selectedAnimation?.keyframes && (
