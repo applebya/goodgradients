@@ -11,8 +11,8 @@ export function GitHubCorner() {
       aria-label="View source on GitHub"
     >
       <svg
-        width="80"
-        height="80"
+        width="56"
+        height="56"
         viewBox="0 0 250 250"
         className="fill-neutral-800 text-white"
         aria-hidden="true"
@@ -40,8 +40,8 @@ export function GitHubCorner() {
         }
         @media (max-width: 640px) {
           .github-corner svg {
-            width: 60px;
-            height: 60px;
+            width: 48px;
+            height: 48px;
           }
         }
       `}</style>

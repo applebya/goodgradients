@@ -96,8 +96,8 @@ export function Header({
             </kbd>
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-1 flex-shrink-0">
+          {/* Actions - pr-14 to avoid GitHub corner overlap */}
+          <div className="flex items-center gap-1 flex-shrink-0 pr-14 sm:pr-12">
             {/* Mobile: Filter sheet trigger */}
             {isMobile && (
               <MobileFilterSheet
