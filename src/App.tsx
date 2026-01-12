@@ -1,11 +1,15 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState, lazy, Suspense } from 'react';
 import { toast, useToastRegister } from './components/Toast';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { GradientGallery } from './components/GradientGallery';
-import { GradientDetail } from './components/GradientDetail';
 import { SplashScreen } from './components/SplashScreen';
 import { ErrorBoundary } from './components/ErrorBoundary';
+
+// Lazy load the modal - it's not needed until user clicks a gradient
+const GradientDetail = lazy(() =>
+  import('./components/GradientDetail').then(m => ({ default: m.GradientDetail }))
+);
 import { useAppState } from './hooks/useAppState';
 import { useKeyboard } from './hooks/useKeyboard';
 import { gradients } from './data/gradients';
@@ -133,25 +137,29 @@ export default function App() {
 
       <Footer />
 
-      {/* Gradient Detail Modal */}
-      <ErrorBoundary>
-        <GradientDetail
-          gradientDef={selectedGradientDef}
-          encodedGradient={state.selectedGradient}
-          isOpen={!!selectedGradientDef}
-          onClose={actions.closeModal}
-          selectedAnimationId={state.selectedAnimationId}
-          isAnimating={state.isAnimating}
-          isFavorite={state.selectedGradient ? actions.isFavorite(state.selectedGradient) : false}
-          colorFormat={state.colorFormat}
-          onGradientChange={actions.updateGradient}
-          onAnimationChange={actions.selectAnimation}
-          onToggleAnimating={actions.toggleAnimating}
-          onToggleFavorite={() => state.selectedGradient && actions.toggleFavorite(state.selectedGradient)}
-          onColorFormatChange={actions.setColorFormat}
-          onShare={handleShare}
-        />
-      </ErrorBoundary>
+      {/* Gradient Detail Modal - lazy loaded */}
+      {selectedGradientDef && (
+        <ErrorBoundary>
+          <Suspense fallback={null}>
+            <GradientDetail
+              gradientDef={selectedGradientDef}
+              encodedGradient={state.selectedGradient}
+              isOpen={!!selectedGradientDef}
+              onClose={actions.closeModal}
+              selectedAnimationId={state.selectedAnimationId}
+              isAnimating={state.isAnimating}
+              isFavorite={state.selectedGradient ? actions.isFavorite(state.selectedGradient) : false}
+              colorFormat={state.colorFormat}
+              onGradientChange={actions.updateGradient}
+              onAnimationChange={actions.selectAnimation}
+              onToggleAnimating={actions.toggleAnimating}
+              onToggleFavorite={() => state.selectedGradient && actions.toggleFavorite(state.selectedGradient)}
+              onColorFormatChange={actions.setColorFormat}
+              onShare={handleShare}
+            />
+          </Suspense>
+        </ErrorBoundary>
+      )}
     </div>
   );
 }
