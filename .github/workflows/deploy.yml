@@ -31,6 +31,9 @@ jobs:
 
       - name: Build
         run: bun run build
+        env:
+          VITE_PUBLIC_POSTHOG_KEY: phc_aE49e5qyRbqCm04buCzspfb3sta0kvFwyEQjuDl9UWB
+          VITE_PUBLIC_POSTHOG_HOST: https://us.i.posthog.com
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

@@ -10,7 +10,7 @@ interface HeaderProps {
   // Search
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  searchInputRef?: React.RefObject<HTMLInputElement>;
+  searchInputRef?: React.RefObject<HTMLInputElement | null>;
 
   // Filters
   colors: WizardColor[];

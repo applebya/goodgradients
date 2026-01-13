@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
+import tailwindcss from '@tailwindcss/vite';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
@@ -7,6 +8,7 @@ import path from 'path';
 export default defineConfig({
   plugins: [
     react(),
+    tailwindcss(),
     visualizer({
       filename: 'bundle-stats.html',
       open: false,
