@@ -1,10 +1,15 @@
-import { useRef } from 'react';
-import { Search, Shuffle } from './icons';
-import { Button } from './ui/button';
-import { FilterBar } from './FilterBar';
-import { MobileFilterSheet } from './MobileFilterSheet';
-import { useIsMobile } from '@/hooks/useMediaQuery';
-import type { WizardColor, GradientTypeFilter, UIPreviewMode, ColorFormat } from '@/types';
+import { useRef } from "react";
+import { Search, Shuffle } from "./icons";
+import { Button } from "./ui/button";
+import { FilterBar } from "./FilterBar";
+import { MobileFilterSheet } from "./MobileFilterSheet";
+import { useIsMobile } from "@/hooks/useMediaQuery";
+import type {
+  WizardColor,
+  GradientTypeFilter,
+  UIPreviewMode,
+  ColorFormat,
+} from "@/types";
 
 interface HeaderProps {
   // Search
@@ -66,12 +71,15 @@ export function Header({
   const activeFilterCount = colors.length + tags.length;
 
   return (
-    <header className="bg-neutral-950 border-b border-neutral-800">
+    <header className="sticky top-0 z-20 bg-neutral-950/95 backdrop-blur-sm border-b border-neutral-800">
       <div className="max-w-7xl mx-auto px-4 py-2">
         {/* Top row: Logo + Search + Actions */}
         <div className="flex items-center gap-3">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-1.5 flex-shrink-0 hover:opacity-80 transition-opacity">
+          <a
+            href="/"
+            className="flex items-center gap-1.5 flex-shrink-0 hover:opacity-80 transition-opacity"
+          >
             <div className="w-6 h-6 rounded-md bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center">
               <span className="text-white font-bold text-[10px]">GG</span>
             </div>
