@@ -5,7 +5,7 @@
  * This allows favoriting any gradient, not just presets.
  */
 
-const STORAGE_KEY = 'goodgradients_favorites_v2';
+const STORAGE_KEY = "goodgradients_favorites_v2";
 
 export interface FavoritesStore {
   gradients: string[]; // Encoded gradient definitions
@@ -23,16 +23,27 @@ const DEFAULT_STORE: FavoritesStore = {
 export function loadFavorites(): FavoritesStore {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return DEFAULT_STORE;
+    if (!stored) {
+      // Initialize storage with empty state to prevent first-click failure
+      const initial: FavoritesStore = { ...DEFAULT_STORE };
+      saveFavorites(initial);
+      return initial;
+    }
 
     const parsed = JSON.parse(stored) as FavoritesStore;
     // Validate structure
     if (!Array.isArray(parsed.gradients)) {
-      return DEFAULT_STORE;
+      // Re-initialize with default store if structure is invalid
+      const initial: FavoritesStore = { ...DEFAULT_STORE };
+      saveFavorites(initial);
+      return initial;
     }
     return parsed;
   } catch {
-    return DEFAULT_STORE;
+    // On any error, initialize with default store
+    const initial: FavoritesStore = { ...DEFAULT_STORE };
+    saveFavorites(initial);
+    return initial;
   }
 }
 
@@ -43,7 +54,7 @@ export function saveFavorites(store: FavoritesStore): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
   } catch (error) {
-    console.warn('Failed to save favorites to localStorage:', error);
+    console.warn("Failed to save favorites to localStorage:", error);
   }
 }
 
@@ -72,7 +83,10 @@ export function removeFavorite(gradientDef: string): FavoritesStore {
 /**
  * Toggle a gradient's favorite status
  */
-export function toggleFavorite(gradientDef: string): { favorites: string[]; added: boolean } {
+export function toggleFavorite(gradientDef: string): {
+  favorites: string[];
+  added: boolean;
+} {
   const store = loadFavorites();
   const isCurrentlyFavorite = store.gradients.includes(gradientDef);
 
