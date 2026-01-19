@@ -501,66 +501,6 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
             }}
           />
 
-          {/* Recommended Text Color - Prominent */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 p-3 bg-neutral-800/60 rounded-lg border border-neutral-700">
-            <span className="text-sm text-neutral-300 font-medium whitespace-nowrap">
-              Best text colors:
-            </span>
-            <div className="flex flex-wrap gap-2 flex-1">
-              {bestTextColors.map((tc, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleCopy(tc.color, `text-${i}`)}
-                  className={cn(
-                    "flex items-center gap-2 px-3 py-1.5 rounded-md transition-all",
-                    "bg-neutral-900 border border-neutral-600 hover:border-neutral-400",
-                  )}
-                  title={`${tc.name}: ${formatContrastRatio(tc.ratio)} contrast`}
-                >
-                  <div
-                    className="w-5 h-5 rounded-md border border-white/20 flex items-center justify-center"
-                    style={{ background: tc.color }}
-                  >
-                    <span
-                      className="text-[9px] font-bold"
-                      style={{
-                        color: tc.color === "#ffffff" ? "#000" : "#fff",
-                      }}
-                    >
-                      Aa
-                    </span>
-                  </div>
-                  <div
-                    className="w-3 h-3 rounded-full border border-white/30 hidden sm:block"
-                    style={{ background: tc.color }}
-                  />
-                  <span className="text-sm font-mono font-medium text-neutral-200">
-                    {tc.color}
-                  </span>
-                  {tc.meetsAAA && (
-                    <Badge
-                      variant="secondary"
-                      className="text-[10px] px-1.5 py-0 bg-green-900/50 text-green-400 border-green-700"
-                    >
-                      AAA
-                    </Badge>
-                  )}
-                  {!tc.meetsAAA && tc.meetsAA && (
-                    <Badge
-                      variant="secondary"
-                      className="text-[10px] px-1.5 py-0 bg-yellow-900/50 text-yellow-400 border-yellow-700"
-                    >
-                      AA
-                    </Badge>
-                  )}
-                  {copiedId === `text-${i}` && (
-                    <Check className="w-3.5 h-3.5 text-green-500" />
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Use Cases - Each with fullscreen option */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {/* Background */}
@@ -640,29 +580,90 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
             </button>
           </div>
 
-          {/* Color chips - quick copy */}
-          <div className="flex gap-1.5 flex-wrap">
-            {colors.map((color, i) => {
-              const formattedColor = convertColor(color, colorFormat);
-              return (
-                <button
-                  key={i}
-                  onClick={() => handleCopy(formattedColor, `color-${i}`)}
-                  className="flex items-center gap-1.5 px-2 py-1 bg-neutral-800/50 border border-neutral-700 rounded hover:border-neutral-500 transition-colors"
-                >
-                  <div
-                    className="w-4 h-4 rounded"
-                    style={{ background: color }}
-                  />
-                  <span className="text-xs font-mono text-neutral-300">
-                    {formattedColor}
-                  </span>
-                  {copiedId === `color-${i}` && (
-                    <Check className="w-3 h-3 text-green-500" />
-                  )}
-                </button>
-              );
-            })}
+          {/* Colors Section */}
+          <div className="space-y-3">
+            <span className="text-sm text-neutral-400 font-medium">Colors</span>
+
+            {/* Gradient Colors - quick copy chips */}
+            <div className="flex gap-1.5 flex-wrap">
+              {colors.map((color, i) => {
+                const formattedColor = convertColor(color, colorFormat);
+                return (
+                  <button
+                    key={i}
+                    onClick={() => handleCopy(formattedColor, `color-${i}`)}
+                    className="flex items-center gap-1.5 px-2 py-1 bg-neutral-800/50 border border-neutral-700 rounded hover:border-neutral-500 transition-colors"
+                  >
+                    <div
+                      className="w-4 h-4 rounded"
+                      style={{ background: color }}
+                    />
+                    <span className="text-xs font-mono text-neutral-300">
+                      {formattedColor}
+                    </span>
+                    {copiedId === `color-${i}` && (
+                      <Check className="w-3 h-3 text-green-500" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Recommended Text Colors */}
+            <div className="p-3 bg-neutral-800/60 rounded-lg border border-neutral-700">
+              <span className="text-xs text-neutral-400 mb-2 block">
+                Recommended text colors:
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {bestTextColors.map((tc, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handleCopy(tc.color, `text-${i}`)}
+                    className={cn(
+                      "flex items-center gap-2 px-3 py-1.5 rounded-md transition-all",
+                      "bg-neutral-900 border border-neutral-600 hover:border-neutral-400",
+                    )}
+                    title={`${tc.name}: ${formatContrastRatio(tc.ratio)} contrast`}
+                  >
+                    <div
+                      className="w-5 h-5 rounded-md border border-white/20 flex items-center justify-center"
+                      style={{ background: tc.color }}
+                    >
+                      <span
+                        className="text-[9px] font-bold"
+                        style={{
+                          color: tc.color === "#ffffff" ? "#000" : "#fff",
+                        }}
+                      >
+                        Aa
+                      </span>
+                    </div>
+                    <span className="text-sm font-mono font-medium text-neutral-200">
+                      {tc.color}
+                    </span>
+                    {tc.meetsAAA && (
+                      <Badge
+                        variant="secondary"
+                        className="text-[10px] px-1.5 py-0 bg-green-900/50 text-green-400 border-green-700"
+                      >
+                        AAA
+                      </Badge>
+                    )}
+                    {!tc.meetsAAA && tc.meetsAA && (
+                      <Badge
+                        variant="secondary"
+                        className="text-[10px] px-1.5 py-0 bg-yellow-900/50 text-yellow-400 border-yellow-700"
+                      >
+                        AA
+                      </Badge>
+                    )}
+                    {copiedId === `text-${i}` && (
+                      <Check className="w-3.5 h-3.5 text-green-500" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Collapsible: Gradient Settings */}
