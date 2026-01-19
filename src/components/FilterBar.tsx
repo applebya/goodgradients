@@ -8,7 +8,6 @@ import {
   Palette,
   Heart,
 } from "./icons";
-import { Button } from "./ui/button";
 import {
   Popover,
   PopoverContent,
@@ -204,15 +203,14 @@ export function FilterBar({
 
         {/* Clear Filters */}
         {hasActiveFilters && (
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
             onClick={onClearFilters}
-            className="h-7 px-2 text-xs text-neutral-400 hover:text-white"
+            className="flex h-7 items-center gap-1 rounded-md px-2 text-xs text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors focus:outline-none focus:ring-2 focus:ring-neutral-600"
+            aria-label="Clear all filters"
           >
-            <X className="h-3 w-3 mr-1" />
+            <X className="h-3 w-3" />
             Clear
-          </Button>
+          </button>
         )}
       </div>
 
