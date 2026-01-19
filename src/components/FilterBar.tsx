@@ -98,10 +98,26 @@ export function FilterBar({
             >
               {colors.length === 0 ? (
                 <span className="text-neutral-400">Any Colors</span>
-              ) : colors.length <= 2 ? (
-                <span>{colors.join(", ")}</span>
               ) : (
-                <span>{colors.length} colors</span>
+                <div className="flex items-center gap-1.5">
+                  <div className="flex -space-x-1">
+                    {colors.slice(0, 3).map((color) => {
+                      const opt = COLOR_OPTIONS.find((o) => o.value === color);
+                      return (
+                        <div
+                          key={color}
+                          className="w-3.5 h-3.5 rounded-full border border-neutral-800"
+                          style={{ background: opt?.previewGradient }}
+                        />
+                      );
+                    })}
+                  </div>
+                  <span>
+                    {colors.length === 1
+                      ? colors[0]
+                      : `${colors.length} colors`}
+                  </span>
+                </div>
               )}
               <ChevronDown className="h-3 w-3 text-neutral-500" />
             </button>
