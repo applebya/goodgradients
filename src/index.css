@@ -62,6 +62,19 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
+  /* Ensure pointer cursor on all interactive elements */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled),
+  [type="reset"]:not(:disabled),
+  input[type="range"]:not(:disabled),
+  a[href],
+  summary,
+  [tabindex]:not([tabindex="-1"]):not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
 }
 
 /* Scrollbar styling */
