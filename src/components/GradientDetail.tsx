@@ -77,6 +77,9 @@ export function GradientDetail({
 }: GradientDetailProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [fullscreenMode, setFullscreenMode] = useState<
+    "background" | "button" | "badge" | "text" | null
+  >(null);
   const [codeTab, setCodeTab] = useState<"css" | "swift" | "kotlin" | "ai">(
     "css",
   );
@@ -87,8 +90,30 @@ export function GradientDetail({
   useEffect(() => {
     if (!isOpen) {
       setIsFullscreen(false);
+      setFullscreenMode(null);
     }
   }, [isOpen]);
+
+  // Close fullscreen on Escape key
+  useEffect(() => {
+    if (!isFullscreen) return;
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsFullscreen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [isFullscreen]);
+
+  const handleFullscreenPreview = (
+    mode: "background" | "button" | "badge" | "text",
+  ) => {
+    setFullscreenMode(mode);
+    setIsFullscreen(true);
+  };
 
   // Get selected animation
   const selectedAnimation = selectedAnimationId
@@ -205,12 +230,176 @@ ${formattedColors.map((c, i) => `- ${c} at ${gradientDef.stops[i]?.position ?? i
 ${gradientDef.type === "linear" || gradientDef.type === "conic" ? `Angle: ${gradientDef.angle}°` : "Radiates from center"}
 ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimation.description}` : ""}`.trim();
 
+  // Render fullscreen content based on mode
+  const renderFullscreenContent = () => {
+    switch (fullscreenMode) {
+      case "background":
+        return (
+          <div
+            className="w-full h-full flex flex-col items-center justify-center p-8"
+            style={{
+              background: displayGradient,
+              ...getAnimationStyle(selectedAnimation),
+            }}
+          >
+            <h1
+              className="text-5xl font-bold mb-4 drop-shadow-lg"
+              style={{ color: bestTextColors[0]?.color || "#ffffff" }}
+            >
+              Your Headline Here
+            </h1>
+            <p
+              className="text-xl opacity-80 mb-8 max-w-md text-center drop-shadow"
+              style={{ color: bestTextColors[0]?.color || "#ffffff" }}
+            >
+              This is how your content looks on this gradient background.
+            </p>
+            <div className="flex gap-4">
+              <button
+                className="px-6 py-3 rounded-lg font-medium shadow-lg"
+                style={{
+                  background: bestTextColors[0]?.color || "#ffffff",
+                  color: avgColor,
+                }}
+              >
+                Primary Button
+              </button>
+              <button
+                className="px-6 py-3 rounded-lg font-medium border-2"
+                style={{
+                  borderColor: bestTextColors[0]?.color || "#ffffff",
+                  color: bestTextColors[0]?.color || "#ffffff",
+                }}
+              >
+                Secondary
+              </button>
+            </div>
+            {/* Text color suggestions */}
+            <div className="absolute bottom-6 left-6 flex gap-2">
+              <span
+                className="text-xs opacity-60"
+                style={{ color: bestTextColors[0]?.color || "#fff" }}
+              >
+                Recommended text:
+              </span>
+              {bestTextColors.map((tc, i) => (
+                <button
+                  key={i}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCopy(tc.color, `text-${i}`);
+                  }}
+                  className="flex items-center gap-1 px-2 py-1 rounded bg-black/30 backdrop-blur-sm"
+                >
+                  <div
+                    className="w-3 h-3 rounded-full border border-white/30"
+                    style={{ background: tc.color }}
+                  />
+                  <span
+                    className="text-xs font-mono"
+                    style={{ color: tc.color }}
+                  >
+                    {tc.color}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      case "button":
+        return (
+          <div className="w-full h-full flex items-center justify-center bg-neutral-900">
+            <button
+              className="px-12 py-6 rounded-xl text-2xl font-bold text-white shadow-2xl hover:scale-105 transition-transform"
+              style={{
+                background: displayGradient,
+                ...getAnimationStyle(selectedAnimation),
+              }}
+            >
+              Gradient Button
+            </button>
+          </div>
+        );
+      case "badge":
+        return (
+          <div className="w-full h-full flex flex-col items-center justify-center gap-6 bg-neutral-900">
+            <div className="flex gap-4">
+              <span
+                className="px-4 py-2 rounded-full text-sm text-white font-medium"
+                style={{
+                  background: displayGradient,
+                  ...getAnimationStyle(selectedAnimation),
+                }}
+              >
+                New Feature
+              </span>
+              <span
+                className="px-4 py-2 rounded-full text-sm text-white font-medium"
+                style={{
+                  background: displayGradient,
+                  ...getAnimationStyle(selectedAnimation),
+                }}
+              >
+                Popular
+              </span>
+              <span
+                className="px-4 py-2 rounded-full text-sm text-white font-medium"
+                style={{
+                  background: displayGradient,
+                  ...getAnimationStyle(selectedAnimation),
+                }}
+              >
+                Pro
+              </span>
+            </div>
+            <div className="flex gap-4">
+              <span
+                className="px-6 py-3 rounded-lg text-lg text-white font-semibold"
+                style={{
+                  background: displayGradient,
+                  ...getAnimationStyle(selectedAnimation),
+                }}
+              >
+                Premium Badge
+              </span>
+            </div>
+          </div>
+        );
+      case "text":
+        return (
+          <div className="w-full h-full flex flex-col items-center justify-center gap-8 bg-neutral-900">
+            <h1
+              className="text-7xl font-black bg-clip-text text-transparent"
+              style={{
+                backgroundImage: displayGradient,
+                ...getAnimationStyle(selectedAnimation),
+              }}
+            >
+              Gradient Text
+            </h1>
+            <p
+              className="text-3xl font-semibold bg-clip-text text-transparent max-w-2xl text-center"
+              style={{
+                backgroundImage: displayGradient,
+                ...getAnimationStyle(selectedAnimation),
+              }}
+            >
+              Beautiful typography with gradient colors
+            </p>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   // Fullscreen overlay rendered via Portal to ensure it's above Dialog overlay
   // Uses z-[9999] to guarantee it's above all Radix Dialog layers
   // onPointerDown handlers prevent Radix Dialog from detecting "click outside"
   const fullscreenOverlay =
     isFullscreen &&
     isOpen &&
+    fullscreenMode &&
     createPortal(
       <div
         data-testid="fullscreen-overlay"
@@ -239,81 +428,11 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
         >
           <X className="w-6 h-6" />
         </button>
-        <div
-          className="w-full h-full flex flex-col items-center justify-center p-8"
-          onClick={() => setIsFullscreen(false)}
-          style={{
-            background: displayGradient,
-            ...getAnimationStyle(selectedAnimation),
-          }}
-        >
-          {/* Sample content */}
-          <h1
-            className="text-5xl font-bold mb-4 drop-shadow-lg"
-            style={{ color: bestTextColors[0]?.color || "#ffffff" }}
-          >
-            Your Headline Here
-          </h1>
-          <p
-            className="text-xl opacity-80 mb-8 max-w-md text-center drop-shadow"
-            style={{ color: bestTextColors[0]?.color || "#ffffff" }}
-          >
-            This is how your content looks on this gradient background.
-          </p>
-          <div className="flex gap-4">
-            <button
-              className="px-6 py-3 rounded-lg font-medium shadow-lg"
-              style={{
-                background: bestTextColors[0]?.color || "#ffffff",
-                color: avgColor,
-              }}
-            >
-              Primary Button
-            </button>
-            <button
-              className="px-6 py-3 rounded-lg font-medium border-2"
-              style={{
-                borderColor: bestTextColors[0]?.color || "#ffffff",
-                color: bestTextColors[0]?.color || "#ffffff",
-              }}
-            >
-              Secondary
-            </button>
-          </div>
-
-          {/* Text color suggestions */}
-          <div className="absolute bottom-6 left-6 flex gap-2">
-            <span
-              className="text-xs opacity-60"
-              style={{ color: bestTextColors[0]?.color || "#fff" }}
-            >
-              Recommended text:
-            </span>
-            {bestTextColors.map((tc, i) => (
-              <button
-                key={i}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleCopy(tc.color, `text-${i}`);
-                }}
-                className="flex items-center gap-1 px-2 py-1 rounded bg-black/30 backdrop-blur-sm"
-              >
-                <div
-                  className="w-3 h-3 rounded-full border border-white/30"
-                  style={{ background: tc.color }}
-                />
-                <span className="text-xs font-mono" style={{ color: tc.color }}>
-                  {tc.color}
-                </span>
-              </button>
-            ))}
-          </div>
-
-          <div className="absolute bottom-6 right-6">
-            <Badge className="bg-black/50 backdrop-blur-sm text-white border-0">
-              Click anywhere to close
-            </Badge>
-          </div>
+        {renderFullscreenContent()}
+        <div className="absolute bottom-6 right-6">
+          <Badge className="bg-black/50 backdrop-blur-sm text-white border-0">
+            Click anywhere to close
+          </Badge>
         </div>
       </div>,
       document.body,
@@ -373,39 +492,14 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
             />
           )}
 
-          {/* Preview with fullscreen option */}
+          {/* Preview - gradient only, no text overlay */}
           <div
-            className="rounded-xl relative overflow-hidden h-28 cursor-pointer group"
+            className="rounded-xl relative overflow-hidden h-28"
             style={{
               background: displayGradient,
               ...getAnimationStyle(selectedAnimation),
             }}
-            onClick={() => setIsFullscreen(true)}
-          >
-            {/* Text preview */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span
-                className="text-lg font-semibold drop-shadow-md opacity-80 group-hover:opacity-100 transition-opacity"
-                style={{ color: bestTextColors[0]?.color || "#ffffff" }}
-              >
-                Click to preview fullscreen
-              </span>
-            </div>
-
-            {/* Expand button */}
-            <Button
-              size="icon-xs"
-              variant="ghost"
-              className="absolute top-2 right-2 bg-black/40 text-white hover:bg-black/60 h-7 w-7"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsFullscreen(true);
-              }}
-              aria-label="Fullscreen preview"
-            >
-              <Maximize2 className="w-3.5 h-3.5" />
-            </Button>
-          </div>
+          />
 
           {/* Recommended Text Color - Prominent */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 p-3 bg-neutral-800/60 rounded-lg border border-neutral-700">
@@ -467,16 +561,17 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
             </div>
           </div>
 
-          {/* Use Cases - Most Prominent */}
+          {/* Use Cases - Each with fullscreen option */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {/* Background */}
-            <div
-              className="rounded-lg p-3 flex flex-col items-center justify-center min-h-[70px] cursor-pointer hover:scale-[1.02] transition-transform"
+            <button
+              className="rounded-lg p-3 flex flex-col items-center justify-center min-h-[70px] cursor-pointer hover:scale-[1.02] transition-transform relative group/preview"
               style={{
                 background: displayGradient,
                 ...getAnimationStyle(selectedAnimation),
               }}
-              onClick={() => setIsFullscreen(true)}
+              onClick={() => handleFullscreenPreview("background")}
+              aria-label="Preview gradient as background in fullscreen"
             >
               <span
                 className="text-xs font-medium drop-shadow"
@@ -484,25 +579,38 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               >
                 Background
               </span>
-            </div>
+              <Maximize2
+                className="w-3 h-3 absolute top-1.5 right-1.5 opacity-0 group-hover/preview:opacity-70 transition-opacity"
+                style={{ color: bestTextColors[0]?.color || "#fff" }}
+              />
+            </button>
 
             {/* Button */}
-            <div className="flex items-center justify-center bg-neutral-800 rounded-lg p-2">
-              <button
-                className="px-3 py-1.5 rounded text-xs font-medium text-white"
+            <button
+              className="flex items-center justify-center bg-neutral-800 rounded-lg p-2 cursor-pointer hover:scale-[1.02] transition-transform relative group/preview"
+              onClick={() => handleFullscreenPreview("button")}
+              aria-label="Preview gradient as button in fullscreen"
+            >
+              <span
+                className="px-3 py-1.5 rounded text-xs font-medium text-white pointer-events-none"
                 style={{
                   background: displayGradient,
                   ...getAnimationStyle(selectedAnimation),
                 }}
               >
                 Button
-              </button>
-            </div>
+              </span>
+              <Maximize2 className="w-3 h-3 absolute top-1.5 right-1.5 opacity-0 group-hover/preview:opacity-70 transition-opacity text-neutral-400" />
+            </button>
 
             {/* Text */}
-            <div className="flex items-center justify-center bg-neutral-800 rounded-lg p-2">
+            <button
+              className="flex items-center justify-center bg-neutral-800 rounded-lg p-2 cursor-pointer hover:scale-[1.02] transition-transform relative group/preview"
+              onClick={() => handleFullscreenPreview("text")}
+              aria-label="Preview gradient as text in fullscreen"
+            >
               <span
-                className="text-lg font-bold bg-clip-text text-transparent"
+                className="text-lg font-bold bg-clip-text text-transparent pointer-events-none"
                 style={{
                   backgroundImage: displayGradient,
                   ...getAnimationStyle(selectedAnimation),
@@ -510,12 +618,17 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               >
                 Text
               </span>
-            </div>
+              <Maximize2 className="w-3 h-3 absolute top-1.5 right-1.5 opacity-0 group-hover/preview:opacity-70 transition-opacity text-neutral-400" />
+            </button>
 
             {/* Badge */}
-            <div className="flex items-center justify-center bg-neutral-800 rounded-lg p-2">
+            <button
+              className="flex items-center justify-center bg-neutral-800 rounded-lg p-2 cursor-pointer hover:scale-[1.02] transition-transform relative group/preview"
+              onClick={() => handleFullscreenPreview("badge")}
+              aria-label="Preview gradient as badge in fullscreen"
+            >
               <span
-                className="px-2 py-0.5 rounded-full text-[10px] text-white font-medium"
+                className="px-2 py-0.5 rounded-full text-[10px] text-white font-medium pointer-events-none"
                 style={{
                   background: displayGradient,
                   ...getAnimationStyle(selectedAnimation),
@@ -523,7 +636,8 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               >
                 Badge
               </span>
-            </div>
+              <Maximize2 className="w-3 h-3 absolute top-1.5 right-1.5 opacity-0 group-hover/preview:opacity-70 transition-opacity text-neutral-400" />
+            </button>
           </div>
 
           {/* Color chips - quick copy */}
