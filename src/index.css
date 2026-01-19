@@ -253,9 +253,9 @@
     105deg,
     transparent 0%,
     transparent 40%,
-    rgba(255, 255, 255, 0.15) 45%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0.15) 55%,
+    rgba(255, 255, 255, 0.08) 45%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.08) 55%,
     transparent 60%,
     transparent 100%
   );
@@ -277,7 +277,7 @@
 .card-shimmer:hover::before,
 .card-shimmer:focus-within::before {
   opacity: 1;
-  animation: card-shimmer-sweep 0.5s ease-out forwards;
+  animation: card-shimmer-sweep 0.7s ease-out forwards;
 }
 
 /* Content area shimmer overlay */
@@ -289,9 +289,9 @@
     105deg,
     transparent 0%,
     transparent 40%,
-    rgba(255, 255, 255, 0.08) 45%,
-    rgba(255, 255, 255, 0.12) 50%,
-    rgba(255, 255, 255, 0.08) 55%,
+    rgba(255, 255, 255, 0.04) 45%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 55%,
     transparent 60%,
     transparent 100%
   );
@@ -304,7 +304,22 @@
 .card-shimmer:hover .card-shimmer-content::before,
 .card-shimmer:focus-within .card-shimmer-content::before {
   opacity: 1;
-  animation: card-shimmer-sweep 0.5s ease-out forwards;
+  animation: card-shimmer-sweep 0.7s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-shimmer::before,
+  .card-shimmer-content::before {
+    animation: none;
+    opacity: 0;
+  }
+
+  .card-shimmer:hover::before,
+  .card-shimmer:focus-within::before,
+  .card-shimmer:hover .card-shimmer-content::before,
+  .card-shimmer:focus-within .card-shimmer-content::before {
+    opacity: 0;
+  }
 }
 
 /* Splash screen animations */
