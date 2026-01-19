@@ -53,11 +53,11 @@ const GRADIENT_TYPES: { value: GradientTypeFilter; label: string }[] = [
 ];
 
 const PREVIEW_MODES: { value: UIPreviewMode; label: string }[] = [
-  { value: "background", label: "Background UI" },
-  { value: "button", label: "Button UI" },
-  { value: "text", label: "Text UI" },
-  { value: "badge", label: "Badge UI" },
-  { value: "border", label: "Border UI" },
+  { value: "background", label: "Background" },
+  { value: "button", label: "Button" },
+  { value: "badge", label: "Badge" },
+  { value: "text", label: "Text" },
+  { value: "border", label: "Border" },
 ];
 
 export function FilterBar({

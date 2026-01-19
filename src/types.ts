@@ -3,7 +3,7 @@ export type {
   GradientDefinition,
   ColorStop,
   GradientType,
-} from './lib/gradient-url';
+} from "./lib/gradient-url";
 
 // Core gradient preset type (for browsing presets)
 export interface GradientPreset {
@@ -21,16 +21,16 @@ export type Gradient = GradientPreset;
 
 // Consolidated categories - matches header UI
 export type GradientCategory =
-  | 'Purple'
-  | 'Blue'
-  | 'Green'
-  | 'Pink'
-  | 'Orange'
-  | 'Teal'
-  | 'Warm'
-  | 'Cool'
-  | 'Neutral'
-  | 'Multi';
+  | "Purple"
+  | "Blue"
+  | "Green"
+  | "Pink"
+  | "Orange"
+  | "Teal"
+  | "Warm"
+  | "Cool"
+  | "Neutral"
+  | "Multi";
 
 // Animation types
 export interface Animation {
@@ -46,21 +46,31 @@ export interface Animation {
   };
 }
 
-export type AnimationCategory = 'Movement' | 'Rotation' | 'Pulse' | 'Morph' | 'Wave';
+export type AnimationCategory =
+  | "Movement"
+  | "Rotation"
+  | "Pulse"
+  | "Morph"
+  | "Wave";
 
 // Gradient type filter
-export type GradientTypeFilter = 'linear' | 'radial' | 'conic';
+export type GradientTypeFilter = "linear" | "radial" | "conic";
 
 // UI preview mode for cards
-export type UIPreviewMode = 'background' | 'button' | 'text' | 'badge' | 'border';
+export type UIPreviewMode =
+  | "background"
+  | "button"
+  | "badge"
+  | "text"
+  | "border";
 
 // Color format for display/export
-export type ColorFormat = 'hex' | 'rgb' | 'rgba' | 'hsl' | 'hsla';
+export type ColorFormat = "hex" | "rgb" | "rgba" | "hsl" | "hsla";
 
 // App state - now uses gradient definition instead of ID
 export interface AppState {
   // View state
-  view: 'gallery' | 'detail';
+  view: "gallery" | "detail";
 
   // Selected gradient (full definition, not just ID)
   // Format: "linear,135,667eea:0,764ba2:100"
@@ -68,16 +78,16 @@ export interface AppState {
   selectedAnimationId: string | null;
 
   // Filters
-  category: GradientCategory | 'All' | 'Favorites';
+  category: GradientCategory | "All" | "Favorites";
   searchQuery: string;
-  colors: WizardColor[];            // Color filters (multi-select)
-  tags: string[];                   // Tag filters (multi-select)
+  colors: WizardColor[]; // Color filters (multi-select)
+  tags: string[]; // Tag filters (multi-select)
   gradientType: GradientTypeFilter; // Gradient type filter (defaults to 'linear')
 
   // UI state
   isAnimating: boolean;
-  previewMode: UIPreviewMode;       // How to display gradients in cards
-  colorFormat: ColorFormat;         // Color format for display/export
+  previewMode: UIPreviewMode; // How to display gradients in cards
+  colorFormat: ColorFormat; // Color format for display/export
 }
 
 // URL state (serialized subset of AppState)
@@ -99,7 +109,7 @@ export interface URLState {
 }
 
 // Export formats
-export type ExportFormat = 'css' | 'tailwind' | 'ai';
+export type ExportFormat = "css" | "tailwind" | "ai";
 
 export interface ExportResult {
   format: ExportFormat;
@@ -113,4 +123,12 @@ export interface FavoritesState {
 }
 
 // Wizard colors match the main categories
-export type WizardColor = 'Purple' | 'Blue' | 'Green' | 'Pink' | 'Orange' | 'Teal' | 'Neutral' | 'Multi';
+export type WizardColor =
+  | "Purple"
+  | "Blue"
+  | "Green"
+  | "Pink"
+  | "Orange"
+  | "Teal"
+  | "Neutral"
+  | "Multi";

@@ -543,24 +543,6 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               <Maximize2 className="w-3 h-3 absolute top-1.5 right-1.5 opacity-0 group-hover/preview:opacity-70 transition-opacity text-neutral-400" />
             </button>
 
-            {/* Text */}
-            <button
-              className="flex items-center justify-center bg-neutral-800 rounded-lg p-2 cursor-pointer hover:scale-[1.02] transition-transform relative group/preview"
-              onClick={() => handleFullscreenPreview("text")}
-              aria-label="Preview gradient as text in fullscreen"
-            >
-              <span
-                className="text-lg font-bold bg-clip-text text-transparent pointer-events-none"
-                style={{
-                  backgroundImage: displayGradient,
-                  ...getAnimationStyle(selectedAnimation),
-                }}
-              >
-                Text
-              </span>
-              <Maximize2 className="w-3 h-3 absolute top-1.5 right-1.5 opacity-0 group-hover/preview:opacity-70 transition-opacity text-neutral-400" />
-            </button>
-
             {/* Badge */}
             <button
               className="flex items-center justify-center bg-neutral-800 rounded-lg p-2 cursor-pointer hover:scale-[1.02] transition-transform relative group/preview"
@@ -575,6 +557,24 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                 }}
               >
                 Badge
+              </span>
+              <Maximize2 className="w-3 h-3 absolute top-1.5 right-1.5 opacity-0 group-hover/preview:opacity-70 transition-opacity text-neutral-400" />
+            </button>
+
+            {/* Text */}
+            <button
+              className="flex items-center justify-center bg-neutral-800 rounded-lg p-2 cursor-pointer hover:scale-[1.02] transition-transform relative group/preview"
+              onClick={() => handleFullscreenPreview("text")}
+              aria-label="Preview gradient as text in fullscreen"
+            >
+              <span
+                className="text-lg font-bold bg-clip-text text-transparent pointer-events-none"
+                style={{
+                  backgroundImage: displayGradient,
+                  ...getAnimationStyle(selectedAnimation),
+                }}
+              >
+                Text
               </span>
               <Maximize2 className="w-3 h-3 absolute top-1.5 right-1.5 opacity-0 group-hover/preview:opacity-70 transition-opacity text-neutral-400" />
             </button>
