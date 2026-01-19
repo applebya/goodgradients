@@ -22,11 +22,16 @@
 }
 
 @keyframes border-shine {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(255,255,255,0.1), inset 0 0 0 1px rgba(255,255,255,0);
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(255, 255, 255, 0.1),
+      inset 0 0 0 1px rgba(255, 255, 255, 0);
   }
   50% {
-    box-shadow: 0 0 20px 3px rgba(255,255,255,0.2), inset 0 0 20px 3px rgba(255,255,255,0.15);
+    box-shadow:
+      0 0 20px 3px rgba(255, 255, 255, 0.2),
+      inset 0 0 20px 3px rgba(255, 255, 255, 0.15);
   }
 }
 
@@ -84,7 +89,8 @@
 /* No container-affecting animations (opacity, transform, filter) */
 
 @keyframes gradient-shift {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
   50% {
@@ -93,7 +99,8 @@
 }
 
 @keyframes gradient-wave {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
   50% {
@@ -123,7 +130,8 @@
 }
 
 @keyframes gradient-sway {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
   25% {
@@ -138,7 +146,8 @@
 }
 
 @keyframes gradient-drift {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 50% 0%;
   }
   50% {
@@ -147,7 +156,8 @@
 }
 
 @keyframes gradient-pulse-move {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 50% 50%;
     background-size: 200% 200%;
   }
@@ -158,7 +168,8 @@
 }
 
 @keyframes gradient-breathe-move {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 50% 50%;
     background-size: 300% 300%;
   }
@@ -172,7 +183,6 @@
   background-size: 200% 200%;
   animation: gradient-shift 3s ease infinite;
 }
-
 
 /* Loading shimmer */
 @keyframes shimmer {
@@ -221,7 +231,7 @@
 
 /* Border shimmer - sweeps once on hover */
 .card-shimmer::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: -1px;
   border-radius: inherit;
@@ -237,9 +247,13 @@
     transparent 100%
   );
   background-size: 100% 100%;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   mask-composite: exclude;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   opacity: 0;
   pointer-events: none;
@@ -255,7 +269,7 @@
 
 /* Content area shimmer overlay */
 .card-shimmer-content::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(
@@ -284,7 +298,8 @@
 
 /* Subtle breathe animation - just gentle scale, no rotation/translation */
 @keyframes splash-breathe {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -294,7 +309,8 @@
 
 /* Loading dots */
 @keyframes splash-dot {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.3;
     transform: scale(0.8);
   }
@@ -316,4 +332,27 @@
 
 .animate-fullscreen-fade-in {
   animation: fullscreen-fade-in 0.3s ease-out forwards;
+}
+
+/* Lightning icon pulse for active animation */
+@keyframes icon-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 2px currentColor);
+  }
+  50% {
+    opacity: 0.7;
+    filter: drop-shadow(0 0 6px currentColor);
+  }
+}
+
+.animate-icon-pulse {
+  animation: icon-pulse 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-icon-pulse {
+    animation: none;
+  }
 }
