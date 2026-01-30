@@ -45,6 +45,7 @@ import {
 
 interface GradientDetailProps {
   gradientDef: GradientDefinition | null;
+  gradientName: string | null;
   encodedGradient: string | null;
   isOpen: boolean;
   onClose: () => void;
@@ -62,6 +63,7 @@ interface GradientDetailProps {
 
 export function GradientDetail({
   gradientDef,
+  gradientName,
   isOpen,
   onClose,
   selectedAnimationId,
@@ -452,12 +454,12 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
           <DialogHeader className="pb-2">
             <div className="flex items-center justify-between">
               <DialogTitle className="flex items-center gap-2 text-base">
-                Gradient
+                {gradientName ?? "Custom Gradient"}
               </DialogTitle>
               <div className="flex items-center gap-1">
                 <ShareMenu
                   getShareUrl={onShare}
-                  gradientName={`${gradientDef.type} gradient`}
+                  gradientName={gradientName ?? `${gradientDef.type} gradient`}
                 />
                 <Button
                   size="icon-sm"
@@ -491,15 +493,6 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               dangerouslySetInnerHTML={{ __html: selectedAnimation.keyframes }}
             />
           )}
-
-          {/* Preview - gradient only, no text overlay */}
-          <div
-            className="rounded-xl relative overflow-hidden h-28"
-            style={{
-              background: displayGradient,
-              ...getAnimationStyle(selectedAnimation),
-            }}
-          />
 
           {/* Use Cases - Each with fullscreen option */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">

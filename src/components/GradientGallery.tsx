@@ -1,13 +1,20 @@
-import { useMemo, useRef, useEffect, useState, useCallback } from 'react';
-import { useWindowVirtualizer } from '@tanstack/react-virtual';
-import { GradientCard, SkeletonCard } from './GradientCard';
-import { gradients } from '@/data/gradients';
-import { encodeGradient, parseGradientCSS } from '@/lib/gradient-url';
-import { filterGradientsByColors } from '@/lib/wizard';
-import type { GradientPreset, GradientCategory, WizardColor, GradientTypeFilter, UIPreviewMode, ColorFormat } from '@/types';
+import { useMemo, useRef, useEffect, useState, useCallback } from "react";
+import { useWindowVirtualizer } from "@tanstack/react-virtual";
+import { GradientCard, SkeletonCard } from "./GradientCard";
+import { gradients } from "@/data/gradients";
+import { encodeGradient, parseGradientCSS } from "@/lib/gradient-url";
+import { filterGradientsByColors } from "@/lib/wizard";
+import type {
+  GradientPreset,
+  GradientCategory,
+  WizardColor,
+  GradientTypeFilter,
+  UIPreviewMode,
+  ColorFormat,
+} from "@/types";
 
 interface GradientGalleryProps {
-  category: GradientCategory | 'All' | 'Favorites';
+  category: GradientCategory | "All" | "Favorites";
   searchQuery: string;
   colors: WizardColor[];
   tags: string[];
@@ -37,7 +44,7 @@ function getEncodedGradient(preset: GradientPreset): string | null {
 // Hook to get responsive column count
 function useColumnCount() {
   const [columns, setColumns] = useState(() => {
-    if (typeof window === 'undefined') return 4;
+    if (typeof window === "undefined") return 4;
     const width = window.innerWidth;
     if (width < 640) return 1;
     if (width < 1024) return 2;
@@ -54,8 +61,8 @@ function useColumnCount() {
       else setColumns(4);
     };
 
-    window.addEventListener('resize', updateColumns);
-    return () => window.removeEventListener('resize', updateColumns);
+    window.addEventListener("resize", updateColumns);
+    return () => window.removeEventListener("resize", updateColumns);
   }, []);
 
   return columns;
@@ -95,12 +102,12 @@ export function GradientGallery({
     let result: GradientPreset[] = gradients;
 
     // Apply category filter first
-    if (category === 'Favorites') {
+    if (category === "Favorites") {
       result = result.filter((g) => {
         const encoded = getEncodedGradient(g);
         return encoded && favorites.includes(encoded);
       });
-    } else if (category !== 'All') {
+    } else if (category !== "All") {
       result = result.filter((g) => g.category === category);
     }
 
@@ -111,9 +118,7 @@ export function GradientGallery({
 
     // Apply tags filter (gradient must have ANY selected tag - OR logic)
     if (tags.length > 0) {
-      result = result.filter((g) =>
-        tags.some((tag) => g.tags.includes(tag))
-      );
+      result = result.filter((g) => tags.some((tag) => g.tags.includes(tag)));
     }
 
     // Apply search filter
@@ -124,9 +129,12 @@ export function GradientGallery({
           g.name.toLowerCase().includes(searchLower) ||
           g.description.toLowerCase().includes(searchLower) ||
           g.tags.some((t) => t.toLowerCase().includes(searchLower)) ||
-          g.colors.some((c) => c.toLowerCase().includes(searchLower))
+          g.colors.some((c) => c.toLowerCase().includes(searchLower)),
       );
     }
+
+    // Sort by name alphabetically
+    result = [...result].sort((a, b) => a.name.localeCompare(b.name));
 
     return result;
   }, [category, searchQuery, colors, tags, favorites]);
@@ -169,12 +177,12 @@ export function GradientGallery({
           <span className="text-2xl">🎨</span>
         </div>
         <h3 className="text-lg font-medium text-white mb-2">
-          {category === 'Favorites' ? 'No favorites yet' : 'No gradients found'}
+          {category === "Favorites" ? "No favorites yet" : "No gradients found"}
         </h3>
         <p className="text-neutral-400 max-w-sm">
-          {category === 'Favorites'
-            ? 'Start adding gradients to your favorites by clicking the heart icon.'
-            : 'Try adjusting your filters or search query.'}
+          {category === "Favorites"
+            ? "Start adding gradients to your favorites by clicking the heart icon."
+            : "Try adjusting your filters or search query."}
         </p>
       </div>
     );
@@ -215,13 +223,16 @@ export function GradientGallery({
         <div
           style={{
             height: `${virtualizer.getTotalSize()}px`,
-            width: '100%',
-            position: 'relative',
+            width: "100%",
+            position: "relative",
           }}
         >
           {virtualItems.map((virtualRow) => {
             const startIndex = virtualRow.index * columns;
-            const rowGradients = filteredGradients.slice(startIndex, startIndex + columns);
+            const rowGradients = filteredGradients.slice(
+              startIndex,
+              startIndex + columns,
+            );
 
             return (
               <div
@@ -229,10 +240,10 @@ export function GradientGallery({
                 data-index={virtualRow.index}
                 ref={virtualizer.measureElement}
                 style={{
-                  position: 'absolute',
+                  position: "absolute",
                   top: 0,
                   left: 0,
-                  width: '100%',
+                  width: "100%",
                   transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
                 }}
               >
@@ -248,7 +259,9 @@ export function GradientGallery({
                         colorFormat={colorFormat}
                         selectedAnimationId={selectedAnimationId}
                         isFavorite={encoded ? isFavorite(encoded) : false}
-                        onToggleFavorite={() => encoded && onToggleFavorite(encoded)}
+                        onToggleFavorite={() =>
+                          encoded && onToggleFavorite(encoded)
+                        }
                         onSelect={onSelectGradient}
                       />
                     );

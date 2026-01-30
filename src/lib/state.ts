@@ -1,37 +1,65 @@
-import type { AppState, URLState, GradientCategory, WizardColor, GradientTypeFilter, ColorFormat } from '@/types';
-import { decodeGradient } from './gradient-url';
+import type {
+  AppState,
+  URLState,
+  GradientCategory,
+  WizardColor,
+  GradientTypeFilter,
+  ColorFormat,
+} from "@/types";
+import { decodeGradient } from "./gradient-url";
 
 const DEFAULT_STATE: AppState = {
-  view: 'gallery',
+  view: "gallery",
   selectedGradient: null,
   selectedAnimationId: null,
-  category: 'All',
-  searchQuery: '',
+  category: "All",
+  searchQuery: "",
   colors: [],
   tags: [],
-  gradientType: 'linear',
+  gradientType: "linear",
   isAnimating: true,
-  previewMode: 'background',
-  colorFormat: 'hex',
+  previewMode: "background",
+  colorFormat: "hex",
 };
 
 // Valid values for validation
-const VALID_COLORS: WizardColor[] = ['Purple', 'Blue', 'Green', 'Pink', 'Orange', 'Teal', 'Neutral', 'Multi'];
-const VALID_GRADIENT_TYPES: GradientTypeFilter[] = ['linear', 'radial', 'conic'];
-const VALID_COLOR_FORMATS: ColorFormat[] = ['hex', 'rgb', 'rgba', 'hsl', 'hsla'];
+const VALID_COLORS: WizardColor[] = [
+  "Purple",
+  "Blue",
+  "Green",
+  "Pink",
+  "Orange",
+  "Teal",
+  "Neutral",
+  "Multi",
+];
+const VALID_GRADIENT_TYPES: GradientTypeFilter[] = [
+  "linear",
+  "radial",
+  "conic",
+];
+const VALID_COLOR_FORMATS: ColorFormat[] = [
+  "hex",
+  "rgb",
+  "rgba",
+  "hsl",
+  "hsla",
+];
 
 /**
  * Parse URL search params into app state
  */
-export function parseURLState(searchParams: URLSearchParams): Partial<AppState> {
+export function parseURLState(
+  searchParams: URLSearchParams,
+): Partial<AppState> {
   const urlState: URLState = {
-    g: searchParams.get('g') ?? undefined,
-    a: searchParams.get('a') ?? undefined,
-    c: searchParams.get('c') ?? undefined,
-    q: searchParams.get('q') ?? undefined,
-    colors: searchParams.get('colors') ?? undefined,
-    t: searchParams.get('t') ?? undefined,
-    cf: searchParams.get('cf') ?? undefined,
+    g: searchParams.get("g") ?? undefined,
+    a: searchParams.get("a") ?? undefined,
+    c: searchParams.get("c") ?? undefined,
+    q: searchParams.get("q") ?? undefined,
+    colors: searchParams.get("colors") ?? undefined,
+    t: searchParams.get("t") ?? undefined,
+    cf: searchParams.get("cf") ?? undefined,
   };
 
   const state: Partial<AppState> = {};
@@ -41,24 +69,37 @@ export function parseURLState(searchParams: URLSearchParams): Partial<AppState> 
     const decoded = decodeGradient(urlState.g);
     if (decoded) {
       state.selectedGradient = urlState.g;
-      state.view = 'detail';
+      state.view = "detail";
     }
   }
 
   if (urlState.a) state.selectedAnimationId = urlState.a;
-  if (urlState.c) state.category = urlState.c as GradientCategory | 'All' | 'Favorites';
+  if (urlState.c)
+    state.category = urlState.c as GradientCategory | "All" | "Favorites";
   if (urlState.q) state.searchQuery = urlState.q;
 
-  // Parse colors filter (comma-separated)
+  // Parse colors filter (comma-separated, case-insensitive)
   if (urlState.colors) {
-    const colorList = urlState.colors.split(',').filter(c => VALID_COLORS.includes(c as WizardColor));
+    const colorList = urlState.colors
+      .split(",")
+      .map((c) => {
+        // Case-insensitive match against valid colors
+        const match = VALID_COLORS.find(
+          (valid) => valid.toLowerCase() === c.toLowerCase(),
+        );
+        return match;
+      })
+      .filter((c): c is WizardColor => c !== undefined);
     if (colorList.length > 0) {
-      state.colors = colorList as WizardColor[];
+      state.colors = colorList;
     }
   }
 
   // Parse gradient type filter
-  if (urlState.t && VALID_GRADIENT_TYPES.includes(urlState.t as GradientTypeFilter)) {
+  if (
+    urlState.t &&
+    VALID_GRADIENT_TYPES.includes(urlState.t as GradientTypeFilter)
+  ) {
     state.gradientType = urlState.t as GradientTypeFilter;
   }
 
@@ -76,13 +117,16 @@ export function parseURLState(searchParams: URLSearchParams): Partial<AppState> 
 export function serializeStateToURL(state: Partial<AppState>): URLSearchParams {
   const params = new URLSearchParams();
 
-  if (state.selectedGradient) params.set('g', state.selectedGradient);
-  if (state.selectedAnimationId) params.set('a', state.selectedAnimationId);
-  if (state.category && state.category !== 'All') params.set('c', state.category);
-  if (state.searchQuery) params.set('q', state.searchQuery);
-  if (state.colors && state.colors.length > 0) params.set('colors', state.colors.join(','));
-  if (state.gradientType) params.set('t', state.gradientType);
-  if (state.colorFormat && state.colorFormat !== 'hex') params.set('cf', state.colorFormat);
+  if (state.selectedGradient) params.set("g", state.selectedGradient);
+  if (state.selectedAnimationId) params.set("a", state.selectedAnimationId);
+  if (state.category && state.category !== "All")
+    params.set("c", state.category);
+  if (state.searchQuery) params.set("q", state.searchQuery);
+  if (state.colors && state.colors.length > 0)
+    params.set("colors", state.colors.map((c) => c.toLowerCase()).join(","));
+  if (state.gradientType) params.set("t", state.gradientType);
+  if (state.colorFormat && state.colorFormat !== "hex")
+    params.set("cf", state.colorFormat);
 
   return params;
 }
@@ -107,7 +151,7 @@ export function updateURL(state: Partial<AppState>): void {
     ? `${window.location.pathname}?${queryString}`
     : window.location.pathname;
 
-  window.history.replaceState(null, '', newURL);
+  window.history.replaceState(null, "", newURL);
 }
 
 /**
@@ -124,8 +168,25 @@ export function getInitialState(): AppState {
 export function getMinimalShareState(state: AppState): Partial<AppState> {
   const minimal: Partial<AppState> = {};
 
+  // Core selection
   if (state.selectedGradient) minimal.selectedGradient = state.selectedGradient;
-  if (state.selectedAnimationId) minimal.selectedAnimationId = state.selectedAnimationId;
+  if (state.selectedAnimationId)
+    minimal.selectedAnimationId = state.selectedAnimationId;
+
+  // Category filter
+  if (state.category && state.category !== "All")
+    minimal.category = state.category;
+
+  // Color filter
+  if (state.colors && state.colors.length > 0) minimal.colors = state.colors;
+
+  // Gradient type filter (only if not default)
+  if (state.gradientType && state.gradientType !== "linear")
+    minimal.gradientType = state.gradientType;
+
+  // Color format (only if not default)
+  if (state.colorFormat && state.colorFormat !== "hex")
+    minimal.colorFormat = state.colorFormat;
 
   return minimal;
 }
