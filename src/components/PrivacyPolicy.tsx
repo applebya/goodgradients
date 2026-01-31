@@ -58,11 +58,21 @@ export function PrivacyPolicy() {
             <h2 className="text-lg font-semibold text-white mb-3">
               Local Storage
             </h2>
-            <p>
-              Your favorites are stored locally in your browser using
-              localStorage. This data never leaves your device and is not sent
-              to any server.
+            <p className="mb-3">
+              We use your browser's localStorage to store preferences locally.
+              This data never leaves your device and is not sent to any server.
             </p>
+            <ul className="list-disc list-inside space-y-1 ml-4">
+              <li>
+                <strong className="text-neutral-200">Favorites:</strong> Your
+                saved gradient selections
+              </li>
+              <li>
+                <strong className="text-neutral-200">Splash screen:</strong> A
+                timestamp to avoid showing the intro animation more than once
+                per 24-hour period
+              </li>
+            </ul>
           </section>
 
           <section>

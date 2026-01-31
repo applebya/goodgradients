@@ -35,6 +35,30 @@ gradients.forEach((g) => {
   }
 });
 
+// Check if splash was shown within the last 24 hours
+const SPLASH_STORAGE_KEY = "goodgradients-splash-seen";
+const SPLASH_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+function shouldShowSplash(): boolean {
+  try {
+    const lastSeen = localStorage.getItem(SPLASH_STORAGE_KEY);
+    if (!lastSeen) return true;
+    const timestamp = parseInt(lastSeen, 10);
+    if (isNaN(timestamp)) return true;
+    return Date.now() - timestamp > SPLASH_EXPIRY_MS;
+  } catch {
+    return true; // Show splash if localStorage unavailable
+  }
+}
+
+function markSplashSeen(): void {
+  try {
+    localStorage.setItem(SPLASH_STORAGE_KEY, Date.now().toString());
+  } catch {
+    // Ignore localStorage errors
+  }
+}
+
 export default function App() {
   // Simple path-based routing for static pages
   const path = window.location.pathname;
@@ -42,7 +66,7 @@ export default function App() {
     return <PrivacyPolicy />;
   }
 
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(shouldShowSplash);
   const { state, favorites, actions } = useAppState();
 
   // Register toast function
@@ -109,7 +133,10 @@ export default function App() {
     <div className="min-h-screen bg-neutral-950 text-white">
       {showSplash && (
         <SplashScreen
-          onComplete={() => setShowSplash(false)}
+          onComplete={() => {
+            markSplashSeen();
+            setShowSplash(false);
+          }}
           minDuration={2000}
         />
       )}
