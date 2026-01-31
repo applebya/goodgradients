@@ -62,7 +62,7 @@ export function Header({
     <>
       {/* Top bar: Logo - scrolls with page */}
       <div className="bg-neutral-950">
-        <div className="max-w-7xl mx-auto px-4 py-3">
+        <div className="max-w-7xl mx-auto px-4 py-2">
           <a
             href="/"
             className="inline-flex items-center hover:opacity-80 transition-opacity"
