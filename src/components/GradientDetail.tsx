@@ -770,60 +770,73 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
             <span>Gradient Settings</span>
             <ChevronRight
               className={cn(
-                "w-4 h-4 transition-transform",
+                "w-4 h-4 transition-transform duration-200 ease-out",
                 showSettings && "rotate-90",
               )}
             />
           </button>
-          {showSettings && (
-            <div className="space-y-3 pb-2">
-              <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
-                <Button
-                  variant={
-                    gradientDef.type === "linear" ? "default" : "outline"
-                  }
-                  onClick={() => handleTypeChange("linear")}
-                  size="sm"
-                >
-                  <Layers className="w-3 h-3 mr-1" /> Linear
-                </Button>
-                <Button
-                  variant={
-                    gradientDef.type === "radial" ? "default" : "outline"
-                  }
-                  onClick={() => handleTypeChange("radial")}
-                  size="sm"
-                >
-                  <Circle className="w-3 h-3 mr-1" /> Radial
-                </Button>
-                <Button
-                  variant={gradientDef.type === "conic" ? "default" : "outline"}
-                  onClick={() => handleTypeChange("conic")}
-                  size="sm"
-                >
-                  <RotateCw className="w-3 h-3 mr-1" /> Conic
-                </Button>
-              </div>
-              {(gradientDef.type === "linear" ||
-                gradientDef.type === "conic") && (
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-neutral-400 w-12">Angle</span>
-                  <input
-                    type="range"
-                    min="0"
-                    max="360"
-                    value={gradientDef.angle}
-                    onChange={(e) => handleAngleChange(Number(e.target.value))}
-                    aria-label="Gradient angle"
-                    className="flex-1 h-1.5 bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
-                  />
-                  <span className="text-xs text-white w-8 text-right">
-                    {gradientDef.angle}°
-                  </span>
+          <div
+            className={cn(
+              "grid transition-all duration-200 ease-out",
+              showSettings
+                ? "grid-rows-[1fr] opacity-100"
+                : "grid-rows-[0fr] opacity-0",
+            )}
+          >
+            <div className="overflow-hidden">
+              <div className="space-y-3 pb-2">
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+                  <Button
+                    variant={
+                      gradientDef.type === "linear" ? "default" : "outline"
+                    }
+                    onClick={() => handleTypeChange("linear")}
+                    size="sm"
+                  >
+                    <Layers className="w-3 h-3 mr-1" /> Linear
+                  </Button>
+                  <Button
+                    variant={
+                      gradientDef.type === "radial" ? "default" : "outline"
+                    }
+                    onClick={() => handleTypeChange("radial")}
+                    size="sm"
+                  >
+                    <Circle className="w-3 h-3 mr-1" /> Radial
+                  </Button>
+                  <Button
+                    variant={
+                      gradientDef.type === "conic" ? "default" : "outline"
+                    }
+                    onClick={() => handleTypeChange("conic")}
+                    size="sm"
+                  >
+                    <RotateCw className="w-3 h-3 mr-1" /> Conic
+                  </Button>
                 </div>
-              )}
+                {(gradientDef.type === "linear" ||
+                  gradientDef.type === "conic") && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-neutral-400 w-12">Angle</span>
+                    <input
+                      type="range"
+                      min="0"
+                      max="360"
+                      value={gradientDef.angle}
+                      onChange={(e) =>
+                        handleAngleChange(Number(e.target.value))
+                      }
+                      aria-label="Gradient angle"
+                      className="flex-1 h-1.5 bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
+                    />
+                    <span className="text-xs text-white w-8 text-right">
+                      {gradientDef.angle}°
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
-          )}
+          </div>
 
           {/* Collapsible: Animation */}
           <button
@@ -832,7 +845,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
           >
             <span className="flex items-center gap-2">
               <Zap className="w-4 h-4" />
-              Animate Gradient
+              Animate
               {selectedAnimation && (
                 <Badge variant="secondary" className="text-xs">
                   {selectedAnimation.name}
@@ -862,77 +875,108 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               )}
               <ChevronRight
                 className={cn(
-                  "w-4 h-4 transition-transform",
+                  "w-4 h-4 transition-transform duration-200 ease-out",
                   showAnimation && "rotate-90",
                 )}
               />
             </div>
           </button>
-          {showAnimation && (
-            <div className="space-y-3 pb-2">
-              {/* Animation options with B&W preview for clarity */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {animations.map((anim) => {
-                  const isSelected =
-                    anim.id === "none"
-                      ? !selectedAnimationId
-                      : selectedAnimationId === anim.id;
+          <div
+            className={cn(
+              "grid transition-all duration-200 ease-out",
+              showAnimation
+                ? "grid-rows-[1fr] opacity-100"
+                : "grid-rows-[0fr] opacity-0",
+            )}
+          >
+            <div className="overflow-hidden">
+              <div className="space-y-3 pb-2">
+                {/* Animation options with B&W preview for clarity */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {animations.map((anim) => {
+                    const isSelected =
+                      anim.id === "none"
+                        ? !selectedAnimationId
+                        : selectedAnimationId === anim.id;
 
-                  // B&W gradient for clear animation visibility
-                  const previewGradient =
-                    "linear-gradient(135deg, #000 0%, #fff 100%)";
+                    // B&W gradient for clear animation visibility
+                    const previewGradient =
+                      "linear-gradient(135deg, #000 0%, #fff 100%)";
 
-                  return (
-                    <button
-                      key={anim.id}
-                      onClick={() => {
-                        if (anim.id === "none") {
-                          onAnimationChange(null);
-                        } else {
-                          onAnimationChange(anim.id);
-                          if (!isAnimating) onToggleAnimating();
-                        }
-                      }}
-                      className={cn(
-                        "rounded-lg border overflow-hidden",
-                        isSelected
-                          ? "border-white ring-2 ring-white/20"
-                          : "border-neutral-700 hover:border-neutral-500",
-                      )}
-                    >
-                      <div
-                        className="h-14"
-                        style={{
-                          background: previewGradient,
-                          ...parseAnimationStyle(
-                            anim.id !== "none" ? anim : undefined,
-                          ),
+                    return (
+                      <button
+                        key={anim.id}
+                        onClick={() => {
+                          if (anim.id === "none") {
+                            onAnimationChange(null);
+                          } else {
+                            onAnimationChange(anim.id);
+                            if (!isAnimating) onToggleAnimating();
+                          }
                         }}
-                      />
-                      <div className="p-1.5 bg-neutral-900">
-                        <p className="text-[11px] text-white font-medium truncate">
-                          {anim.name}
-                        </p>
-                        <p className="text-[9px] text-neutral-500 truncate">
-                          {anim.description}
-                        </p>
-                      </div>
-                    </button>
-                  );
-                })}
+                        className={cn(
+                          "rounded-lg border overflow-hidden",
+                          isSelected
+                            ? "border-white ring-2 ring-white/20"
+                            : "border-neutral-700 hover:border-neutral-500",
+                        )}
+                      >
+                        <div
+                          className="h-14"
+                          style={{
+                            background: previewGradient,
+                            ...parseAnimationStyle(
+                              anim.id !== "none" ? anim : undefined,
+                            ),
+                          }}
+                        />
+                        <div className="p-1.5 bg-neutral-900">
+                          <p className="text-[11px] text-white font-medium truncate">
+                            {anim.name}
+                          </p>
+                          <p className="text-[9px] text-neutral-500 truncate">
+                            {anim.description}
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
-          )}
+          </div>
 
-          {/* Code Export - Always Visible Tabs */}
+          {/* Code Export */}
           <div className="border-t border-neutral-800 pt-3">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-neutral-400">Copy Code</span>
+            {/* Tab Buttons + Color Format on same row */}
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <div className="flex gap-1 overflow-x-auto">
+                {(["css", "swift", "kotlin", "ai"] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setCodeTab(tab)}
+                    className={cn(
+                      "px-2.5 sm:px-3 py-1.5 text-xs rounded transition-colors whitespace-nowrap flex-shrink-0",
+                      codeTab === tab
+                        ? "bg-neutral-700 text-white"
+                        : "bg-neutral-800/50 text-neutral-400 hover:text-white hover:bg-neutral-800",
+                    )}
+                  >
+                    {tab === "css"
+                      ? "CSS"
+                      : tab === "swift"
+                        ? "SwiftUI"
+                        : tab === "kotlin"
+                          ? "Kotlin"
+                          : "AI Agent"}
+                  </button>
+                ))}
+              </div>
               {/* Color Format Dropdown */}
               <Popover>
                 <PopoverTrigger asChild>
                   <button
-                    className="flex h-6 items-center gap-1.5 rounded border border-neutral-700 bg-neutral-900 px-2 text-xs text-white hover:bg-neutral-800"
+                    className="flex h-7 items-center gap-1.5 rounded border border-neutral-700 bg-neutral-900 px-2 text-xs text-white hover:bg-neutral-800 flex-shrink-0"
                     aria-label="Color format"
                   >
                     <Palette className="h-3 w-3 text-neutral-500" />
@@ -963,32 +1007,9 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                 </PopoverContent>
               </Popover>
             </div>
-            {/* Tab Buttons */}
-            <div className="flex gap-1 mb-2 overflow-x-auto pb-1 -mx-1 px-1">
-              {(["css", "swift", "kotlin", "ai"] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setCodeTab(tab)}
-                  className={cn(
-                    "px-2.5 sm:px-3 py-1.5 text-xs rounded transition-colors whitespace-nowrap flex-shrink-0",
-                    codeTab === tab
-                      ? "bg-neutral-700 text-white"
-                      : "bg-neutral-800/50 text-neutral-400 hover:text-white hover:bg-neutral-800",
-                  )}
-                >
-                  {tab === "css"
-                    ? "CSS"
-                    : tab === "swift"
-                      ? "SwiftUI"
-                      : tab === "kotlin"
-                        ? "Kotlin"
-                        : "AI Agent"}
-                </button>
-              ))}
-            </div>
             {/* Tab Content */}
-            <div className="relative">
-              <pre className="p-3 bg-neutral-900 rounded-lg text-xs font-mono text-neutral-300 overflow-x-auto max-h-32">
+            <div className="relative bg-neutral-900 rounded-lg">
+              <pre className="p-3 pr-12 text-xs font-mono text-neutral-300 overflow-x-auto max-h-32">
                 {codeTab === "css" &&
                   (selectedAnimation ? fullCSSCode : cssCode)}
                 {codeTab === "swift" && swiftUICode}
@@ -1010,7 +1031,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                     codeTab,
                   )
                 }
-                className="absolute top-2 right-2 p-1.5 bg-neutral-800 rounded hover:bg-neutral-700 transition-colors"
+                className="absolute top-2 right-2 p-1.5 bg-neutral-800 rounded hover:bg-neutral-700 transition-colors z-10"
                 aria-label="Copy code"
               >
                 {copiedId === codeTab ? (
