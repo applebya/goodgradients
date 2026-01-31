@@ -10,8 +10,6 @@ import {
   RotateCw,
   Maximize2,
   Zap,
-  Play,
-  Pause,
   X,
   ChevronDown,
   Palette,
@@ -872,45 +870,21 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
           {/* Collapsible: Animation */}
           <button
             onClick={() => setShowAnimation(!showAnimation)}
-            className="flex items-center justify-between w-full py-2 text-sm text-neutral-400 hover:text-white transition-colors"
+            className="flex items-center gap-2 py-2 text-sm text-neutral-400 hover:text-white transition-colors"
           >
-            <span className="flex items-center gap-2">
-              <ChevronDown
-                className={cn(
-                  "w-4 h-4 transition-transform duration-200 ease-out",
-                  !showAnimation && "-rotate-90",
-                )}
-              />
-              <Zap className="w-4 h-4" />
-              Animate
-              {selectedAnimation && (
-                <Badge variant="secondary" className="text-xs">
-                  {selectedAnimation.name}
-                </Badge>
+            <ChevronDown
+              className={cn(
+                "w-4 h-4 transition-transform duration-200 ease-out",
+                !showAnimation && "-rotate-90",
               )}
-            </span>
-            <div className="flex items-center gap-2">
-              {selectedAnimation && (
-                <Button
-                  size="icon-xs"
-                  variant="ghost"
-                  className="h-6 w-6"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onToggleAnimating();
-                  }}
-                  aria-label={
-                    isAnimating ? "Pause animation" : "Play animation"
-                  }
-                >
-                  {isAnimating ? (
-                    <Pause className="w-3 h-3" />
-                  ) : (
-                    <Play className="w-3 h-3" />
-                  )}
-                </Button>
-              )}
-            </div>
+            />
+            <Zap className="w-4 h-4" />
+            Animate
+            {selectedAnimation && (
+              <Badge variant="secondary" className="text-xs">
+                {selectedAnimation.name}
+              </Badge>
+            )}
           </button>
           <div
             className={cn(
