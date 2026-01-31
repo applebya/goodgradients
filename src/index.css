@@ -94,6 +94,14 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Prevent Radix Dialog from causing layout shift by overriding its scroll lock compensation */
+  body[data-scroll-locked] {
+    overflow: hidden !important;
+    /* Reset the padding Radix adds to compensate for scrollbar - we use scrollbar-gutter instead */
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+  }
+
   /* Ensure pointer cursor on all interactive elements */
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),

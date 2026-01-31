@@ -265,8 +265,14 @@ export function useAppState() {
   }, []);
 
   // Check if this is the first modal open from a direct link (skip animation)
+  // Returns true once (for the initial direct link open), then resets to false
   const shouldSkipModalAnimation = useCallback(() => {
-    return isFirstDirectLinkOpen.current;
+    const shouldSkip = isFirstDirectLinkOpen.current;
+    // Reset after first check so subsequent opens animate normally
+    if (isFirstDirectLinkOpen.current) {
+      isFirstDirectLinkOpen.current = false;
+    }
+    return shouldSkip;
   }, []);
 
   const reset = useCallback(() => {
