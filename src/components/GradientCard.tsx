@@ -210,13 +210,6 @@ export const GradientCard = memo(function GradientCard({
       onMouseEnter={preloadGradientDetail}
       onFocus={preloadGradientDetail}
     >
-      {/* Inject animation keyframes - sourced from internal animations.ts, safe */}
-      {selectedAnimation?.keyframes && (
-        <style
-          dangerouslySetInnerHTML={{ __html: selectedAnimation.keyframes }}
-        />
-      )}
-
       {/* Gradient Preview */}
       <div
         className="relative aspect-video"

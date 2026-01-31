@@ -8,6 +8,7 @@ import { GitHubCorner } from "./components/GitHubCorner";
 import { SplashScreen } from "./components/SplashScreen";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { PrivacyPolicy } from "./components/PrivacyPolicy";
+import { AnimationStyles } from "./components/AnimationStyles";
 
 // Lazy load the modal - it's not needed until user clicks a gradient
 const GradientDetail = lazy(() =>
@@ -138,6 +139,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white">
+      {/* Global animation keyframes - inject once to avoid interruption on re-renders */}
+      <AnimationStyles />
       {showSplash && (
         <SplashScreen
           onComplete={() => {

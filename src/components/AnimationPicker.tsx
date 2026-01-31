@@ -56,12 +56,6 @@ export function AnimationPicker({
   // B&W gradient for clear animation visibility
   const previewGradient = "linear-gradient(135deg, #000 0%, #fff 100%)";
 
-  // CSS keyframes are from internal animations.ts, not user input - safe to inject
-  const keyframesCSS = animations
-    .filter((a) => a.keyframes)
-    .map((a) => a.keyframes)
-    .join("\n");
-
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -82,9 +76,6 @@ export function AnimationPicker({
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-80 p-2" align="end">
-        {/* Inject animation keyframes - sourced from internal animations.ts, safe (not user input) */}
-        <style dangerouslySetInnerHTML={{ __html: keyframesCSS }} />
-
         <div className="grid grid-cols-3 gap-2">
           {animations.map((anim) => {
             const isSelected =

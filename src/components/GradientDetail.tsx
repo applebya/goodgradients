@@ -464,12 +464,6 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
         onPointerDown={(e) => e.stopPropagation()}
         onMouseDown={(e) => e.stopPropagation()}
       >
-        {/* Inject animation keyframes - sourced from internal animations.ts, safe */}
-        {selectedAnimation && (
-          <style
-            dangerouslySetInnerHTML={{ __html: selectedAnimation.keyframes }}
-          />
-        )}
         {/* Close button - explicit target for reliable closing */}
         <button
           data-testid="fullscreen-close"
@@ -531,13 +525,6 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               </div>
             </div>
           </DialogHeader>
-
-          {/* Inject animation keyframes for main modal */}
-          {selectedAnimation && (
-            <style
-              dangerouslySetInnerHTML={{ __html: selectedAnimation.keyframes }}
-            />
-          )}
 
           {/* Use Cases - Each with fullscreen option */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
