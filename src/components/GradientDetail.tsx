@@ -51,6 +51,7 @@ import {
   convertGradientColors,
   COLOR_FORMAT_OPTIONS,
 } from "@/lib/color-format";
+import { useColorSpelling } from "@/hooks/useLocale";
 
 interface GradientDetailProps {
   gradientDef: GradientDefinition | null;
@@ -102,6 +103,9 @@ export function GradientDetail({
   >("css");
   const [showSettings, setShowSettings] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
+
+  // Locale-aware spelling
+  const spelling = useColorSpelling();
 
   // Reset fullscreen state when modal closes or gradient changes
   useEffect(() => {
@@ -618,7 +622,9 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
 
           {/* Colors Section */}
           <div className="space-y-3">
-            <span className="text-sm text-neutral-400 font-medium">Colors</span>
+            <span className="text-sm text-neutral-400 font-medium">
+              {spelling.Colors}
+            </span>
 
             {/* Gradient Colors - quick copy chips */}
             <div className="flex gap-1.5 flex-wrap">
@@ -1057,7 +1063,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                   <PopoverTrigger asChild>
                     <button
                       className="flex h-7 items-center gap-1.5 rounded border border-neutral-700 bg-neutral-900 px-2 text-xs text-white hover:bg-neutral-800 flex-shrink-0"
-                      aria-label="Color format"
+                      aria-label={`${spelling.Color} format`}
                     >
                       <Palette className="h-3 w-3 text-neutral-500" />
                       <span>

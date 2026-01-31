@@ -8,6 +8,7 @@ import {
   Palette,
   Heart,
 } from "./icons";
+import { useColorSpelling } from "@/hooks/useLocale";
 import {
   Popover,
   PopoverContent,
@@ -82,6 +83,7 @@ export function FilterBar({
   onClearFilters,
   hasActiveFilters,
 }: FilterBarProps) {
+  const spelling = useColorSpelling();
   return (
     <div className="flex items-center justify-between gap-4">
       {/* Left: Filters */}
@@ -320,7 +322,7 @@ export function FilterBar({
           <PopoverTrigger asChild>
             <button
               className="flex h-7 items-center justify-between gap-1.5 rounded-md border border-neutral-700 bg-neutral-900 px-2.5 py-1.5 text-xs text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600"
-              aria-label="Color format"
+              aria-label={`${spelling.Color} format`}
             >
               <Palette className="h-3 w-3 text-neutral-500" />
               <span>

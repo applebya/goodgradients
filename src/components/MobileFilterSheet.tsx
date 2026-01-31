@@ -1,5 +1,6 @@
-import { SlidersHorizontal, Check } from './icons';
-import { Button } from './ui/button';
+import { SlidersHorizontal, Check } from "./icons";
+import { Button } from "./ui/button";
+import { useColorSpelling } from "@/hooks/useLocale";
 import {
   Sheet,
   SheetContent,
@@ -7,22 +8,34 @@ import {
   SheetTitle,
   SheetFooter,
   SheetTrigger,
-} from './ui/sheet';
-import { cn } from '@/lib/utils';
-import { COLOR_OPTIONS } from '@/lib/wizard';
-import { allTags } from '@/data/gradients';
-import type { WizardColor, GradientTypeFilter } from '@/types';
+} from "./ui/sheet";
+import { cn } from "@/lib/utils";
+import { COLOR_OPTIONS } from "@/lib/wizard";
+import { allTags } from "@/data/gradients";
+import type { WizardColor, GradientTypeFilter } from "@/types";
 
 // Priority tags for mobile - most useful/common ones
 const MOBILE_PRIORITY_TAGS = [
-  'elegant', 'modern', 'bold', 'soft', 'vibrant',
-  'professional', 'nature', 'tech', 'calm', 'dark',
-  'warm', 'cool', 'minimal', 'luxury', 'creative',
+  "elegant",
+  "modern",
+  "bold",
+  "soft",
+  "vibrant",
+  "professional",
+  "nature",
+  "tech",
+  "calm",
+  "dark",
+  "warm",
+  "cool",
+  "minimal",
+  "luxury",
+  "creative",
 ];
 
 const getMobileFilteredTags = (): string[] => {
   // Show priority tags that exist in the actual tag list
-  return MOBILE_PRIORITY_TAGS.filter(t => allTags.includes(t));
+  return MOBILE_PRIORITY_TAGS.filter((t) => allTags.includes(t));
 };
 
 interface MobileFilterSheetProps {
@@ -37,9 +50,9 @@ interface MobileFilterSheetProps {
 }
 
 const GRADIENT_TYPES: { value: GradientTypeFilter; label: string }[] = [
-  { value: 'linear', label: 'Linear' },
-  { value: 'radial', label: 'Radial' },
-  { value: 'conic', label: 'Conic' },
+  { value: "linear", label: "Linear" },
+  { value: "radial", label: "Radial" },
+  { value: "conic", label: "Conic" },
 ];
 
 function FilterSection({
@@ -76,10 +89,10 @@ function OptionPill({
       aria-label={ariaLabel}
       aria-pressed={selected}
       className={cn(
-        'flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors',
+        "flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors",
         selected
-          ? 'bg-white text-black font-medium'
-          : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
+          ? "bg-white text-black font-medium"
+          : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700",
       )}
     >
       {children}
@@ -97,10 +110,16 @@ export function MobileFilterSheet({
   onClearFilters,
   activeFilterCount,
 }: MobileFilterSheetProps) {
+  const spelling = useColorSpelling();
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon-sm" className="relative" aria-label="Open filters">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className="relative"
+          aria-label="Open filters"
+        >
           <SlidersHorizontal className="w-4 h-4" />
           {activeFilterCount > 0 && (
             <span className="absolute -top-1 -right-1 w-4 h-4 bg-white text-black text-[10px] font-bold rounded-full flex items-center justify-center">
@@ -116,7 +135,7 @@ export function MobileFilterSheet({
 
         <div className="space-y-6 py-4 px-4">
           {/* Colors */}
-          <FilterSection title="Colors (select multiple)">
+          <FilterSection title={`${spelling.Colors} (select multiple)`}>
             <div className="flex flex-wrap gap-2">
               {COLOR_OPTIONS.map((opt) => (
                 <button
@@ -125,10 +144,10 @@ export function MobileFilterSheet({
                   aria-label={`${opt.label} color`}
                   aria-pressed={colors.includes(opt.value)}
                   className={cn(
-                    'flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors',
+                    "flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors",
                     colors.includes(opt.value)
-                      ? 'bg-white text-black font-medium'
-                      : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
+                      ? "bg-white text-black font-medium"
+                      : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700",
                   )}
                 >
                   <div
@@ -136,9 +155,7 @@ export function MobileFilterSheet({
                     style={{ background: opt.previewGradient }}
                   />
                   {opt.label}
-                  {colors.includes(opt.value) && (
-                    <Check className="w-3 h-3" />
-                  )}
+                  {colors.includes(opt.value) && <Check className="w-3 h-3" />}
                 </button>
               ))}
             </div>
@@ -169,16 +186,14 @@ export function MobileFilterSheet({
                   aria-label={`${tag} tag`}
                   aria-pressed={tags.includes(tag)}
                   className={cn(
-                    'flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors capitalize',
+                    "flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors capitalize",
                     tags.includes(tag)
-                      ? 'bg-white text-black font-medium'
-                      : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
+                      ? "bg-white text-black font-medium"
+                      : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700",
                   )}
                 >
                   {tag}
-                  {tags.includes(tag) && (
-                    <Check className="w-3 h-3" />
-                  )}
+                  {tags.includes(tag) && <Check className="w-3 h-3" />}
                 </button>
               ))}
             </div>
@@ -186,11 +201,7 @@ export function MobileFilterSheet({
         </div>
 
         <SheetFooter className="flex-row gap-2">
-          <Button
-            variant="outline"
-            className="flex-1"
-            onClick={onClearFilters}
-          >
+          <Button variant="outline" className="flex-1" onClick={onClearFilters}>
             Clear all
           </Button>
         </SheetFooter>
