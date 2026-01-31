@@ -768,189 +768,198 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
           </div>
 
           {/* Collapsible: Gradient Settings */}
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => setShowSettings(!showSettings)}
-              className="flex items-center gap-2 py-2 text-sm text-neutral-400 hover:text-white transition-colors"
-            >
-              <ChevronDown
-                className={cn(
-                  "w-4 h-4 transition-transform duration-200 ease-out",
-                  !showSettings && "-rotate-90",
-                )}
-              />
-              <span>Gradient Settings</span>
-            </button>
-            {showSettings && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-xs text-neutral-500 hover:text-white h-7"
-                onClick={() => {
-                  handleTypeChange("linear");
-                  handleAngleChange(135);
-                }}
+          <div>
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => setShowSettings(!showSettings)}
+                className="flex-1 flex items-center gap-2 py-2 text-sm text-neutral-400 hover:text-white transition-colors"
               >
-                Reset
-              </Button>
-            )}
-          </div>
-          <div
-            className={cn(
-              "grid transition-all duration-200 ease-out",
-              showSettings
-                ? "grid-rows-[1fr] opacity-100"
-                : "grid-rows-[0fr] opacity-0",
-            )}
-          >
-            <div className="overflow-hidden">
-              <div className="space-y-3 pb-2">
-                <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
-                  <Button
-                    variant={
-                      gradientDef.type === "linear" ? "default" : "outline"
-                    }
-                    onClick={() => handleTypeChange("linear")}
-                    size="sm"
-                  >
-                    <Layers className="w-3 h-3 mr-1" /> Linear
-                  </Button>
-                  <Button
-                    variant={
-                      gradientDef.type === "radial" ? "default" : "outline"
-                    }
-                    onClick={() => handleTypeChange("radial")}
-                    size="sm"
-                  >
-                    <Circle className="w-3 h-3 mr-1" /> Radial
-                  </Button>
-                  <Button
-                    variant={
-                      gradientDef.type === "conic" ? "default" : "outline"
-                    }
-                    onClick={() => handleTypeChange("conic")}
-                    size="sm"
-                  >
-                    <RotateCw className="w-3 h-3 mr-1" /> Conic
-                  </Button>
-                </div>
-                {(gradientDef.type === "linear" ||
-                  gradientDef.type === "conic") && (
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs font-mono text-white w-10">
-                      {gradientDef.angle}°
-                    </span>
-                    <input
-                      type="range"
-                      min="0"
-                      max="360"
-                      value={gradientDef.angle}
-                      onChange={(e) =>
-                        handleAngleChange(Number(e.target.value))
+                <ChevronDown
+                  className={cn(
+                    "w-4 h-4 transition-transform duration-200 ease-out",
+                    !showSettings && "-rotate-90",
+                  )}
+                />
+                <span>Gradient Settings</span>
+              </button>
+              {showSettings && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs text-neutral-500 hover:text-white h-7"
+                  onClick={() => {
+                    handleTypeChange("linear");
+                    handleAngleChange(135);
+                  }}
+                >
+                  Reset
+                </Button>
+              )}
+            </div>
+            <div
+              className={cn(
+                "grid transition-all duration-200 ease-out",
+                showSettings
+                  ? "grid-rows-[1fr] opacity-100"
+                  : "grid-rows-[0fr] opacity-0",
+              )}
+            >
+              <div className="overflow-hidden">
+                <div className="space-y-3 pb-2">
+                  <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+                    <Button
+                      variant={
+                        gradientDef.type === "linear" ? "default" : "outline"
                       }
-                      aria-label="Gradient angle"
-                      className="flex-1 h-1.5 bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
-                    />
+                      onClick={() => handleTypeChange("linear")}
+                      size="sm"
+                    >
+                      <Layers className="w-3 h-3 mr-1" /> Linear
+                    </Button>
+                    <Button
+                      variant={
+                        gradientDef.type === "radial" ? "default" : "outline"
+                      }
+                      onClick={() => handleTypeChange("radial")}
+                      size="sm"
+                    >
+                      <Circle className="w-3 h-3 mr-1" /> Radial
+                    </Button>
+                    <Button
+                      variant={
+                        gradientDef.type === "conic" ? "default" : "outline"
+                      }
+                      onClick={() => handleTypeChange("conic")}
+                      size="sm"
+                    >
+                      <RotateCw className="w-3 h-3 mr-1" /> Conic
+                    </Button>
                   </div>
-                )}
+                  {(gradientDef.type === "linear" ||
+                    gradientDef.type === "conic") && (
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-mono text-white w-10">
+                        {gradientDef.angle}°
+                      </span>
+                      <input
+                        type="range"
+                        min="0"
+                        max="360"
+                        value={gradientDef.angle}
+                        onChange={(e) =>
+                          handleAngleChange(Number(e.target.value))
+                        }
+                        aria-label="Gradient angle"
+                        className="flex-1 h-1.5 bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
           {/* Collapsible: Animation */}
-          <button
-            onClick={() => setShowAnimation(!showAnimation)}
-            className="flex items-center gap-2 py-2 text-sm text-neutral-400 hover:text-white transition-colors"
-          >
-            <ChevronDown
-              className={cn(
-                "w-4 h-4 transition-transform duration-200 ease-out",
-                !showAnimation && "-rotate-90",
-              )}
-            />
-            <Zap className="w-4 h-4" />
-            Animate
-            {selectedAnimation && (
-              <Badge variant="secondary" className="text-xs">
-                {selectedAnimation.name}
-              </Badge>
-            )}
-          </button>
-          <div
-            className={cn(
-              "grid transition-all duration-200 ease-out",
-              showAnimation
-                ? "grid-rows-[1fr] opacity-100"
-                : "grid-rows-[0fr] opacity-0",
-            )}
-          >
-            <div className="overflow-hidden">
-              <div className="space-y-3 pb-2">
-                {/* Animation options with B&W preview for clarity */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {animations.map((anim) => {
-                    const isSelected =
-                      anim.id === "none"
-                        ? !selectedAnimationId
-                        : selectedAnimationId === anim.id;
-
-                    // B&W gradient for clear animation visibility
-                    const previewGradient =
-                      "linear-gradient(135deg, #000 0%, #fff 100%)";
-
-                    const baseStyle = parseAnimationStyle(
-                      anim.id !== "none" ? anim : undefined,
-                    );
-                    const styleWithSpeed =
-                      anim.id !== "none"
-                        ? applyAnimationSpeed(baseStyle, animationSpeed)
-                        : baseStyle;
-
-                    return (
-                      <button
-                        key={anim.id}
-                        onClick={() => {
-                          if (anim.id === "none") {
-                            onAnimationChange(null);
-                          } else {
-                            onAnimationChange(anim.id);
-                            if (!isAnimating) onToggleAnimating();
-                          }
-                        }}
-                        className={cn(
-                          "rounded-lg border overflow-hidden",
-                          isSelected
-                            ? "border-white ring-2 ring-white/20"
-                            : "border-neutral-700 hover:border-neutral-500",
-                        )}
-                      >
-                        <div
-                          className="h-14"
-                          style={{
-                            background: previewGradient,
-                            ...styleWithSpeed,
-                          }}
-                        />
-                        <div className="p-1.5 bg-neutral-900">
-                          <p className="text-[11px] text-white font-medium truncate">
-                            {anim.name}
-                          </p>
-                          <p className="text-[9px] text-neutral-500 truncate">
-                            {anim.description}
-                          </p>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Speed slider - only show when animation is selected */}
-                {selectedAnimationId && (
-                  <AnimationSpeedSlider
-                    speed={animationSpeed}
-                    onChange={onAnimationSpeedChange}
-                  />
+          <div>
+            <button
+              onClick={() => setShowAnimation(!showAnimation)}
+              className="w-full flex items-center gap-2 py-2 text-sm text-neutral-400 hover:text-white transition-colors"
+            >
+              <ChevronDown
+                className={cn(
+                  "w-4 h-4 transition-transform duration-200 ease-out",
+                  !showAnimation && "-rotate-90",
                 )}
+              />
+              <Zap
+                className={cn(
+                  "w-4 h-4",
+                  selectedAnimation && "text-amber-400 animate-icon-pulse",
+                )}
+              />
+              Animate
+              {selectedAnimation && (
+                <Badge variant="secondary" className="text-xs">
+                  {selectedAnimation.name}
+                </Badge>
+              )}
+            </button>
+            <div
+              className={cn(
+                "grid transition-all duration-200 ease-out",
+                showAnimation
+                  ? "grid-rows-[1fr] opacity-100"
+                  : "grid-rows-[0fr] opacity-0",
+              )}
+            >
+              <div className="overflow-hidden">
+                <div className="space-y-3 pb-2">
+                  {/* Animation options with B&W preview for clarity */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {animations.map((anim) => {
+                      const isSelected =
+                        anim.id === "none"
+                          ? !selectedAnimationId
+                          : selectedAnimationId === anim.id;
+
+                      // B&W gradient for clear animation visibility
+                      const previewGradient =
+                        "linear-gradient(135deg, #000 0%, #fff 100%)";
+
+                      const baseStyle = parseAnimationStyle(
+                        anim.id !== "none" ? anim : undefined,
+                      );
+                      const styleWithSpeed =
+                        anim.id !== "none"
+                          ? applyAnimationSpeed(baseStyle, animationSpeed)
+                          : baseStyle;
+
+                      return (
+                        <button
+                          key={anim.id}
+                          onClick={() => {
+                            if (anim.id === "none") {
+                              onAnimationChange(null);
+                            } else {
+                              onAnimationChange(anim.id);
+                              if (!isAnimating) onToggleAnimating();
+                            }
+                          }}
+                          className={cn(
+                            "rounded-lg border overflow-hidden",
+                            isSelected
+                              ? "border-white ring-2 ring-white/20"
+                              : "border-neutral-700 hover:border-neutral-500",
+                          )}
+                        >
+                          <div
+                            className="h-14"
+                            style={{
+                              background: previewGradient,
+                              ...styleWithSpeed,
+                            }}
+                          />
+                          <div className="p-1.5 bg-neutral-900">
+                            <p className="text-[11px] text-white font-medium truncate">
+                              {anim.name}
+                            </p>
+                            <p className="text-[9px] text-neutral-500 truncate">
+                              {anim.description}
+                            </p>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Speed slider - only show when animation is selected */}
+                  {selectedAnimationId && (
+                    <AnimationSpeedSlider
+                      speed={animationSpeed}
+                      onChange={onAnimationSpeedChange}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>

@@ -61,7 +61,7 @@ export function Header({
   return (
     <>
       {/* Top bar: Logo - scrolls with page */}
-      <div className="bg-neutral-950 border-b border-neutral-800">
+      <div className="bg-neutral-950">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <a
             href="/"

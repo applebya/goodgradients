@@ -100,6 +100,15 @@ export function parseURLState(
     }
   }
 
+  // Parse tags filter (comma-separated)
+  const tagsParam = searchParams.get("tags");
+  if (tagsParam) {
+    const tagList = tagsParam.split(",").filter((t) => t.length > 0);
+    if (tagList.length > 0) {
+      state.tags = tagList;
+    }
+  }
+
   // Parse gradient type filter (for preview, not the selected gradient's type)
   const typeFilter = searchParams.get("t");
   if (
@@ -150,6 +159,10 @@ export function serializeStateToURL(state: Partial<AppState>): URLSearchParams {
   // Colors filter
   if (state.colors && state.colors.length > 0)
     params.set("colors", state.colors.map((c) => c.toLowerCase()).join(","));
+
+  // Tags filter
+  if (state.tags && state.tags.length > 0)
+    params.set("tags", state.tags.join(","));
 
   // Gradient type filter (for preview)
   if (state.gradientType && state.gradientType !== "linear")
@@ -224,6 +237,9 @@ export function getMinimalShareState(state: AppState): Partial<AppState> {
 
   // Color filter
   if (state.colors && state.colors.length > 0) minimal.colors = state.colors;
+
+  // Tags filter
+  if (state.tags && state.tags.length > 0) minimal.tags = state.tags;
 
   // Gradient type filter (only if not default)
   if (state.gradientType && state.gradientType !== "linear")

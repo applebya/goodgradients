@@ -1,6 +1,6 @@
 import { memo, useCallback, useMemo, useState } from "react";
 import { toast } from "./Toast";
-import { Copy, Check } from "./icons";
+import { Copy, Check, Tag } from "./icons";
 import { HeartButton } from "./HeartButton";
 import { applyAnimationSpeed } from "./AnimationSpeedSlider";
 import { Button } from "./ui/button";
@@ -262,9 +262,8 @@ export const GradientCard = memo(function GradientCard({
 
       {/* Card Content - with shimmer overlay (shimmer limited to this area) */}
       <div className="p-4 relative card-shimmer card-shimmer-content rounded-b-xl">
-        <div className="flex items-start justify-between mb-2">
+        <div className="mb-2">
           <h3 className="text-white font-medium">{gradient.name}</h3>
-          <Badge variant="secondary">{gradient.category}</Badge>
         </div>
 
         <p className="text-sm text-neutral-400 mb-3 line-clamp-2">
@@ -294,7 +293,8 @@ export const GradientCard = memo(function GradientCard({
         {/* Tags */}
         <div className="flex gap-1.5 flex-wrap">
           {gradient.tags.slice(0, 3).map((tag) => (
-            <Badge key={tag} variant="outline" className="text-xs">
+            <Badge key={tag} variant="outline" className="text-xs gap-1">
+              <Tag className="w-3 h-3" />
               {tag}
             </Badge>
           ))}
@@ -316,10 +316,9 @@ export function SkeletonCard() {
 
       {/* Card Content Skeleton */}
       <div className="p-4">
-        {/* Title + Badge */}
-        <div className="flex items-start justify-between mb-2">
+        {/* Title */}
+        <div className="mb-2">
           <div className="h-5 w-24 rounded loading-shimmer" />
-          <div className="h-5 w-16 rounded loading-shimmer" />
         </div>
 
         {/* Description */}

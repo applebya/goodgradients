@@ -1,6 +1,7 @@
 import { useMemo, useRef, useEffect, useState, useCallback } from "react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { GradientCard, SkeletonCard } from "./GradientCard";
+import { Button } from "./ui/button";
 import { gradients } from "@/data/gradients";
 import { encodeGradient, parseGradientCSS } from "@/lib/gradient-url";
 import { filterGradientsByColors } from "@/lib/wizard";
@@ -28,6 +29,7 @@ interface GradientGalleryProps {
   onSelectGradient: (gradient: GradientPreset) => void;
   onToggleFavorite: (encodedGradient: string) => void;
   isFavorite: (encodedGradient: string) => boolean;
+  onClearFilters: () => void;
 }
 
 // Pre-compute encoded gradients once at module load for performance
@@ -146,6 +148,7 @@ export function GradientGallery({
   onSelectGradient,
   onToggleFavorite,
   isFavorite,
+  onClearFilters,
 }: GradientGalleryProps) {
   const listRef = useRef<HTMLDivElement>(null);
   const columns = useColumnCount();
@@ -178,9 +181,9 @@ export function GradientGallery({
       result = filterGradientsByColors(result, colors);
     }
 
-    // Apply tags filter (gradient must have ANY selected tag - OR logic)
+    // Apply tags filter (gradient must have ALL selected tags - AND logic)
     if (tags.length > 0) {
-      result = result.filter((g) => tags.some((tag) => g.tags.includes(tag)));
+      result = result.filter((g) => tags.every((tag) => g.tags.includes(tag)));
     }
 
     // Apply search filter
@@ -233,6 +236,12 @@ export function GradientGallery({
   }
 
   if (filteredGradients.length === 0) {
+    const hasFilters =
+      colors.length > 0 ||
+      tags.length > 0 ||
+      searchQuery.length > 0 ||
+      category !== "All";
+
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <div className="w-16 h-16 mb-4 rounded-full bg-neutral-800 flex items-center justify-center">
@@ -241,11 +250,16 @@ export function GradientGallery({
         <h3 className="text-lg font-medium text-white mb-2">
           {category === "Favorites" ? "No favorites yet" : "No gradients found"}
         </h3>
-        <p className="text-neutral-400 max-w-sm">
+        <p className="text-neutral-400 max-w-sm mb-4">
           {category === "Favorites"
             ? "Start adding gradients to your favorites by clicking the heart icon."
             : "Try adjusting your filters or search query."}
         </p>
+        {hasFilters && category !== "Favorites" && (
+          <Button variant="outline" onClick={onClearFilters}>
+            Reset filters
+          </Button>
+        )}
       </div>
     );
   }

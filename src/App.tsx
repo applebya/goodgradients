@@ -7,6 +7,7 @@ import { ScrollToTop } from "./components/ScrollToTop";
 import { GitHubCorner } from "./components/GitHubCorner";
 import { SplashScreen } from "./components/SplashScreen";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { PrivacyPolicy } from "./components/PrivacyPolicy";
 
 // Lazy load the modal - it's not needed until user clicks a gradient
 const GradientDetail = lazy(() =>
@@ -35,6 +36,12 @@ gradients.forEach((g) => {
 });
 
 export default function App() {
+  // Simple path-based routing for static pages
+  const path = window.location.pathname;
+  if (path === "/privacy" || path === "/privacy.html") {
+    return <PrivacyPolicy />;
+  }
+
   const [showSplash, setShowSplash] = useState(true);
   const { state, favorites, actions } = useAppState();
 
@@ -144,6 +151,7 @@ export default function App() {
             onSelectGradient={handleSelectGradient}
             onToggleFavorite={actions.toggleFavorite}
             isFavorite={actions.isFavorite}
+            onClearFilters={actions.clearFilters}
           />
         </ErrorBoundary>
       </main>
