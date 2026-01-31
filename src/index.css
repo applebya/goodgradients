@@ -416,3 +416,24 @@
     animation: none;
   }
 }
+
+/* Download button pulse animation */
+@keyframes download-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.animate-download-pulse {
+  animation: download-pulse 1s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-download-pulse {
+    animation: none;
+  }
+}

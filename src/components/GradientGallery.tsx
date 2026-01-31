@@ -4,6 +4,7 @@ import { GradientCard, SkeletonCard } from "./GradientCard";
 import { gradients } from "@/data/gradients";
 import { encodeGradient, parseGradientCSS } from "@/lib/gradient-url";
 import { filterGradientsByColors } from "@/lib/wizard";
+import { generateCSV, downloadCSV } from "@/lib/csv-export";
 import type {
   GradientPreset,
   GradientCategory,
@@ -70,6 +71,65 @@ function useColumnCount() {
 
 // Threshold for when to use virtualization (only for large lists)
 const VIRTUALIZATION_THRESHOLD = 100;
+
+// Download bar component
+function DownloadBar({
+  gradients,
+  isFavorites,
+}: {
+  gradients: GradientPreset[];
+  isFavorites: boolean;
+}) {
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleDownload = useCallback(async () => {
+    setIsGenerating(true);
+
+    // Small delay to show the animation (CSV generation is instant)
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    const csv = generateCSV(gradients);
+    const filename = isFavorites
+      ? "goodgradients-favorites.csv"
+      : "goodgradients-export.csv";
+    downloadCSV(csv, filename);
+
+    setIsGenerating(false);
+  }, [gradients, isFavorites]);
+
+  if (gradients.length === 0) return null;
+
+  return (
+    <div className="mt-8 flex justify-center">
+      <button
+        onClick={handleDownload}
+        disabled={isGenerating}
+        className="flex items-center gap-2 px-6 py-3 rounded-lg bg-neutral-800/50 hover:bg-neutral-800 border border-neutral-700 text-neutral-300 hover:text-white transition-colors disabled:cursor-not-allowed"
+      >
+        {isGenerating ? (
+          <span className="animate-download-pulse">Generating...</span>
+        ) : (
+          <>
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+              />
+            </svg>
+            Download as CSV
+          </>
+        )}
+      </button>
+    </div>
+  );
+}
 
 export function GradientGallery({
   category,
@@ -210,6 +270,10 @@ export function GradientGallery({
             );
           })}
         </div>
+        <DownloadBar
+          gradients={filteredGradients}
+          isFavorites={category === "Favorites"}
+        />
       </section>
     );
   }
@@ -272,6 +336,10 @@ export function GradientGallery({
           })}
         </div>
       </div>
+      <DownloadBar
+        gradients={filteredGradients}
+        isFavorites={category === "Favorites"}
+      />
     </section>
   );
 }
