@@ -69,7 +69,7 @@ export function AnimationPicker({
                 : "text-neutral-500",
             )}
           />
-          <span>{selectedAnimation?.name ?? "Static"}</span>
+          <span>{selectedAnimation?.name ?? "No animation"}</span>
           <ChevronDown className="h-3 w-3 text-neutral-500" />
         </button>
       </PopoverTrigger>
