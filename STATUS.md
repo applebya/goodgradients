@@ -95,30 +95,30 @@
 
 **Tagline (60 chars max):**
 
-> 500+ CSS gradients with instant code export
+> 500+ gradients with animations to make your UI stand out
 
 **Description:**
 
-> Browse 500+ beautiful, hand-curated gradients. Export to CSS, Tailwind, SwiftUI, and Kotlin with one click. Features linear, radial, and conic gradients with customizable animations. All free, no signup required.
+> Designer-curated gradients that help you build memorable brands. Add eye-catching animations, export to CSS, Tailwind, SwiftUI, Kotlin, CSV, or AI-ready descriptions. Linear, radial, and conic gradients. No signup, works offline.
 
 **First Comment (as maker):**
 
 > Hey Product Hunt! 👋
 >
-> I built Good Gradients because I was tired of manually writing CSS gradients or using generators with limited presets.
+> I built Good Gradients because picking the right gradient shouldn't slow down your design workflow.
 >
 > **What makes it different:**
 >
-> - 500+ hand-curated gradients (not random combinations)
-> - One-click export to CSS, Tailwind, SwiftUI, Kotlin
-> - 10 animation presets that actually look good
-> - WCAG contrast checking for text colors
-> - Shareable URLs with full state
+> - 500+ designer-curated gradients (not random color combinations)
+> - 10+ eye-catching animations to make your UI memorable
+> - One-click export to CSS, Tailwind, SwiftUI, Kotlin, CSV, AI agents
+> - WCAG contrast checking so your text stays readable
+> - Shareable URLs - send gradients to teammates
 > - PWA that works offline
 >
-> It's 100% free, open source, no signup required.
+> Perfect for landing pages, app backgrounds, buttons, and brand identity work.
 >
-> Would love your feedback! What features would make this more useful for your workflow?
+> What UI elements do you use gradients for most?
 
 **Product Hunt Checklist:**
 
@@ -138,65 +138,68 @@
 
 **Title:**
 
-> Show HN: Good Gradients – 500+ CSS gradients with Tailwind/SwiftUI/Kotlin export
+> Show HN: Good Gradients – 500+ animated CSS gradients with multi-platform export
 
 **Post body (keep short):**
 
-> I built a free gradient generator with 500+ curated presets. You can export to CSS, Tailwind, SwiftUI, or Kotlin with one click.
+> I built a gradient library with 500+ designer-curated presets and 10+ animation effects. Export to CSS, Tailwind, SwiftUI, Kotlin, CSV, or AI-ready descriptions.
 >
-> Features: linear/radial/conic gradients, 10 animations, WCAG contrast checking, shareable URLs, PWA support.
+> Useful for: landing pages, app backgrounds, buttons, brand identity, design systems.
+>
+> Features: linear/radial/conic gradients, WCAG contrast checking, shareable URLs, PWA.
 >
 > https://goodgradients.com
 >
 > Open source: https://github.com/applebya/goodgradients
->
-> Would love feedback on what would make this more useful.
 
 ### Reddit Posts
 
 **r/webdev Title:**
 
-> [Self-Promo Saturday] I built a free gradient generator with 500+ curated gradients and export to CSS, Tailwind, SwiftUI, and Kotlin
+> [Self-Promo Saturday] 500+ animated CSS gradients with export to Tailwind, SwiftUI, Kotlin & AI agents
 
 **r/css Title:**
 
-> I made a CSS gradient library with 500+ presets, animations, and instant code export
+> 500+ CSS gradients with animations - export to Tailwind, SwiftUI, Kotlin, CSV, AI
 
 **Post template:**
 
-> Hey everyone! I've been working on Good Gradients - a free tool with 500+ hand-curated CSS gradients.
+> Hey everyone! I built Good Gradients - 500+ designer-curated gradients to make your UI stand out.
+>
+> **Why I built it:** Picking the right gradient shouldn't slow down your workflow. These are hand-picked to actually look good together.
 >
 > **Features:**
 >
-> - Export to CSS, Tailwind, SwiftUI, Kotlin
+> - 10+ eye-catching animation effects
+> - Export to CSS, Tailwind, SwiftUI, Kotlin, CSV, AI agents
 > - Linear, radial, and conic gradients
-> - 10 animation presets
-> - WCAG contrast checking
+> - WCAG contrast checking for readable text
 > - Shareable URLs
-> - Works offline (PWA)
+> - PWA (works offline)
+>
+> Great for: landing pages, app backgrounds, buttons, brand identity.
 >
 > Link: https://goodgradients.com
 >
-> It's open source: https://github.com/applebya/goodgradients
+> Open source: https://github.com/applebya/goodgradients
 >
-> What gradients or features would you like to see added?
+> What do you use gradients for in your projects?
 
 ### Twitter/X Thread
 
 ```
-🎨 Introducing Good Gradients
+🎨 Good Gradients
 
-500+ beautiful CSS gradients, ready to use.
+500+ designer-curated gradients to make your UI stand out.
 
-One-click export to:
-• CSS
-• Tailwind
-• SwiftUI
-• Kotlin
+Add eye-catching animations ✨
+Export to CSS, Tailwind, SwiftUI, Kotlin, CSV, AI agents
 
-Plus animations, contrast checking, and shareable URLs.
-
-100% free. No signup.
+Perfect for:
+• Landing pages
+• App backgrounds
+• Brand identity
+• Design systems
 
 https://goodgradients.com
 

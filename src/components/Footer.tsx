@@ -1,3 +1,5 @@
+import { AnimatedLogo } from "./AnimatedLogo";
+
 export function Footer() {
   return (
     <footer className="border-t border-neutral-800 py-8 mt-8">
@@ -5,13 +7,14 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
           <div className="md:col-span-2">
-            <h3 className="text-neutral-200 font-medium mb-2">
-              Good Gradients
-            </h3>
+            <div className="mb-2">
+              <AnimatedLogo selectedAnimationId={null} />
+            </div>
             <p className="text-sm text-neutral-400 max-w-md leading-relaxed">
-              Free CSS gradient generator with 500+ curated gradients. Export to
-              CSS, Tailwind, SwiftUI, and Kotlin. Browse linear, radial, and
-              conic gradients with animations.
+              500+ designer-curated gradients to make your UI stand out. Add
+              eye-catching animations, export to CSS, Tailwind, SwiftUI, Kotlin,
+              CSV, or AI-ready descriptions. Build memorable brands and delight
+              your users.
             </p>
           </div>
 

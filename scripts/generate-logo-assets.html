@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Molle:ital@1&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+
+      .logo {
+        font-family: "Molle", cursive;
+        font-style: italic;
+        font-weight: 400;
+        background: linear-gradient(
+          135deg,
+          #22c55e 0%,
+          #06b6d4 33%,
+          #8b5cf6 66%,
+          #ec4899 100%
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+        line-height: 1;
+        letter-spacing: -0.02em;
+      }
+
+      /* Favicon - 32x32 */
+      .favicon {
+        font-size: 28px;
+      }
+
+      /* Icon 192 */
+      .icon-192 {
+        font-size: 140px;
+      }
+
+      /* Icon 512 */
+      .icon-512 {
+        font-size: 380px;
+      }
+
+      /* OG Image - 1200x630, centered */
+      .og-image {
+        font-size: 320px;
+      }
+
+      .og-container {
+        width: 1200px;
+        height: 630px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- This page is used by Playwright to capture logo assets -->
+    <div id="target"></div>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const type = params.get("type") || "favicon";
+      const target = document.getElementById("target");
+
+      function createLogo(className) {
+        const span = document.createElement("span");
+        span.className = "logo " + className;
+        span.textContent = "GG";
+        return span;
+      }
+
+      switch (type) {
+        case "favicon":
+          target.appendChild(createLogo("favicon"));
+          document.body.style.width = "32px";
+          document.body.style.height = "32px";
+          break;
+        case "icon-192":
+          target.appendChild(createLogo("icon-192"));
+          document.body.style.width = "192px";
+          document.body.style.height = "192px";
+          break;
+        case "icon-512":
+          target.appendChild(createLogo("icon-512"));
+          document.body.style.width = "512px";
+          document.body.style.height = "512px";
+          break;
+        case "og-image":
+          const container = document.createElement("div");
+          container.className = "og-container";
+          container.appendChild(createLogo("og-image"));
+          target.appendChild(container);
+          document.body.style.width = "1200px";
+          document.body.style.height = "630px";
+          break;
+      }
+    </script>
+  </body>
+</html>
