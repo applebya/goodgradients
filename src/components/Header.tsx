@@ -17,6 +17,7 @@ interface HeaderProps {
   previewMode: UIPreviewMode;
   colorFormat: ColorFormat;
   selectedAnimationId: string | null;
+  animationSpeed: number;
   showFavoritesOnly: boolean;
   onColorsChange: (colors: WizardColor[]) => void;
   onToggleColor: (color: WizardColor) => void;
@@ -25,6 +26,7 @@ interface HeaderProps {
   onPreviewModeChange: (mode: UIPreviewMode) => void;
   onColorFormatChange: (format: ColorFormat) => void;
   onAnimationChange: (id: string | null) => void;
+  onAnimationSpeedChange: (speed: number) => void;
   onToggleFavorites: () => void;
   onClearFilters: () => void;
   hasActiveFilters: boolean;
@@ -37,6 +39,7 @@ export function Header({
   previewMode,
   colorFormat,
   selectedAnimationId,
+  animationSpeed,
   showFavoritesOnly,
   onColorsChange,
   onToggleColor,
@@ -45,6 +48,7 @@ export function Header({
   onPreviewModeChange,
   onColorFormatChange,
   onAnimationChange,
+  onAnimationSpeedChange,
   onToggleFavorites,
   onClearFilters,
   hasActiveFilters,
@@ -91,6 +95,7 @@ export function Header({
               previewMode={previewMode}
               colorFormat={colorFormat}
               selectedAnimationId={selectedAnimationId}
+              animationSpeed={animationSpeed}
               showFavoritesOnly={showFavoritesOnly}
               onColorsChange={onColorsChange}
               onToggleColor={onToggleColor}
@@ -99,6 +104,7 @@ export function Header({
               onPreviewModeChange={onPreviewModeChange}
               onColorFormatChange={onColorFormatChange}
               onAnimationChange={onAnimationChange}
+              onAnimationSpeedChange={onAnimationSpeedChange}
               onToggleFavorites={onToggleFavorites}
               onClearFilters={onClearFilters}
               hasActiveFilters={hasActiveFilters}

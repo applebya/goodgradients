@@ -23,6 +23,7 @@ interface GradientGalleryProps {
   previewMode: UIPreviewMode;
   colorFormat: ColorFormat;
   selectedAnimationId: string | null;
+  animationSpeed: number;
   favorites: string[]; // Encoded gradient definitions
   onSelectGradient: (gradient: GradientPreset) => void;
   onToggleFavorite: (encodedGradient: string) => void;
@@ -100,18 +101,18 @@ function DownloadBar({
   if (gradients.length === 0) return null;
 
   return (
-    <div className="mt-8 flex justify-center">
+    <div className="mt-12 mb-12 flex justify-center">
       <button
         onClick={handleDownload}
         disabled={isGenerating}
-        className="flex items-center gap-2 px-6 py-3 rounded-lg bg-neutral-800/50 hover:bg-neutral-800 border border-neutral-700 text-neutral-300 hover:text-white transition-colors disabled:cursor-not-allowed"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-neutral-800/50 hover:bg-neutral-800 border border-neutral-700 text-xs text-neutral-400 hover:text-neutral-300 transition-colors disabled:cursor-not-allowed"
       >
         {isGenerating ? (
           <span className="animate-download-pulse">Generating...</span>
         ) : (
           <>
             <svg
-              className="w-4 h-4"
+              className="w-3 h-3"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -123,7 +124,7 @@ function DownloadBar({
                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
               />
             </svg>
-            Download as CSV
+            Download CSV
           </>
         )}
       </button>
@@ -140,6 +141,7 @@ export function GradientGallery({
   previewMode,
   colorFormat,
   selectedAnimationId,
+  animationSpeed,
   favorites,
   onSelectGradient,
   onToggleFavorite,
@@ -263,6 +265,7 @@ export function GradientGallery({
                 previewMode={previewMode}
                 colorFormat={colorFormat}
                 selectedAnimationId={selectedAnimationId}
+                animationSpeed={animationSpeed}
                 isFavorite={encoded ? isFavorite(encoded) : false}
                 onToggleFavorite={() => encoded && onToggleFavorite(encoded)}
                 onSelect={onSelectGradient}
@@ -322,6 +325,7 @@ export function GradientGallery({
                         previewMode={previewMode}
                         colorFormat={colorFormat}
                         selectedAnimationId={selectedAnimationId}
+                        animationSpeed={animationSpeed}
                         isFavorite={encoded ? isFavorite(encoded) : false}
                         onToggleFavorite={() =>
                           encoded && onToggleFavorite(encoded)

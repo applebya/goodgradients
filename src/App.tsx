@@ -113,6 +113,7 @@ export default function App() {
         previewMode={state.previewMode}
         colorFormat={state.colorFormat}
         selectedAnimationId={state.selectedAnimationId}
+        animationSpeed={state.animationSpeed}
         showFavoritesOnly={state.category === "Favorites"}
         onColorsChange={actions.setColors}
         onToggleColor={actions.toggleColor}
@@ -121,6 +122,7 @@ export default function App() {
         onPreviewModeChange={actions.setPreviewMode}
         onColorFormatChange={actions.setColorFormat}
         onAnimationChange={actions.selectAnimation}
+        onAnimationSpeedChange={actions.setAnimationSpeed}
         onToggleFavorites={handleToggleFavorites}
         onClearFilters={actions.clearFilters}
         hasActiveFilters={actions.hasActiveFilters()}
@@ -137,6 +139,7 @@ export default function App() {
             previewMode={state.previewMode}
             colorFormat={state.colorFormat}
             selectedAnimationId={state.selectedAnimationId}
+            animationSpeed={state.animationSpeed}
             favorites={favorites}
             onSelectGradient={handleSelectGradient}
             onToggleFavorite={actions.toggleFavorite}
@@ -161,6 +164,7 @@ export default function App() {
               isOpen={!!selectedGradientDef}
               onClose={actions.closeModal}
               selectedAnimationId={state.selectedAnimationId}
+              animationSpeed={state.animationSpeed}
               isAnimating={state.isAnimating}
               isFavorite={
                 state.selectedGradient
@@ -171,6 +175,7 @@ export default function App() {
               skipAnimation={actions.shouldSkipModalAnimation()}
               onGradientChange={actions.updateGradient}
               onAnimationChange={actions.selectAnimation}
+              onAnimationSpeedChange={actions.setAnimationSpeed}
               onToggleAnimating={actions.toggleAnimating}
               onToggleFavorite={() =>
                 state.selectedGradient &&

@@ -88,6 +88,7 @@ export interface AppState {
   isAnimating: boolean;
   previewMode: UIPreviewMode; // How to display gradients in cards
   colorFormat: ColorFormat; // Color format for display/export
+  animationSpeed: number; // Animation duration in milliseconds (500-10000)
 }
 
 // URL state (serialized subset of AppState)

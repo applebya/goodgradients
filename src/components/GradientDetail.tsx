@@ -3,7 +3,6 @@ import { createPortal } from "react-dom";
 import { toast } from "./Toast";
 import {
   Copy,
-  Heart,
   Check,
   Layers,
   Circle,
@@ -15,6 +14,11 @@ import {
   Palette,
 } from "./icons";
 import { ShareMenu } from "./ShareMenu";
+import { HeartButton } from "./HeartButton";
+import {
+  AnimationSpeedSlider,
+  applyAnimationSpeed,
+} from "./AnimationSpeedSlider";
 import { animations, getAnimationById } from "@/data/animations";
 import type { Animation, ColorFormat } from "@/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
@@ -55,12 +59,14 @@ interface GradientDetailProps {
   isOpen: boolean;
   onClose: () => void;
   selectedAnimationId: string | null;
+  animationSpeed: number;
   isAnimating: boolean;
   isFavorite: boolean;
   colorFormat: ColorFormat;
   skipAnimation?: boolean;
   onGradientChange: (encoded: string) => void;
   onAnimationChange: (id: string | null) => void;
+  onAnimationSpeedChange: (speed: number) => void;
   onToggleAnimating: () => void;
   onToggleFavorite: () => void;
   onColorFormatChange: (format: ColorFormat) => void;
@@ -73,12 +79,14 @@ export function GradientDetail({
   isOpen,
   onClose,
   selectedAnimationId,
+  animationSpeed,
   isAnimating,
   isFavorite,
   colorFormat,
   skipAnimation,
   onGradientChange,
   onAnimationChange,
+  onAnimationSpeedChange,
   onToggleAnimating,
   onToggleFavorite,
   onColorFormatChange,
@@ -94,17 +102,6 @@ export function GradientDetail({
   );
   const [showSettings, setShowSettings] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
-  const [heartAnimating, setHeartAnimating] = useState(false);
-
-  // Handle favorite toggle with animation
-  const handleFavoriteClick = useCallback(() => {
-    // Only animate when adding to favorites (not when removing)
-    if (!isFavorite) {
-      setHeartAnimating(true);
-      setTimeout(() => setHeartAnimating(false), 500);
-    }
-    onToggleFavorite();
-  }, [isFavorite, onToggleFavorite]);
 
   // Reset fullscreen state when modal closes or gradient changes
   useEffect(() => {
@@ -165,15 +162,16 @@ export function GradientDetail({
     [],
   );
 
-  // Helper to get animation inline styles (respects isAnimating state)
+  // Helper to get animation inline styles (respects isAnimating state and speed)
   const getAnimationStyle = useCallback(
     (animation: Animation | undefined): React.CSSProperties => {
       if (!animation || !isAnimating) {
         return {};
       }
-      return parseAnimationStyle(animation);
+      const baseStyle = parseAnimationStyle(animation);
+      return applyAnimationSpeed(baseStyle, animationSpeed);
     },
-    [isAnimating, parseAnimationStyle],
+    [isAnimating, parseAnimationStyle, animationSpeed],
   );
 
   const handleCopy = useCallback(async (text: string, id: string) => {
@@ -329,9 +327,10 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
         return (
           <div className="w-full h-full flex items-center justify-center bg-neutral-900">
             <button
-              className="px-12 py-6 rounded-xl text-2xl font-bold text-white shadow-2xl hover:scale-105 transition-transform"
+              className="px-12 py-6 rounded-xl text-2xl font-bold shadow-2xl hover:scale-105 transition-transform"
               style={{
                 background: displayGradient,
+                color: bestTextColors[0]?.color || "#ffffff",
                 ...getAnimationStyle(selectedAnimation),
               }}
             >
@@ -344,27 +343,30 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
           <div className="w-full h-full flex flex-col items-center justify-center gap-6 bg-neutral-900">
             <div className="flex gap-4">
               <span
-                className="px-4 py-2 rounded-full text-sm text-white font-medium"
+                className="px-4 py-2 rounded-full text-sm font-medium"
                 style={{
                   background: displayGradient,
+                  color: bestTextColors[0]?.color || "#ffffff",
                   ...getAnimationStyle(selectedAnimation),
                 }}
               >
                 New Feature
               </span>
               <span
-                className="px-4 py-2 rounded-full text-sm text-white font-medium"
+                className="px-4 py-2 rounded-full text-sm font-medium"
                 style={{
                   background: displayGradient,
+                  color: bestTextColors[0]?.color || "#ffffff",
                   ...getAnimationStyle(selectedAnimation),
                 }}
               >
                 Popular
               </span>
               <span
-                className="px-4 py-2 rounded-full text-sm text-white font-medium"
+                className="px-4 py-2 rounded-full text-sm font-medium"
                 style={{
                   background: displayGradient,
+                  color: bestTextColors[0]?.color || "#ffffff",
                   ...getAnimationStyle(selectedAnimation),
                 }}
               >
@@ -373,9 +375,10 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
             </div>
             <div className="flex gap-4">
               <span
-                className="px-6 py-3 rounded-lg text-lg text-white font-semibold"
+                className="px-6 py-3 rounded-lg text-lg font-semibold"
                 style={{
                   background: displayGradient,
+                  color: bestTextColors[0]?.color || "#ffffff",
                   ...getAnimationStyle(selectedAnimation),
                 }}
               >
@@ -479,23 +482,10 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                   getShareUrl={onShare}
                   gradientName={gradientName ?? `${gradientDef.type} gradient`}
                 />
-                <Button
-                  size="icon-sm"
-                  variant="ghost"
-                  className={cn("h-8 w-8", isFavorite && "text-red-400")}
-                  onClick={handleFavoriteClick}
-                  aria-label={
-                    isFavorite ? "Remove from favorites" : "Add to favorites"
-                  }
-                >
-                  <Heart
-                    className={cn(
-                      "w-4 h-4",
-                      isFavorite && "fill-current",
-                      heartAnimating && "heart-animate",
-                    )}
-                  />
-                </Button>
+                <HeartButton
+                  isFavorite={isFavorite}
+                  onToggle={onToggleFavorite}
+                />
                 <Button
                   size="icon-sm"
                   variant="ghost"
@@ -908,6 +898,14 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                     const previewGradient =
                       "linear-gradient(135deg, #000 0%, #fff 100%)";
 
+                    const baseStyle = parseAnimationStyle(
+                      anim.id !== "none" ? anim : undefined,
+                    );
+                    const styleWithSpeed =
+                      anim.id !== "none"
+                        ? applyAnimationSpeed(baseStyle, animationSpeed)
+                        : baseStyle;
+
                     return (
                       <button
                         key={anim.id}
@@ -930,9 +928,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                           className="h-14"
                           style={{
                             background: previewGradient,
-                            ...parseAnimationStyle(
-                              anim.id !== "none" ? anim : undefined,
-                            ),
+                            ...styleWithSpeed,
                           }}
                         />
                         <div className="p-1.5 bg-neutral-900">
@@ -947,13 +943,21 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                     );
                   })}
                 </div>
+
+                {/* Speed slider - only show when animation is selected */}
+                {selectedAnimationId && (
+                  <AnimationSpeedSlider
+                    speed={animationSpeed}
+                    onChange={onAnimationSpeedChange}
+                  />
+                )}
               </div>
             </div>
           </div>
 
           {/* Code Export */}
           <div className="border-t border-neutral-800 pt-3">
-            {/* Tab Buttons + Color Format on same row */}
+            {/* Tab Buttons + Copy + Color Format on same row */}
             <div className="flex items-center justify-between gap-2 mb-2">
               <div className="flex gap-1 overflow-x-auto">
                 {(["css", "swift", "kotlin", "ai"] as const).map((tab) => (
@@ -977,74 +981,79 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                   </button>
                 ))}
               </div>
-              {/* Color Format Dropdown */}
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button
-                    className="flex h-7 items-center gap-1.5 rounded border border-neutral-700 bg-neutral-900 px-2 text-xs text-white hover:bg-neutral-800 flex-shrink-0"
-                    aria-label="Color format"
-                  >
-                    <Palette className="h-3 w-3 text-neutral-500" />
-                    <span>
-                      {COLOR_FORMAT_OPTIONS.find((f) => f.value === colorFormat)
-                        ?.label ?? "HEX"}
-                    </span>
-                    <ChevronDown className="h-3 w-3 text-neutral-500" />
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-28 p-1" align="end">
-                  {COLOR_FORMAT_OPTIONS.map((opt) => (
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {/* Copy Code Button */}
+                <button
+                  onClick={() =>
+                    handleCopy(
+                      codeTab === "css"
+                        ? selectedAnimation
+                          ? fullCSSCode
+                          : cssCode
+                        : codeTab === "swift"
+                          ? swiftUICode
+                          : codeTab === "kotlin"
+                            ? kotlinCode
+                            : aiAgentCode,
+                      codeTab,
+                    )
+                  }
+                  className="flex h-7 items-center gap-1.5 rounded border border-neutral-700 bg-neutral-900 px-2 text-xs text-white hover:bg-neutral-800 transition-colors"
+                  aria-label="Copy code"
+                >
+                  <span>Copy Code</span>
+                  {copiedId === codeTab ? (
+                    <Check className="h-3 w-3 text-green-500" />
+                  ) : (
+                    <Copy className="h-3 w-3 text-neutral-500" />
+                  )}
+                </button>
+                {/* Color Format Dropdown */}
+                <Popover>
+                  <PopoverTrigger asChild>
                     <button
-                      key={opt.value}
-                      onClick={() => onColorFormatChange(opt.value)}
-                      className={cn(
-                        "flex w-full items-center gap-2 rounded px-2 py-1 text-xs",
-                        "hover:bg-neutral-800 transition-colors",
-                        colorFormat === opt.value && "bg-neutral-800",
-                      )}
+                      className="flex h-7 items-center gap-1.5 rounded border border-neutral-700 bg-neutral-900 px-2 text-xs text-white hover:bg-neutral-800 flex-shrink-0"
+                      aria-label="Color format"
                     >
-                      <span className="flex-1 text-left">{opt.label}</span>
-                      {colorFormat === opt.value && (
-                        <Check className="h-3 w-3 text-white" />
-                      )}
+                      <Palette className="h-3 w-3 text-neutral-500" />
+                      <span>
+                        {COLOR_FORMAT_OPTIONS.find(
+                          (f) => f.value === colorFormat,
+                        )?.label ?? "HEX"}
+                      </span>
+                      <ChevronDown className="h-3 w-3 text-neutral-500" />
                     </button>
-                  ))}
-                </PopoverContent>
-              </Popover>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-28 p-1" align="end">
+                    {COLOR_FORMAT_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        onClick={() => onColorFormatChange(opt.value)}
+                        className={cn(
+                          "flex w-full items-center gap-2 rounded px-2 py-1 text-xs",
+                          "hover:bg-neutral-800 transition-colors",
+                          colorFormat === opt.value && "bg-neutral-800",
+                        )}
+                      >
+                        <span className="flex-1 text-left">{opt.label}</span>
+                        {colorFormat === opt.value && (
+                          <Check className="h-3 w-3 text-white" />
+                        )}
+                      </button>
+                    ))}
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
             {/* Tab Content */}
-            <div className="relative bg-neutral-900 rounded-lg overflow-hidden">
-              <pre className="p-3 pr-12 text-xs font-mono text-neutral-300 max-h-32 overflow-auto whitespace-pre-wrap break-words">
+            <div className="bg-neutral-900 rounded-lg overflow-hidden">
+              <pre className="p-3 text-xs font-mono text-neutral-300 max-h-32 overflow-auto whitespace-pre-wrap break-words">
                 {codeTab === "css" &&
                   (selectedAnimation ? fullCSSCode : cssCode)}
                 {codeTab === "swift" && swiftUICode}
                 {codeTab === "kotlin" && kotlinCode}
                 {codeTab === "ai" && aiAgentCode}
               </pre>
-              <button
-                onClick={() =>
-                  handleCopy(
-                    codeTab === "css"
-                      ? selectedAnimation
-                        ? fullCSSCode
-                        : cssCode
-                      : codeTab === "swift"
-                        ? swiftUICode
-                        : codeTab === "kotlin"
-                          ? kotlinCode
-                          : aiAgentCode,
-                    codeTab,
-                  )
-                }
-                className="absolute top-2 right-2 p-1.5 bg-neutral-800 rounded hover:bg-neutral-700 transition-colors z-10"
-                aria-label="Copy code"
-              >
-                {copiedId === codeTab ? (
-                  <Check className="w-3.5 h-3.5 text-green-500" />
-                ) : (
-                  <Copy className="w-3.5 h-3.5 text-neutral-400" />
-                )}
-              </button>
             </div>
           </div>
         </DialogContent>

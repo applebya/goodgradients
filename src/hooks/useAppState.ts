@@ -35,6 +35,7 @@ const DEFAULT_STATE: AppState = {
   isAnimating: true,
   previewMode: "background",
   colorFormat: "hex",
+  animationSpeed: 3000, // Default 3 seconds
 };
 
 const URL_DEBOUNCE_MS = 150;
@@ -233,6 +234,14 @@ export function useAppState() {
     );
   }, []);
 
+  const setAnimationSpeed = useCallback((animationSpeed: number) => {
+    setState((prev) =>
+      prev.animationSpeed === animationSpeed
+        ? prev
+        : { ...prev, animationSpeed },
+    );
+  }, []);
+
   const toggleFavorite = useCallback((gradientDef: string) => {
     const { favorites: newFavorites, added } =
       toggleFavoriteStorage(gradientDef);
@@ -295,6 +304,7 @@ export function useAppState() {
       setGradientType,
       setPreviewMode,
       setColorFormat,
+      setAnimationSpeed,
       clearFilters,
       hasActiveFilters,
       toggleAnimating,

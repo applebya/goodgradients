@@ -61,7 +61,7 @@
 }
 
 .heart-animate {
-  animation: heart-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: heart-pop 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @layer base {
@@ -83,6 +83,8 @@
 
   html {
     overflow-y: scroll;
+    /* Prevent layout shift when modal opens by always reserving scrollbar space */
+    scrollbar-gutter: stable;
   }
 
   body {

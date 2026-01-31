@@ -6,18 +6,26 @@ import {
   PopoverTrigger,
   PopoverClose,
 } from "./ui/popover";
+import {
+  AnimationSpeedSlider,
+  applyAnimationSpeed,
+} from "./AnimationSpeedSlider";
 import { cn } from "@/lib/utils";
 import { animations, getAnimationById } from "@/data/animations";
 import type { Animation } from "@/types";
 
 interface AnimationPickerProps {
   selectedAnimationId: string | null;
+  animationSpeed: number;
   onAnimationChange: (id: string | null) => void;
+  onSpeedChange: (speed: number) => void;
 }
 
 export function AnimationPicker({
   selectedAnimationId,
+  animationSpeed,
   onAnimationChange,
+  onSpeedChange,
 }: AnimationPickerProps) {
   const selectedAnimation = selectedAnimationId
     ? getAnimationById(selectedAnimationId)
@@ -74,7 +82,7 @@ export function AnimationPicker({
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-80 p-2" align="end">
-        {/* Inject animation keyframes - sourced from internal animations.ts, safe */}
+        {/* Inject animation keyframes - sourced from internal animations.ts, safe (not user input) */}
         <style dangerouslySetInnerHTML={{ __html: keyframesCSS }} />
 
         <div className="grid grid-cols-3 gap-2">
@@ -83,6 +91,14 @@ export function AnimationPicker({
               anim.id === "none"
                 ? !selectedAnimationId
                 : selectedAnimationId === anim.id;
+
+            const baseStyle = parseAnimationStyle(
+              anim.id !== "none" ? anim : undefined,
+            );
+            const styleWithSpeed =
+              anim.id !== "none"
+                ? applyAnimationSpeed(baseStyle, animationSpeed)
+                : baseStyle;
 
             return (
               <PopoverClose key={anim.id} asChild>
@@ -105,9 +121,7 @@ export function AnimationPicker({
                     className="h-12"
                     style={{
                       background: previewGradient,
-                      ...parseAnimationStyle(
-                        anim.id !== "none" ? anim : undefined,
-                      ),
+                      ...styleWithSpeed,
                     }}
                   />
                   <div className="p-1.5 bg-neutral-900">
@@ -120,6 +134,16 @@ export function AnimationPicker({
             );
           })}
         </div>
+
+        {/* Speed slider - only show when animation is selected */}
+        {selectedAnimationId && (
+          <div className="mt-3 pt-3 border-t border-neutral-800">
+            <AnimationSpeedSlider
+              speed={animationSpeed}
+              onChange={onSpeedChange}
+            />
+          </div>
+        )}
       </PopoverContent>
     </Popover>
   );

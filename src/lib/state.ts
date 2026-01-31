@@ -24,6 +24,7 @@ const DEFAULT_STATE: AppState = {
   isAnimating: true,
   previewMode: "background",
   colorFormat: "hex",
+  animationSpeed: 3000,
 };
 
 // Valid values for validation

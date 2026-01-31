@@ -1,6 +1,8 @@
 import { memo, useCallback, useMemo, useState } from "react";
 import { toast } from "./Toast";
-import { Heart, Copy, Check } from "./icons";
+import { Copy, Check } from "./icons";
+import { HeartButton } from "./HeartButton";
+import { applyAnimationSpeed } from "./AnimationSpeedSlider";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
@@ -29,6 +31,7 @@ interface GradientCardProps {
   previewMode: UIPreviewMode;
   colorFormat: ColorFormat;
   selectedAnimationId: string | null;
+  animationSpeed: number;
   isFavorite: boolean;
   onToggleFavorite: () => void;
   onSelect: (gradient: GradientPreset) => void;
@@ -40,6 +43,7 @@ export const GradientCard = memo(function GradientCard({
   previewMode,
   colorFormat,
   selectedAnimationId,
+  animationSpeed,
   isFavorite,
   onToggleFavorite,
   onSelect,
@@ -69,18 +73,15 @@ export const GradientCard = memo(function GradientCard({
     );
     const bgSize = bgSizeMatch ? bgSizeMatch[1] : undefined;
 
-    return {
+    const baseStyle: React.CSSProperties = {
       ...(bgSize ? { backgroundSize: bgSize } : {}),
       ...(animValue ? { animation: animValue } : {}),
     };
-  }, [selectedAnimation]);
+
+    return applyAnimationSpeed(baseStyle, animationSpeed);
+  }, [selectedAnimation, animationSpeed]);
 
   const [copied, setCopied] = useState(false);
-
-  const handleFavorite = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onToggleFavorite();
-  };
 
   const handleQuickCopy = useCallback(
     (e: React.MouseEvent) => {
@@ -246,24 +247,16 @@ export const GradientCard = memo(function GradientCard({
             )}
           </Button>
           {/* Favorite button */}
-          <Button
-            size="icon-sm"
-            variant="ghost"
-            className={cn(
-              "h-8 w-8 rounded-full bg-black/40 hover:bg-black/60 transition-all",
-              isFavorite
-                ? "text-red-400 opacity-100"
-                : "text-white/70 hover:text-white opacity-0 group-hover:opacity-100 group-focus-within:opacity-100",
-            )}
-            onClick={handleFavorite}
-            aria-label={
+          <HeartButton
+            isFavorite={isFavorite}
+            onToggle={onToggleFavorite}
+            variant="overlay"
+            ariaLabel={
               isFavorite
                 ? `Remove ${gradient.name} from favorites`
                 : `Add ${gradient.name} to favorites`
             }
-          >
-            <Heart className={cn("w-4 h-4", isFavorite && "fill-current")} />
-          </Button>
+          />
         </div>
       </div>
 
