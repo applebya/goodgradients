@@ -1026,7 +1026,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               </Popover>
             </div>
             {/* Tab Content */}
-            <div className="relative bg-neutral-900 rounded-lg">
+            <div className="relative bg-neutral-900 rounded-lg overflow-hidden">
               <pre className="p-3 pr-12 text-xs font-mono text-neutral-300 overflow-x-auto max-h-32">
                 {codeTab === "css" &&
                   (selectedAnimation ? fullCSSCode : cssCode)}
