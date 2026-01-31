@@ -94,6 +94,32 @@ export function PrivacyPolicy() {
 
           <section>
             <h2 className="text-lg font-semibold text-white mb-3">
+              Accessibility Disclaimer
+            </h2>
+            <p className="mb-3">
+              Good Gradients provides WCAG contrast ratio estimates as a
+              convenience feature. These calculations are based on the average
+              color of gradient backgrounds and are provided for informational
+              purposes only.
+            </p>
+            <p className="mb-3">
+              <strong className="text-neutral-200">Important:</strong> Due to
+              the nature of gradients (color variations, angles, color stops),
+              actual contrast ratios will vary across different areas of the
+              gradient. The values displayed are approximations and should not
+              be relied upon for accessibility compliance.
+            </p>
+            <p>
+              We make no warranties or guarantees regarding the accuracy of
+              accessibility calculations. You are solely responsible for
+              verifying that your designs meet applicable accessibility
+              standards. Good Gradients and its contributors shall not be held
+              liable for any claims arising from the use of these estimates.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-semibold text-white mb-3">
               Open Source
             </h2>
             <p>
