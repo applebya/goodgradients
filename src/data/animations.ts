@@ -101,11 +101,11 @@ export const animations: Animation[] = [
     description: "Size pulse",
     category: "Pulse",
     keyframes: `@keyframes gradient-pulse-move {
-  0%, 100% { background-position: 50% 50%; background-size: 200% 200%; }
-  50% { background-position: 50% 50%; background-size: 150% 150%; }
+  0%, 100% { background-position: 50% 50%; background-size: 300% 300%; }
+  50% { background-position: 50% 50%; background-size: 120% 120%; }
 }`,
     property:
-      "background-size: 200% 200%; animation: gradient-pulse-move 2s ease-in-out infinite;",
+      "background-size: 300% 300%; animation: gradient-pulse-move 2s ease-in-out infinite;",
     preview: { duration: "2s", timing: "ease-in-out" },
   },
   {
@@ -114,11 +114,11 @@ export const animations: Animation[] = [
     description: "Slow inhale/exhale",
     category: "Pulse",
     keyframes: `@keyframes gradient-breathe-move {
-  0%, 100% { background-position: 50% 50%; background-size: 300% 300%; }
-  50% { background-position: 50% 50%; background-size: 200% 200%; }
+  0%, 100% { background-position: 50% 50%; background-size: 400% 400%; }
+  50% { background-position: 50% 50%; background-size: 150% 150%; }
 }`,
     property:
-      "background-size: 300% 300%; animation: gradient-breathe-move 6s ease-in-out infinite;",
+      "background-size: 400% 400%; animation: gradient-breathe-move 6s ease-in-out infinite;",
     preview: { duration: "6s", timing: "ease-in-out" },
   },
 ];
