@@ -1,12 +1,16 @@
 import type {
   AppState,
-  URLState,
   GradientCategory,
   WizardColor,
   GradientTypeFilter,
   ColorFormat,
 } from "@/types";
-import { decodeGradient } from "./gradient-url";
+import {
+  decodeGradient,
+  decodeGradientFromParams,
+  encodeGradient,
+  encodeGradientToParams,
+} from "./gradient-url";
 
 const DEFAULT_STATE: AppState = {
   view: "gallery",
@@ -48,39 +52,39 @@ const VALID_COLOR_FORMATS: ColorFormat[] = [
 
 /**
  * Parse URL search params into app state
+ * Supports both new format (?g=color1-color2&type=linear&angle=135)
+ * and legacy format (?g=linear,135,color1:0,color2:100)
  */
 export function parseURLState(
   searchParams: URLSearchParams,
 ): Partial<AppState> {
-  const urlState: URLState = {
-    g: searchParams.get("g") ?? undefined,
-    a: searchParams.get("a") ?? undefined,
-    c: searchParams.get("c") ?? undefined,
-    q: searchParams.get("q") ?? undefined,
-    colors: searchParams.get("colors") ?? undefined,
-    t: searchParams.get("t") ?? undefined,
-    cf: searchParams.get("cf") ?? undefined,
-  };
-
   const state: Partial<AppState> = {};
 
-  // Validate and set gradient definition
-  if (urlState.g) {
-    const decoded = decodeGradient(urlState.g);
-    if (decoded) {
-      state.selectedGradient = urlState.g;
-      state.view = "detail";
-    }
+  // Parse gradient from URL params (supports both new and legacy formats)
+  const gradientDef = decodeGradientFromParams(searchParams);
+  if (gradientDef) {
+    // Convert to internal storage format
+    state.selectedGradient = encodeGradient(gradientDef);
+    state.view = "detail";
   }
 
-  if (urlState.a) state.selectedAnimationId = urlState.a;
-  if (urlState.c)
-    state.category = urlState.c as GradientCategory | "All" | "Favorites";
-  if (urlState.q) state.searchQuery = urlState.q;
+  // Animation
+  const animation = searchParams.get("a");
+  if (animation) state.selectedAnimationId = animation;
+
+  // Category
+  const category = searchParams.get("c");
+  if (category)
+    state.category = category as GradientCategory | "All" | "Favorites";
+
+  // Search query
+  const query = searchParams.get("q");
+  if (query) state.searchQuery = query;
 
   // Parse colors filter (comma-separated, case-insensitive)
-  if (urlState.colors) {
-    const colorList = urlState.colors
+  const colorsParam = searchParams.get("colors");
+  if (colorsParam) {
+    const colorList = colorsParam
       .split(",")
       .map((c) => {
         // Case-insensitive match against valid colors
@@ -95,17 +99,19 @@ export function parseURLState(
     }
   }
 
-  // Parse gradient type filter
+  // Parse gradient type filter (for preview, not the selected gradient's type)
+  const typeFilter = searchParams.get("t");
   if (
-    urlState.t &&
-    VALID_GRADIENT_TYPES.includes(urlState.t as GradientTypeFilter)
+    typeFilter &&
+    VALID_GRADIENT_TYPES.includes(typeFilter as GradientTypeFilter)
   ) {
-    state.gradientType = urlState.t as GradientTypeFilter;
+    state.gradientType = typeFilter as GradientTypeFilter;
   }
 
   // Parse color format
-  if (urlState.cf && VALID_COLOR_FORMATS.includes(urlState.cf as ColorFormat)) {
-    state.colorFormat = urlState.cf as ColorFormat;
+  const colorFormat = searchParams.get("cf");
+  if (colorFormat && VALID_COLOR_FORMATS.includes(colorFormat as ColorFormat)) {
+    state.colorFormat = colorFormat as ColorFormat;
   }
 
   return state;
@@ -113,18 +119,42 @@ export function parseURLState(
 
 /**
  * Serialize app state to URL search params
+ * Uses the new clean URL format: ?g=color1-color2&type=radial&angle=90
  */
 export function serializeStateToURL(state: Partial<AppState>): URLSearchParams {
   const params = new URLSearchParams();
 
-  if (state.selectedGradient) params.set("g", state.selectedGradient);
+  // Serialize gradient to clean URL params
+  if (state.selectedGradient) {
+    const gradientDef = decodeGradient(state.selectedGradient);
+    if (gradientDef) {
+      const gradientParams = encodeGradientToParams(gradientDef);
+      // Add each gradient param
+      for (const [key, value] of Object.entries(gradientParams)) {
+        params.set(key, value);
+      }
+    }
+  }
+
+  // Animation
   if (state.selectedAnimationId) params.set("a", state.selectedAnimationId);
+
+  // Category
   if (state.category && state.category !== "All")
     params.set("c", state.category);
+
+  // Search query
   if (state.searchQuery) params.set("q", state.searchQuery);
+
+  // Colors filter
   if (state.colors && state.colors.length > 0)
     params.set("colors", state.colors.map((c) => c.toLowerCase()).join(","));
-  if (state.gradientType) params.set("t", state.gradientType);
+
+  // Gradient type filter (for preview)
+  if (state.gradientType && state.gradientType !== "linear")
+    params.set("t", state.gradientType);
+
+  // Color format
   if (state.colorFormat && state.colorFormat !== "hex")
     params.set("cf", state.colorFormat);
 

@@ -1,21 +1,26 @@
-import { memo, useCallback, useMemo, useState } from 'react';
-import { toast } from './Toast';
-import { Heart, Copy, Check } from './icons';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { cn } from '@/lib/utils';
-import { transformGradient } from '@/lib/gradient';
-import { convertColor } from '@/lib/color-format';
-import { getAnimationById } from '@/data/animations';
-import { getGradientAverageColor, getBestTextColor } from '@/lib/contrast';
-import type { GradientPreset, UIPreviewMode, GradientTypeFilter, ColorFormat } from '@/types';
+import { memo, useCallback, useMemo, useState } from "react";
+import { toast } from "./Toast";
+import { Heart, Copy, Check } from "./icons";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+import { cn } from "@/lib/utils";
+import { transformGradient } from "@/lib/gradient";
+import { convertColor } from "@/lib/color-format";
+import { getAnimationById } from "@/data/animations";
+import { getGradientAverageColor, getBestTextColor } from "@/lib/contrast";
+import type {
+  GradientPreset,
+  UIPreviewMode,
+  GradientTypeFilter,
+  ColorFormat,
+} from "@/types";
 
 // Preload the GradientDetail chunk on hover for instant modal opening
 let detailPreloaded = false;
 function preloadGradientDetail() {
   if (detailPreloaded) return;
   detailPreloaded = true;
-  import('./GradientDetail');
+  import("./GradientDetail");
 }
 
 interface GradientCardProps {
@@ -40,18 +45,28 @@ export const GradientCard = memo(function GradientCard({
   onSelect,
 }: GradientCardProps) {
   // Transform gradient to the selected type (linear/radial/conic)
-  const displayGradient = transformGradient(gradient.gradient, gradientType, 135);
+  const displayGradient = transformGradient(
+    gradient.gradient,
+    gradientType,
+    135,
+  );
 
   // Get animation and parse its styles
-  const selectedAnimation = selectedAnimationId ? getAnimationById(selectedAnimationId) : undefined;
+  const selectedAnimation = selectedAnimationId
+    ? getAnimationById(selectedAnimationId)
+    : undefined;
 
   const animationStyle = useMemo((): React.CSSProperties => {
     if (!selectedAnimation || !selectedAnimation.property) {
       return {};
     }
-    const animMatch = selectedAnimation.property.match(/animation:\s*([^;]+);?/);
+    const animMatch = selectedAnimation.property.match(
+      /animation:\s*([^;]+);?/,
+    );
     const animValue = animMatch ? animMatch[1] : undefined;
-    const bgSizeMatch = selectedAnimation.property.match(/background-size:\s*([^;]+);?/);
+    const bgSizeMatch = selectedAnimation.property.match(
+      /background-size:\s*([^;]+);?/,
+    );
     const bgSize = bgSizeMatch ? bgSizeMatch[1] : undefined;
 
     return {
@@ -67,27 +82,33 @@ export const GradientCard = memo(function GradientCard({
     onToggleFavorite();
   };
 
-  const handleQuickCopy = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigator.clipboard.writeText(`background: ${displayGradient};`);
-    setCopied(true);
-    toast.success('CSS copied');
-    setTimeout(() => setCopied(false), 1500);
-  }, [displayGradient]);
+  const handleQuickCopy = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      navigator.clipboard.writeText(`background: ${displayGradient};`);
+      setCopied(true);
+      toast.success("CSS copied");
+      setTimeout(() => setCopied(false), 1500);
+    },
+    [displayGradient],
+  );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       onSelect(gradient);
     }
   };
 
-  const handleCopyColor = useCallback((e: React.MouseEvent, color: string) => {
-    e.stopPropagation();
-    const formattedColor = convertColor(color, colorFormat);
-    navigator.clipboard.writeText(formattedColor);
-    toast.success('Copied to clipboard');
-  }, [colorFormat]);
+  const handleCopyColor = useCallback(
+    (e: React.MouseEvent, color: string) => {
+      e.stopPropagation();
+      const formattedColor = convertColor(color, colorFormat);
+      navigator.clipboard.writeText(formattedColor);
+      toast.success("Copied to clipboard");
+    },
+    [colorFormat],
+  );
 
   // Calculate best text color for contrast
   const textColor = useMemo(() => {
@@ -98,27 +119,31 @@ export const GradientCard = memo(function GradientCard({
   // Render the preview content based on mode
   const renderPreviewContent = () => {
     switch (previewMode) {
-      case 'button':
+      case "button":
         return (
           <div className="flex items-center justify-center h-full">
             <div
               className="px-6 py-2.5 rounded-lg font-medium text-sm shadow-lg"
-              style={{ background: displayGradient, color: textColor, ...animationStyle }}
+              style={{
+                background: displayGradient,
+                color: textColor,
+                ...animationStyle,
+              }}
             >
               Click me
             </div>
           </div>
         );
-      case 'text':
+      case "text":
         return (
           <div className="flex items-center justify-center h-full">
             <span
               className="text-3xl font-bold"
               style={{
                 background: displayGradient,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
                 ...animationStyle,
               }}
             >
@@ -126,24 +151,32 @@ export const GradientCard = memo(function GradientCard({
             </span>
           </div>
         );
-      case 'badge':
+      case "badge":
         return (
           <div className="flex items-center justify-center h-full gap-2">
             <span
               className="px-3 py-1 rounded-full text-xs font-medium"
-              style={{ background: displayGradient, color: textColor, ...animationStyle }}
+              style={{
+                background: displayGradient,
+                color: textColor,
+                ...animationStyle,
+              }}
             >
               New
             </span>
             <span
               className="px-3 py-1 rounded-full text-xs font-medium"
-              style={{ background: displayGradient, color: textColor, ...animationStyle }}
+              style={{
+                background: displayGradient,
+                color: textColor,
+                ...animationStyle,
+              }}
             >
               Featured
             </span>
           </div>
         );
-      case 'border':
+      case "border":
         return (
           <div className="flex items-center justify-center h-full">
             <div
@@ -156,7 +189,7 @@ export const GradientCard = memo(function GradientCard({
             </div>
           </div>
         );
-      case 'background':
+      case "background":
       default:
         return null; // Background mode just uses the container background
     }
@@ -168,8 +201,8 @@ export const GradientCard = memo(function GradientCard({
       tabIndex={0}
       aria-label={`${gradient.name} gradient - ${gradient.description}`}
       className={cn(
-        'group bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden card-shimmer',
-        'hover:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors cursor-pointer'
+        "group bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden",
+        "hover:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors cursor-pointer",
       )}
       onClick={() => onSelect(gradient)}
       onKeyDown={handleKeyDown}
@@ -178,15 +211,18 @@ export const GradientCard = memo(function GradientCard({
     >
       {/* Inject animation keyframes - sourced from internal animations.ts, safe */}
       {selectedAnimation?.keyframes && (
-        <style dangerouslySetInnerHTML={{ __html: selectedAnimation.keyframes }} />
+        <style
+          dangerouslySetInnerHTML={{ __html: selectedAnimation.keyframes }}
+        />
       )}
 
       {/* Gradient Preview */}
       <div
         className="relative aspect-video"
         style={{
-          background: previewMode === 'background' ? displayGradient : '#171717',
-          ...(previewMode === 'background' ? animationStyle : {}),
+          background:
+            previewMode === "background" ? displayGradient : "#171717",
+          ...(previewMode === "background" ? animationStyle : {}),
         }}
       >
         {renderPreviewContent()}
@@ -197,8 +233,8 @@ export const GradientCard = memo(function GradientCard({
             size="icon-sm"
             variant="ghost"
             className={cn(
-              'h-8 w-8 rounded-full bg-black/40 hover:bg-black/60 transition-all',
-              'text-white/70 hover:text-white opacity-0 group-hover:opacity-100 group-focus-within:opacity-100'
+              "h-8 w-8 rounded-full bg-black/40 hover:bg-black/60 transition-all",
+              "text-white/70 hover:text-white opacity-0 group-hover:opacity-100 group-focus-within:opacity-100",
             )}
             onClick={handleQuickCopy}
             aria-label="Copy gradient CSS"
@@ -214,21 +250,25 @@ export const GradientCard = memo(function GradientCard({
             size="icon-sm"
             variant="ghost"
             className={cn(
-              'h-8 w-8 rounded-full bg-black/40 hover:bg-black/60 transition-all',
+              "h-8 w-8 rounded-full bg-black/40 hover:bg-black/60 transition-all",
               isFavorite
-                ? 'text-red-400 opacity-100'
-                : 'text-white/70 hover:text-white opacity-0 group-hover:opacity-100 group-focus-within:opacity-100'
+                ? "text-red-400 opacity-100"
+                : "text-white/70 hover:text-white opacity-0 group-hover:opacity-100 group-focus-within:opacity-100",
             )}
             onClick={handleFavorite}
-            aria-label={isFavorite ? `Remove ${gradient.name} from favorites` : `Add ${gradient.name} to favorites`}
+            aria-label={
+              isFavorite
+                ? `Remove ${gradient.name} from favorites`
+                : `Add ${gradient.name} to favorites`
+            }
           >
-            <Heart className={cn('w-4 h-4', isFavorite && 'fill-current')} />
+            <Heart className={cn("w-4 h-4", isFavorite && "fill-current")} />
           </Button>
         </div>
       </div>
 
-      {/* Card Content - with shimmer overlay */}
-      <div className="p-4 relative card-shimmer-content">
+      {/* Card Content - with shimmer overlay (shimmer limited to this area) */}
+      <div className="p-4 relative card-shimmer card-shimmer-content rounded-b-xl">
         <div className="flex items-start justify-between mb-2">
           <h3 className="text-white font-medium">{gradient.name}</h3>
           <Badge variant="secondary">{gradient.category}</Badge>

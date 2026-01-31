@@ -276,11 +276,29 @@ test.describe("GoodGradients - Gradient Detail", () => {
 });
 
 test.describe("GoodGradients - URL State", () => {
-  test("should open modal when gradient is encoded in URL", async ({
+  test("should open modal when gradient is encoded in URL (new format)", async ({
     page,
   }) => {
-    // Navigate with encoded gradient in URL (format: type,angle,color1:stop1,color2:stop2)
+    // Navigate with new clean URL format: ?g=color1-color2
     // This represents a purple gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
+    await page.goto("/?g=667eea-764ba2");
+
+    // Wait for page to load
+    await page.waitForSelector('[data-testid="gradient-card"]', {
+      timeout: 15000,
+    });
+
+    // Wait a bit for the modal to open (URL state processing)
+    await page.waitForTimeout(500);
+
+    // Modal should open with the gradient
+    await expect(page.getByRole("dialog")).toBeVisible({ timeout: 10000 });
+  });
+
+  test("should open modal with legacy URL format (backwards compatibility)", async ({
+    page,
+  }) => {
+    // Navigate with legacy format: type,angle,color:stop,color:stop
     await page.goto("/?g=linear,135,667eea:0,764ba2:100");
 
     // Wait for page to load
@@ -292,6 +310,42 @@ test.describe("GoodGradients - URL State", () => {
     await page.waitForTimeout(500);
 
     // Modal should open with the gradient
+    await expect(page.getByRole("dialog")).toBeVisible({ timeout: 10000 });
+  });
+
+  test("should handle radial gradient URL", async ({ page }) => {
+    // Navigate with radial type specified
+    await page.goto("/?g=667eea-764ba2&type=radial");
+
+    await page.waitForSelector('[data-testid="gradient-card"]', {
+      timeout: 15000,
+    });
+    await page.waitForTimeout(500);
+
+    await expect(page.getByRole("dialog")).toBeVisible({ timeout: 10000 });
+  });
+
+  test("should handle custom angle in URL", async ({ page }) => {
+    // Navigate with custom angle
+    await page.goto("/?g=667eea-764ba2&angle=90");
+
+    await page.waitForSelector('[data-testid="gradient-card"]', {
+      timeout: 15000,
+    });
+    await page.waitForTimeout(500);
+
+    await expect(page.getByRole("dialog")).toBeVisible({ timeout: 10000 });
+  });
+
+  test("should handle 5-color gradient URL", async ({ page }) => {
+    // Navigate with a 5-color rainbow gradient
+    await page.goto("/?g=fde047-22c55e-22d3ee-d946ef-ef4444&angle=90");
+
+    await page.waitForSelector('[data-testid="gradient-card"]', {
+      timeout: 15000,
+    });
+    await page.waitForTimeout(500);
+
     await expect(page.getByRole("dialog")).toBeVisible({ timeout: 10000 });
   });
 

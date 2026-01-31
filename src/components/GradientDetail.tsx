@@ -9,7 +9,6 @@ import {
   Circle,
   RotateCw,
   Maximize2,
-  ChevronRight,
   Zap,
   Play,
   Pause,
@@ -781,18 +780,33 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
           </div>
 
           {/* Collapsible: Gradient Settings */}
-          <button
-            onClick={() => setShowSettings(!showSettings)}
-            className="flex items-center justify-between w-full py-2 text-sm text-neutral-400 hover:text-white transition-colors"
-          >
-            <span>Gradient Settings</span>
-            <ChevronRight
-              className={cn(
-                "w-4 h-4 transition-transform duration-200 ease-out",
-                showSettings && "rotate-90",
-              )}
-            />
-          </button>
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => setShowSettings(!showSettings)}
+              className="flex items-center gap-2 py-2 text-sm text-neutral-400 hover:text-white transition-colors"
+            >
+              <ChevronDown
+                className={cn(
+                  "w-4 h-4 transition-transform duration-200 ease-out",
+                  !showSettings && "-rotate-90",
+                )}
+              />
+              <span>Gradient Settings</span>
+            </button>
+            {showSettings && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-xs text-neutral-500 hover:text-white h-7"
+                onClick={() => {
+                  handleTypeChange("linear");
+                  handleAngleChange(135);
+                }}
+              >
+                Reset
+              </Button>
+            )}
+          </div>
           <div
             className={cn(
               "grid transition-all duration-200 ease-out",
@@ -834,8 +848,10 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                 </div>
                 {(gradientDef.type === "linear" ||
                   gradientDef.type === "conic") && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-neutral-400 w-12">Angle</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-mono text-white w-10">
+                      {gradientDef.angle}°
+                    </span>
                     <input
                       type="range"
                       min="0"
@@ -847,9 +863,6 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                       aria-label="Gradient angle"
                       className="flex-1 h-1.5 bg-neutral-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
                     />
-                    <span className="text-xs text-white w-8 text-right">
-                      {gradientDef.angle}°
-                    </span>
                   </div>
                 )}
               </div>
@@ -859,9 +872,15 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
           {/* Collapsible: Animation */}
           <button
             onClick={() => setShowAnimation(!showAnimation)}
-            className="flex items-center justify-between w-full py-2 text-sm text-neutral-400 hover:text-white transition-colors border-t border-neutral-800 pt-3"
+            className="flex items-center justify-between w-full py-2 text-sm text-neutral-400 hover:text-white transition-colors"
           >
             <span className="flex items-center gap-2">
+              <ChevronDown
+                className={cn(
+                  "w-4 h-4 transition-transform duration-200 ease-out",
+                  !showAnimation && "-rotate-90",
+                )}
+              />
               <Zap className="w-4 h-4" />
               Animate
               {selectedAnimation && (
@@ -891,12 +910,6 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                   )}
                 </Button>
               )}
-              <ChevronRight
-                className={cn(
-                  "w-4 h-4 transition-transform duration-200 ease-out",
-                  showAnimation && "rotate-90",
-                )}
-              />
             </div>
           </button>
           <div
@@ -1027,7 +1040,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
             </div>
             {/* Tab Content */}
             <div className="relative bg-neutral-900 rounded-lg overflow-hidden">
-              <pre className="p-3 pr-12 text-xs font-mono text-neutral-300 overflow-x-auto max-h-32">
+              <pre className="p-3 pr-12 text-xs font-mono text-neutral-300 max-h-32 overflow-auto whitespace-pre-wrap break-words">
                 {codeTab === "css" &&
                   (selectedAnimation ? fullCSSCode : cssCode)}
                 {codeTab === "swift" && swiftUICode}

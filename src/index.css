@@ -257,7 +257,7 @@
   display: none;
 }
 
-/* Card shimmer effect - single sweep on hover */
+/* Card shimmer effect - single sweep on hover, limited to card content area */
 @keyframes card-shimmer-sweep {
   0% {
     transform: translateX(-100%) skewX(-15deg);
@@ -271,8 +271,8 @@
   position: relative;
 }
 
-/* Border shimmer - sweeps once on hover */
-.card-shimmer::before {
+/* Border shimmer - sweeps once on card hover, limited to content area */
+.card-shimmer::after {
   content: "";
   position: absolute;
   inset: -1px;
@@ -303,8 +303,9 @@
   transform: translateX(-100%) skewX(-15deg);
 }
 
-.card-shimmer:hover::before,
-.card-shimmer:focus-within::before {
+/* Trigger shimmer on parent card hover using group class */
+.group:hover .card-shimmer::after,
+.group:focus-within .card-shimmer::after {
   opacity: 1;
   animation: card-shimmer-sweep 0.7s ease-out forwards;
 }
@@ -314,6 +315,7 @@
   content: "";
   position: absolute;
   inset: 0;
+  border-radius: inherit;
   background: linear-gradient(
     105deg,
     transparent 0%,
@@ -330,23 +332,24 @@
   transform: translateX(-100%) skewX(-15deg);
 }
 
-.card-shimmer:hover .card-shimmer-content::before,
-.card-shimmer:focus-within .card-shimmer-content::before {
+/* Trigger content shimmer on parent card hover using group class */
+.group:hover .card-shimmer-content::before,
+.group:focus-within .card-shimmer-content::before {
   opacity: 1;
   animation: card-shimmer-sweep 0.7s ease-out forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card-shimmer::before,
+  .card-shimmer::after,
   .card-shimmer-content::before {
     animation: none;
     opacity: 0;
   }
 
-  .card-shimmer:hover::before,
-  .card-shimmer:focus-within::before,
-  .card-shimmer:hover .card-shimmer-content::before,
-  .card-shimmer:focus-within .card-shimmer-content::before {
+  .group:hover .card-shimmer::after,
+  .group:focus-within .card-shimmer::after,
+  .group:hover .card-shimmer-content::before,
+  .group:focus-within .card-shimmer-content::before {
     opacity: 0;
   }
 }
