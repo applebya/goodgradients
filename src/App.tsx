@@ -119,9 +119,16 @@ export default function App() {
     return actions.getShareURL();
   }, [actions]);
 
-  // Toggle favorites filter
+  // Toggle favorites filter - clear other filters when entering favorites mode
   const handleToggleFavorites = useCallback(() => {
-    actions.setCategory(state.category === "Favorites" ? "All" : "Favorites");
+    if (state.category === "Favorites") {
+      // Leaving favorites - just switch to All, keep current filters
+      actions.setCategory("All");
+    } else {
+      // Entering favorites - clear filters first, then switch
+      actions.clearFilters();
+      actions.setCategory("Favorites");
+    }
   }, [actions, state.category]);
 
   // Get selected gradient definition (decoded from URL-encoded string)
