@@ -2,7 +2,7 @@ import { AnimatedLogo } from "./AnimatedLogo";
 
 export function Footer() {
   return (
-    <footer className="border-t border-neutral-800 py-8 mt-8">
+    <footer className="border-t border-neutral-800 py-8 mt-4">
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
@@ -21,7 +21,7 @@ export function Footer() {
           {/* Resources */}
           <div>
             <h4 className="text-neutral-300 font-medium text-sm mb-3">
-              Resources
+              Good Resources
             </h4>
             <ul className="space-y-2 text-sm">
               <li>
@@ -120,9 +120,9 @@ export function Footer() {
               rel="noopener noreferrer"
               className="text-neutral-400 hover:text-white transition-colors"
             >
-              open source
+              open source project
             </a>{" "}
-            project by{" "}
+            by{" "}
             <a
               href="https://github.com/applebya"
               target="_blank"

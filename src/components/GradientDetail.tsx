@@ -97,9 +97,9 @@ export function GradientDetail({
   const [fullscreenMode, setFullscreenMode] = useState<
     "background" | "button" | "badge" | "text" | null
   >(null);
-  const [codeTab, setCodeTab] = useState<"css" | "swift" | "kotlin" | "ai">(
-    "css",
-  );
+  const [codeTab, setCodeTab] = useState<
+    "css" | "tailwind" | "swift" | "kotlin" | "ai"
+  >("css");
   const [showSettings, setShowSettings] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
 
@@ -222,6 +222,35 @@ export function GradientDetail({
   const fullCSSCode = selectedAnimation
     ? `/* Gradient with Animation */\n${selectedAnimation.keyframes}\n\n.animated-gradient {\n  background: ${formattedGradient};\n  ${selectedAnimation.property}\n}`
     : cssCode;
+
+  // Tailwind CSS code
+  const tailwindCode = (() => {
+    if (gradientDef.type === "linear" && formattedColors.length === 2) {
+      // Simple two-color linear gradient
+      const from = formattedColors[0]?.replace("#", "") ?? "";
+      const to = formattedColors[1]?.replace("#", "") ?? "";
+      return `<div class="bg-gradient-to-br from-[#${from}] to-[#${to}]">
+  <!-- Your content -->
+</div>`;
+    } else {
+      // Complex gradient - use arbitrary value
+      const encodedColors = formattedColors.join(",").replace(/#/g, "%23");
+      const gradientType =
+        gradientDef.type === "radial"
+          ? `radial-gradient(circle_at_center,${encodedColors})`
+          : gradientDef.type === "conic"
+            ? `conic-gradient(from_${gradientDef.angle}deg_at_center,${encodedColors})`
+            : `linear-gradient(${gradientDef.angle}deg,${encodedColors})`;
+      return `<div class="bg-[${gradientType}]">
+  <!-- Your content -->
+</div>
+
+<!-- Or use inline style for better readability: -->
+<div style="background: ${formattedGradient}">
+  <!-- Your content -->
+</div>`;
+    }
+  })();
 
   // SwiftUI code
   const swiftUICode = `LinearGradient(
@@ -969,26 +998,30 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
             {/* Tab Buttons + Copy + Color Format on same row */}
             <div className="flex items-center justify-between gap-2 mb-2">
               <div className="flex gap-1 overflow-x-auto">
-                {(["css", "swift", "kotlin", "ai"] as const).map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setCodeTab(tab)}
-                    className={cn(
-                      "px-2.5 sm:px-3 py-1.5 text-xs rounded transition-colors whitespace-nowrap flex-shrink-0",
-                      codeTab === tab
-                        ? "bg-neutral-700 text-white"
-                        : "bg-neutral-800/50 text-neutral-400 hover:text-white hover:bg-neutral-800",
-                    )}
-                  >
-                    {tab === "css"
-                      ? "CSS"
-                      : tab === "swift"
-                        ? "SwiftUI"
-                        : tab === "kotlin"
-                          ? "Kotlin"
-                          : "AI Agent"}
-                  </button>
-                ))}
+                {(["css", "tailwind", "swift", "kotlin", "ai"] as const).map(
+                  (tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setCodeTab(tab)}
+                      className={cn(
+                        "px-2.5 sm:px-3 py-1.5 text-xs rounded transition-colors whitespace-nowrap flex-shrink-0",
+                        codeTab === tab
+                          ? "bg-neutral-700 text-white"
+                          : "bg-neutral-800/50 text-neutral-400 hover:text-white hover:bg-neutral-800",
+                      )}
+                    >
+                      {tab === "css"
+                        ? "CSS"
+                        : tab === "tailwind"
+                          ? "Tailwind"
+                          : tab === "swift"
+                            ? "SwiftUI"
+                            : tab === "kotlin"
+                              ? "Kotlin"
+                              : "AI Agent"}
+                    </button>
+                  ),
+                )}
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
                 {/* Copy Code Button */}
@@ -999,11 +1032,13 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                         ? selectedAnimation
                           ? fullCSSCode
                           : cssCode
-                        : codeTab === "swift"
-                          ? swiftUICode
-                          : codeTab === "kotlin"
-                            ? kotlinCode
-                            : aiAgentCode,
+                        : codeTab === "tailwind"
+                          ? tailwindCode
+                          : codeTab === "swift"
+                            ? swiftUICode
+                            : codeTab === "kotlin"
+                              ? kotlinCode
+                              : aiAgentCode,
                       codeTab,
                     )
                   }
@@ -1059,6 +1094,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               <pre className="p-3 text-xs font-mono text-neutral-300 max-h-32 overflow-auto whitespace-pre-wrap break-words">
                 {codeTab === "css" &&
                   (selectedAnimation ? fullCSSCode : cssCode)}
+                {codeTab === "tailwind" && tailwindCode}
                 {codeTab === "swift" && swiftUICode}
                 {codeTab === "kotlin" && kotlinCode}
                 {codeTab === "ai" && aiAgentCode}

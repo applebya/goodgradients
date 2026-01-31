@@ -103,7 +103,7 @@ function DownloadBar({
   if (gradients.length === 0) return null;
 
   return (
-    <div className="mt-12 mb-12 flex justify-center">
+    <div className="mt-8 mb-4 flex justify-center">
       <button
         onClick={handleDownload}
         disabled={isGenerating}
