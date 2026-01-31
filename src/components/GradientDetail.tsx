@@ -532,9 +532,10 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               aria-label="Preview gradient as button in fullscreen"
             >
               <span
-                className="px-3 py-1.5 rounded text-xs font-medium text-white pointer-events-none"
+                className="px-3 py-1.5 rounded text-xs font-medium pointer-events-none"
                 style={{
                   background: displayGradient,
+                  color: bestTextColors[0]?.color || "#fff",
                   ...getAnimationStyle(selectedAnimation),
                 }}
               >
@@ -550,9 +551,10 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               aria-label="Preview gradient as badge in fullscreen"
             >
               <span
-                className="px-2 py-0.5 rounded-full text-[10px] text-white font-medium pointer-events-none"
+                className="px-2 py-0.5 rounded-full text-[10px] font-medium pointer-events-none"
                 style={{
                   background: displayGradient,
+                  color: bestTextColors[0]?.color || "#fff",
                   ...getAnimationStyle(selectedAnimation),
                 }}
               >
