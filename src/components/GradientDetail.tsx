@@ -61,6 +61,7 @@ interface GradientDetailProps {
   isAnimating: boolean;
   isFavorite: boolean;
   colorFormat: ColorFormat;
+  skipAnimation?: boolean;
   onGradientChange: (encoded: string) => void;
   onAnimationChange: (id: string | null) => void;
   onToggleAnimating: () => void;
@@ -78,6 +79,7 @@ export function GradientDetail({
   isAnimating,
   isFavorite,
   colorFormat,
+  skipAnimation,
   onGradientChange,
   onAnimationChange,
   onToggleAnimating,
@@ -95,6 +97,17 @@ export function GradientDetail({
   );
   const [showSettings, setShowSettings] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
+  const [heartAnimating, setHeartAnimating] = useState(false);
+
+  // Handle favorite toggle with animation
+  const handleFavoriteClick = useCallback(() => {
+    // Only animate when adding to favorites (not when removing)
+    if (!isFavorite) {
+      setHeartAnimating(true);
+      setTimeout(() => setHeartAnimating(false), 500);
+    }
+    onToggleFavorite();
+  }, [isFavorite, onToggleFavorite]);
 
   // Reset fullscreen state when modal closes or gradient changes
   useEffect(() => {
@@ -456,6 +469,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
         <DialogContent
           className="max-w-2xl p-3 sm:p-4 gap-2 sm:gap-3"
           hideCloseButton
+          skipAnimation={skipAnimation}
         >
           {/* Header */}
           <DialogHeader className="pb-2">
@@ -472,13 +486,17 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                   size="icon-sm"
                   variant="ghost"
                   className={cn("h-8 w-8", isFavorite && "text-red-400")}
-                  onClick={onToggleFavorite}
+                  onClick={handleFavoriteClick}
                   aria-label={
                     isFavorite ? "Remove from favorites" : "Add to favorites"
                   }
                 >
                   <Heart
-                    className={cn("w-4 h-4", isFavorite && "fill-current")}
+                    className={cn(
+                      "w-4 h-4",
+                      isFavorite && "fill-current",
+                      heartAnimating && "heart-animate",
+                    )}
                   />
                 </Button>
                 <Button

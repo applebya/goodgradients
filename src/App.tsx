@@ -168,6 +168,7 @@ export default function App() {
                   : false
               }
               colorFormat={state.colorFormat}
+              skipAnimation={actions.shouldSkipModalAnimation()}
               onGradientChange={actions.updateGradient}
               onAnimationChange={actions.selectAnimation}
               onToggleAnimating={actions.toggleAnimating}

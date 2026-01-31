@@ -1,31 +1,86 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
-import type { AppState, GradientCategory, GradientPreset, WizardColor, GradientTypeFilter, UIPreviewMode, ColorFormat } from '@/types';
-import { getInitialState, updateURL, getMinimalShareState, getShareableURL } from '@/lib/state';
-import { getFavorites, toggleFavorite as toggleFavoriteStorage, isFavorite as isFavoriteStorage } from '@/lib/favorites';
-import { encodeGradient, parseGradientCSS } from '@/lib/gradient-url';
+import { useState, useCallback, useEffect, useRef } from "react";
+import type {
+  AppState,
+  GradientCategory,
+  GradientPreset,
+  WizardColor,
+  GradientTypeFilter,
+  UIPreviewMode,
+  ColorFormat,
+} from "@/types";
+import {
+  getInitialState,
+  updateURL,
+  pushURL,
+  getMinimalShareState,
+  getShareableURL,
+  parseURLState,
+} from "@/lib/state";
+import {
+  getFavorites,
+  toggleFavorite as toggleFavoriteStorage,
+  isFavorite as isFavoriteStorage,
+} from "@/lib/favorites";
+import { encodeGradient, parseGradientCSS } from "@/lib/gradient-url";
 
 const DEFAULT_STATE: AppState = {
-  view: 'gallery',
+  view: "gallery",
   selectedGradient: null,
   selectedAnimationId: null,
-  category: 'All',
-  searchQuery: '',
+  category: "All",
+  searchQuery: "",
   colors: [],
   tags: [],
-  gradientType: 'linear',
+  gradientType: "linear",
   isAnimating: true,
-  previewMode: 'background',
-  colorFormat: 'hex',
+  previewMode: "background",
+  colorFormat: "hex",
 };
 
 const URL_DEBOUNCE_MS = 150;
+
+// Check if the page was loaded with a gradient in the URL (direct link)
+const hadGradientOnLoad =
+  typeof window !== "undefined" &&
+  new URLSearchParams(window.location.search).has("g");
 
 export function useAppState() {
   const [state, setState] = useState<AppState>(() => getInitialState());
   const [favorites, setFavorites] = useState<string[]>(() => getFavorites());
   const urlUpdateTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Track if this is still the first modal open from a direct link
+  const isFirstDirectLinkOpen = useRef(hadGradientOnLoad);
+  // Track if we're handling a popstate event (to avoid pushing URL back)
+  const isPopstateHandling = useRef(false);
+  // Track previous gradient state to detect modal open/close
+  const prevGradient = useRef(state.selectedGradient);
+
+  // Handle browser back/forward navigation
+  useEffect(() => {
+    const handlePopstate = () => {
+      isPopstateHandling.current = true;
+      const urlState = parseURLState(
+        new URLSearchParams(window.location.search),
+      );
+      setState((prev) => ({
+        ...prev,
+        selectedGradient: urlState.selectedGradient ?? null,
+        selectedAnimationId:
+          urlState.selectedAnimationId ?? prev.selectedAnimationId,
+        view: urlState.selectedGradient ? "detail" : "gallery",
+      }));
+      // Reset flag after a tick
+      setTimeout(() => {
+        isPopstateHandling.current = false;
+      }, 0);
+    };
+
+    window.addEventListener("popstate", handlePopstate);
+    return () => window.removeEventListener("popstate", handlePopstate);
+  }, []);
 
   // Sync URL on state changes with debouncing
+  // Push to history when modal opens/closes, replace for other changes
   useEffect(() => {
     if (urlUpdateTimer.current) {
       clearTimeout(urlUpdateTimer.current);
@@ -33,7 +88,21 @@ export function useAppState() {
 
     urlUpdateTimer.current = setTimeout(() => {
       const minimalState = getMinimalShareState(state);
-      updateURL(minimalState);
+
+      // Check if modal state changed (opened or closed)
+      const modalStateChanged = prevGradient.current !== state.selectedGradient;
+      prevGradient.current = state.selectedGradient;
+
+      // If this is from popstate or initial load, don't push (just sync)
+      if (isPopstateHandling.current || isFirstDirectLinkOpen.current) {
+        updateURL(minimalState);
+      } else if (modalStateChanged) {
+        // Modal opened or closed - push to history for back navigation
+        pushURL(minimalState);
+      } else {
+        // Other changes (filters, etc.) - just replace
+        updateURL(minimalState);
+      }
     }, URL_DEBOUNCE_MS);
 
     return () => {
@@ -44,7 +113,7 @@ export function useAppState() {
   }, [state]);
 
   // Actions
-  const setView = useCallback((view: AppState['view']) => {
+  const setView = useCallback((view: AppState["view"]) => {
     setState((prev) => ({ ...prev, view }));
   }, []);
 
@@ -55,7 +124,7 @@ export function useAppState() {
     setState((prev) => ({
       ...prev,
       selectedGradient: gradientDef,
-      view: gradientDef ? 'detail' : 'gallery',
+      view: gradientDef ? "detail" : "gallery",
     }));
   }, []);
 
@@ -67,7 +136,7 @@ export function useAppState() {
       setState((prev) => ({
         ...prev,
         selectedGradient: null,
-        view: 'gallery',
+        view: "gallery",
       }));
       return;
     }
@@ -79,7 +148,7 @@ export function useAppState() {
       setState((prev) => ({
         ...prev,
         selectedGradient: encoded,
-        view: 'detail',
+        view: "detail",
       }));
     }
   }, []);
@@ -88,9 +157,14 @@ export function useAppState() {
     setState((prev) => ({ ...prev, selectedAnimationId: animationId }));
   }, []);
 
-  const setCategory = useCallback((category: GradientCategory | 'All' | 'Favorites') => {
-    setState((prev) => prev.category === category ? prev : { ...prev, category });
-  }, []);
+  const setCategory = useCallback(
+    (category: GradientCategory | "All" | "Favorites") => {
+      setState((prev) =>
+        prev.category === category ? prev : { ...prev, category },
+      );
+    },
+    [],
+  );
 
   const setSearchQuery = useCallback((searchQuery: string) => {
     setState((prev) => ({ ...prev, searchQuery }));
@@ -123,7 +197,9 @@ export function useAppState() {
   }, []);
 
   const setGradientType = useCallback((gradientType: GradientTypeFilter) => {
-    setState((prev) => prev.gradientType === gradientType ? prev : { ...prev, gradientType });
+    setState((prev) =>
+      prev.gradientType === gradientType ? prev : { ...prev, gradientType },
+    );
   }, []);
 
   const clearFilters = useCallback(() => {
@@ -131,9 +207,9 @@ export function useAppState() {
       ...prev,
       colors: [],
       tags: [],
-      gradientType: 'linear',
-      category: 'All',
-      searchQuery: '',
+      gradientType: "linear",
+      category: "All",
+      searchQuery: "",
     }));
   }, []);
 
@@ -146,30 +222,42 @@ export function useAppState() {
   }, []);
 
   const setPreviewMode = useCallback((previewMode: UIPreviewMode) => {
-    setState((prev) => prev.previewMode === previewMode ? prev : { ...prev, previewMode });
+    setState((prev) =>
+      prev.previewMode === previewMode ? prev : { ...prev, previewMode },
+    );
   }, []);
 
   const setColorFormat = useCallback((colorFormat: ColorFormat) => {
-    setState((prev) => prev.colorFormat === colorFormat ? prev : { ...prev, colorFormat });
+    setState((prev) =>
+      prev.colorFormat === colorFormat ? prev : { ...prev, colorFormat },
+    );
   }, []);
 
   const toggleFavorite = useCallback((gradientDef: string) => {
-    const { favorites: newFavorites, added } = toggleFavoriteStorage(gradientDef);
+    const { favorites: newFavorites, added } =
+      toggleFavoriteStorage(gradientDef);
     setFavorites(newFavorites);
     return added;
   }, []);
 
   const isFavorite = useCallback(
     (gradientDef: string) => isFavoriteStorage(gradientDef),
-    []
+    [],
   );
 
   const closeModal = useCallback(() => {
+    // After closing modal, we're no longer in direct link mode
+    isFirstDirectLinkOpen.current = false;
     setState((prev) => ({
       ...prev,
-      view: 'gallery',
+      view: "gallery",
       selectedGradient: null,
     }));
+  }, []);
+
+  // Check if this is the first modal open from a direct link (skip animation)
+  const shouldSkipModalAnimation = useCallback(() => {
+    return isFirstDirectLinkOpen.current;
   }, []);
 
   const reset = useCallback(() => {
@@ -216,6 +304,7 @@ export function useAppState() {
       reset,
       getShareURL,
       updateGradient,
+      shouldSkipModalAnimation,
     },
   };
 }

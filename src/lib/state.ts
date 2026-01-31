@@ -142,7 +142,7 @@ export function getShareableURL(state: Partial<AppState>): string {
 }
 
 /**
- * Update URL without triggering navigation
+ * Update URL without triggering navigation (replaceState)
  */
 export function updateURL(state: Partial<AppState>): void {
   const params = serializeStateToURL(state);
@@ -152,6 +152,20 @@ export function updateURL(state: Partial<AppState>): void {
     : window.location.pathname;
 
   window.history.replaceState(null, "", newURL);
+}
+
+/**
+ * Push URL state to browser history (for modal open/close)
+ * This enables browser back/forward navigation
+ */
+export function pushURL(state: Partial<AppState>): void {
+  const params = serializeStateToURL(state);
+  const queryString = params.toString();
+  const newURL = queryString
+    ? `${window.location.pathname}?${queryString}`
+    : window.location.pathname;
+
+  window.history.pushState(null, "", newURL);
 }
 
 /**
