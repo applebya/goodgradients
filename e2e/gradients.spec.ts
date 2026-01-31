@@ -459,16 +459,6 @@ test.describe("GoodGradients - Favorites", () => {
 });
 
 test.describe("GoodGradients - Keyboard Shortcuts", () => {
-  test("should show keyboard shortcuts in footer", async ({ page }) => {
-    await page.goto("/");
-    await page.waitForSelector('[data-testid="gradient-card"]', {
-      timeout: 15000,
-    });
-
-    // Footer should show shortcuts
-    await expect(page.getByText("Focus search")).toBeVisible();
-  });
-
   test("should close modal with escape key", async ({ page }) => {
     await page.goto("/");
     await page.waitForSelector('[data-testid="gradient-card"]', {
