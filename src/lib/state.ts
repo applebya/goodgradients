@@ -4,6 +4,7 @@ import type {
   WizardColor,
   GradientTypeFilter,
   ColorFormat,
+  UIPreviewMode,
 } from "@/types";
 import {
   decodeGradient,
@@ -49,6 +50,13 @@ const VALID_COLOR_FORMATS: ColorFormat[] = [
   "rgba",
   "hsl",
   "hsla",
+];
+const VALID_PREVIEW_MODES: UIPreviewMode[] = [
+  "background",
+  "button",
+  "badge",
+  "text",
+  "border",
 ];
 
 /**
@@ -124,6 +132,15 @@ export function parseURLState(
     state.colorFormat = colorFormat as ColorFormat;
   }
 
+  // Parse preview mode
+  const previewMode = searchParams.get("pm");
+  if (
+    previewMode &&
+    VALID_PREVIEW_MODES.includes(previewMode as UIPreviewMode)
+  ) {
+    state.previewMode = previewMode as UIPreviewMode;
+  }
+
   return state;
 }
 
@@ -171,6 +188,10 @@ export function serializeStateToURL(state: Partial<AppState>): URLSearchParams {
   // Color format
   if (state.colorFormat && state.colorFormat !== "hex")
     params.set("cf", state.colorFormat);
+
+  // Preview mode
+  if (state.previewMode && state.previewMode !== "background")
+    params.set("pm", state.previewMode);
 
   return params;
 }
@@ -248,6 +269,10 @@ export function getMinimalShareState(state: AppState): Partial<AppState> {
   // Color format (only if not default)
   if (state.colorFormat && state.colorFormat !== "hex")
     minimal.colorFormat = state.colorFormat;
+
+  // Preview mode (only if not default)
+  if (state.previewMode && state.previewMode !== "background")
+    minimal.previewMode = state.previewMode;
 
   return minimal;
 }

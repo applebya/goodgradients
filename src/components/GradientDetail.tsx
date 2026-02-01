@@ -294,12 +294,10 @@ background-clip: text;${animProps}`,
       case "background":
       default:
         return {
-          simple: selectedAnimation
-            ? `background: ${formattedGradient};\n${selectedAnimation.property}`
-            : `background: ${formattedGradient};`,
-          full: selectedAnimation
-            ? `/* Gradient with Animation */\n${selectedAnimation.keyframes}\n\n.gradient-bg {\n  background: ${formattedGradient};\n  ${selectedAnimation.property}\n}`
-            : `background: ${formattedGradient};`,
+          simple: `background: ${formattedGradient};${animProps}`,
+          full: `${keyframes}.gradient-bg {
+  background: ${formattedGradient};${animProps}
+}`,
         };
     }
   };
@@ -1168,7 +1166,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                             ? "SwiftUI"
                             : tab === "kotlin"
                               ? "Kotlin"
-                              : "AI Asst"}
+                              : "AI Agent"}
                     </button>
                   ),
                 )}
