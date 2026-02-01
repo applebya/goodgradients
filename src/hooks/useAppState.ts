@@ -204,11 +204,11 @@ export function useAppState() {
   }, []);
 
   const clearFilters = useCallback(() => {
+    // Only clear actual filters, preserve display configs (gradientType, previewMode, colorFormat, etc.)
     setState((prev) => ({
       ...prev,
       colors: [],
       tags: [],
-      gradientType: "linear",
       category: "All",
       searchQuery: "",
     }));
