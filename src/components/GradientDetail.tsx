@@ -107,15 +107,17 @@ export function GradientDetail({
   >("css");
   const [showSettings, setShowSettings] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
+  const [customTextColor, setCustomTextColor] = useState<string | null>(null);
 
   // Locale-aware spelling
   const spelling = useColorSpelling();
 
-  // Reset fullscreen state when modal closes or gradient changes
+  // Reset state when modal closes
   useEffect(() => {
     if (!isOpen) {
       setIsFullscreen(false);
       setFullscreenMode(null);
+      setCustomTextColor(null);
     }
   }, [isOpen]);
 
@@ -218,6 +220,10 @@ export function GradientDetail({
   // Get best text colors - picks diverse options (one light, one dark)
   const bestTextColors = getDiverseTextColors(avgColor);
 
+  // Active text color - custom override or best recommendation
+  const activeTextColor =
+    customTextColor || bestTextColors[0]?.color || "#ffffff";
+
   // Convert gradient to selected color format
   const formattedGradient = convertGradientColors(displayGradient, colorFormat);
   const formattedColors = colors.map((c) => convertColor(c, colorFormat));
@@ -235,7 +241,7 @@ export function GradientDetail({
       case "button":
         return {
           simple: `background: ${formattedGradient};
-color: ${bestTextColors[0]?.color || "#ffffff"};
+color: ${activeTextColor};
 border: none;
 padding: 0.75rem 1.5rem;
 border-radius: 0.5rem;
@@ -243,7 +249,7 @@ font-weight: 600;
 cursor: pointer;${animProps}`,
           full: `${keyframes}.button.gradient {
   background: ${formattedGradient};
-  color: ${bestTextColors[0]?.color || "#ffffff"};
+  color: ${activeTextColor};
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
@@ -261,7 +267,7 @@ cursor: pointer;${animProps}`,
         return {
           simple: `display: inline-block;
 background: ${formattedGradient};
-color: ${bestTextColors[0]?.color || "#ffffff"};
+color: ${activeTextColor};
 padding: 0.25rem 0.75rem;
 border-radius: 9999px;
 font-size: 0.875rem;
@@ -269,7 +275,7 @@ font-weight: 500;${animProps}`,
           full: `${keyframes}.gradient-badge {
   display: inline-block;
   background: ${formattedGradient};
-  color: ${bestTextColors[0]?.color || "#ffffff"};
+  color: ${activeTextColor};
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
   font-size: 0.875rem;
@@ -306,7 +312,7 @@ background-clip: text;${animProps}`,
 
   // Tailwind CSS code - context-aware based on preview mode
   const tailwindCode = (() => {
-    const textColor = bestTextColors[0]?.color || "#ffffff";
+    const textColor = activeTextColor;
     const textColorClass =
       textColor === "#ffffff"
         ? "text-white"
@@ -393,13 +399,13 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
           >
             <h1
               className="text-5xl font-bold mb-4 drop-shadow-lg"
-              style={{ color: bestTextColors[0]?.color || "#ffffff" }}
+              style={{ color: activeTextColor }}
             >
               Your Headline Here
             </h1>
             <p
               className="text-xl opacity-80 mb-8 max-w-md text-center drop-shadow"
-              style={{ color: bestTextColors[0]?.color || "#ffffff" }}
+              style={{ color: activeTextColor }}
             >
               This is how your content looks on this gradient background.
             </p>
@@ -407,7 +413,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               <button
                 className="px-6 py-3 rounded-lg font-medium shadow-lg"
                 style={{
-                  background: bestTextColors[0]?.color || "#ffffff",
+                  background: activeTextColor,
                   color: avgColor,
                 }}
               >
@@ -416,8 +422,8 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               <button
                 className="px-6 py-3 rounded-lg font-medium border-2"
                 style={{
-                  borderColor: bestTextColors[0]?.color || "#ffffff",
-                  color: bestTextColors[0]?.color || "#ffffff",
+                  borderColor: activeTextColor,
+                  color: activeTextColor,
                 }}
               >
                 Secondary
@@ -427,7 +433,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
             <div className="absolute bottom-6 left-6 flex gap-2">
               <span
                 className="text-xs opacity-60"
-                style={{ color: bestTextColors[0]?.color || "#fff" }}
+                style={{ color: activeTextColor }}
               >
                 Recommended text:
               </span>
@@ -462,7 +468,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               className="px-12 py-6 rounded-xl text-2xl font-bold shadow-2xl hover:scale-105 transition-transform"
               style={{
                 background: displayGradient,
-                color: bestTextColors[0]?.color || "#ffffff",
+                color: activeTextColor,
                 ...getAnimationStyle(selectedAnimation),
               }}
             >
@@ -478,7 +484,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                 className="px-4 py-2 rounded-full text-sm font-medium"
                 style={{
                   background: displayGradient,
-                  color: bestTextColors[0]?.color || "#ffffff",
+                  color: activeTextColor,
                   ...getAnimationStyle(selectedAnimation),
                 }}
               >
@@ -488,7 +494,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                 className="px-4 py-2 rounded-full text-sm font-medium"
                 style={{
                   background: displayGradient,
-                  color: bestTextColors[0]?.color || "#ffffff",
+                  color: activeTextColor,
                   ...getAnimationStyle(selectedAnimation),
                 }}
               >
@@ -498,7 +504,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                 className="px-4 py-2 rounded-full text-sm font-medium"
                 style={{
                   background: displayGradient,
-                  color: bestTextColors[0]?.color || "#ffffff",
+                  color: activeTextColor,
                   ...getAnimationStyle(selectedAnimation),
                 }}
               >
@@ -510,7 +516,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                 className="px-6 py-3 rounded-lg text-lg font-semibold"
                 style={{
                   background: displayGradient,
-                  color: bestTextColors[0]?.color || "#ffffff",
+                  color: activeTextColor,
                   ...getAnimationStyle(selectedAnimation),
                 }}
               >
@@ -644,7 +650,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
             >
               <span
                 className="text-xs font-medium drop-shadow"
-                style={{ color: bestTextColors[0]?.color || "#fff" }}
+                style={{ color: activeTextColor }}
               >
                 Background
               </span>
@@ -658,7 +664,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               >
                 <Maximize2
                   className="w-3 h-3"
-                  style={{ color: bestTextColors[0]?.color || "#fff" }}
+                  style={{ color: activeTextColor }}
                 />
               </button>
             </button>
@@ -678,7 +684,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                 className="px-3 py-1.5 rounded text-xs font-medium pointer-events-none"
                 style={{
                   background: displayGradient,
-                  color: bestTextColors[0]?.color || "#fff",
+                  color: activeTextColor,
                   ...getAnimationStyle(selectedAnimation),
                 }}
               >
@@ -711,7 +717,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                 className="px-2 py-0.5 rounded-full text-[10px] font-medium pointer-events-none"
                 style={{
                   background: displayGradient,
-                  color: bestTextColors[0]?.color || "#fff",
+                  color: activeTextColor,
                   ...getAnimationStyle(selectedAnimation),
                 }}
               >
@@ -856,12 +862,18 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                     return allColors.map((tc, i) => (
                       <button
                         key={tc.color}
-                        onClick={() => handleCopy(tc.color, `text-${i}`)}
+                        onClick={() => {
+                          setCustomTextColor(tc.color);
+                          handleCopy(tc.color, `text-${i}`);
+                        }}
                         className={cn(
                           "flex items-center gap-2 px-3 py-1.5 rounded-md transition-all",
-                          "bg-neutral-900 border border-neutral-600 hover:border-neutral-400",
+                          "bg-neutral-900 border hover:border-neutral-400",
+                          customTextColor === tc.color
+                            ? "border-white ring-1 ring-white/30"
+                            : "border-neutral-600",
                         )}
-                        title={`${tc.name}: ${formatContrastRatio(tc.ratio)} contrast`}
+                        title={`${tc.name}: ${formatContrastRatio(tc.ratio)} contrast - Click to use`}
                       >
                         <div
                           className="w-5 h-5 rounded-md border border-white/20 flex items-center justify-center"
@@ -939,6 +951,41 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                       </button>
                     ));
                   })()}
+                  {/* Custom color picker */}
+                  <div className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-neutral-900 border border-neutral-600">
+                    <input
+                      type="color"
+                      value={
+                        customTextColor || bestTextColors[0]?.color || "#ffffff"
+                      }
+                      onChange={(e) => setCustomTextColor(e.target.value)}
+                      className="w-5 h-5 rounded cursor-pointer border-0 bg-transparent [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded [&::-webkit-color-swatch]:border-white/20 [&::-webkit-color-swatch]:border"
+                      title="Pick custom text color"
+                    />
+                    <input
+                      type="text"
+                      value={customTextColor || ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === "") {
+                          setCustomTextColor(null);
+                        } else if (/^#[0-9A-Fa-f]{0,6}$/.test(val)) {
+                          setCustomTextColor(val);
+                        }
+                      }}
+                      placeholder={bestTextColors[0]?.color || "#ffffff"}
+                      className="w-[4.5rem] bg-transparent text-sm font-mono text-neutral-200 placeholder:text-neutral-500 focus:outline-none"
+                    />
+                    {customTextColor && (
+                      <button
+                        onClick={() => setCustomTextColor(null)}
+                        className="text-neutral-500 hover:text-white transition-colors"
+                        title="Reset to recommended"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </TooltipProvider>
