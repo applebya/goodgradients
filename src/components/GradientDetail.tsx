@@ -1240,8 +1240,8 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               </div>
             </div>
             {/* Tab Content */}
-            <div className="bg-neutral-900 rounded-lg overflow-hidden">
-              <pre className="p-3 text-xs font-mono text-neutral-300 max-h-32 overflow-auto whitespace-pre-wrap break-words">
+            <div className="bg-black rounded-lg overflow-hidden">
+              <pre className="p-3 text-xs font-mono text-neutral-300 h-24 overflow-auto whitespace-pre-wrap break-words">
                 {codeTab === "css" &&
                   (selectedAnimation ? fullCSSCode : cssCode)}
                 {codeTab === "tailwind" && tailwindCode}
