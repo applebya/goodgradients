@@ -217,6 +217,7 @@ export default function App() {
                   : false
               }
               colorFormat={state.colorFormat}
+              previewMode={state.previewMode}
               skipAnimation={actions.shouldSkipModalAnimation()}
               onGradientChange={actions.updateGradient}
               onAnimationChange={actions.selectAnimation}
@@ -227,6 +228,7 @@ export default function App() {
                 actions.toggleFavorite(state.selectedGradient)
               }
               onColorFormatChange={actions.setColorFormat}
+              onPreviewModeChange={actions.setPreviewMode}
               onShare={handleShare}
             />
           </Suspense>

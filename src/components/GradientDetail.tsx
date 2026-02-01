@@ -20,7 +20,7 @@ import {
   applyAnimationSpeed,
 } from "./AnimationSpeedSlider";
 import { animations, getAnimationById } from "@/data/animations";
-import type { Animation, ColorFormat } from "@/types";
+import type { Animation, ColorFormat, UIPreviewMode } from "@/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import {
@@ -64,6 +64,7 @@ interface GradientDetailProps {
   isAnimating: boolean;
   isFavorite: boolean;
   colorFormat: ColorFormat;
+  previewMode: UIPreviewMode;
   skipAnimation?: boolean;
   onGradientChange: (encoded: string) => void;
   onAnimationChange: (id: string | null) => void;
@@ -71,6 +72,7 @@ interface GradientDetailProps {
   onToggleAnimating: () => void;
   onToggleFavorite: () => void;
   onColorFormatChange: (format: ColorFormat) => void;
+  onPreviewModeChange: (mode: UIPreviewMode) => void;
   onShare: () => string;
 }
 
@@ -84,6 +86,7 @@ export function GradientDetail({
   isAnimating,
   isFavorite,
   colorFormat,
+  previewMode,
   skipAnimation,
   onGradientChange,
   onAnimationChange,
@@ -91,6 +94,7 @@ export function GradientDetail({
   onToggleAnimating,
   onToggleFavorite,
   onColorFormatChange,
+  onPreviewModeChange,
   onShare,
 }: GradientDetailProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -218,26 +222,107 @@ export function GradientDetail({
   const formattedGradient = convertGradientColors(displayGradient, colorFormat);
   const formattedColors = colors.map((c) => convertColor(c, colorFormat));
 
-  // Generate export code
-  const cssCode = selectedAnimation
-    ? `background: ${formattedGradient};\n${selectedAnimation.property}`
-    : `background: ${formattedGradient};`;
+  // Generate export code based on preview mode
+  const generateCSSCode = () => {
+    const animProps = selectedAnimation
+      ? `\n  ${selectedAnimation.property}`
+      : "";
+    const keyframes = selectedAnimation
+      ? `${selectedAnimation.keyframes}\n\n`
+      : "";
 
-  const fullCSSCode = selectedAnimation
-    ? `/* Gradient with Animation */\n${selectedAnimation.keyframes}\n\n.animated-gradient {\n  background: ${formattedGradient};\n  ${selectedAnimation.property}\n}`
-    : cssCode;
+    switch (previewMode) {
+      case "button":
+        return {
+          simple: `background: ${formattedGradient};
+color: ${bestTextColors[0]?.color || "#ffffff"};
+border: none;
+padding: 0.75rem 1.5rem;
+border-radius: 0.5rem;
+font-weight: 600;
+cursor: pointer;${animProps}`,
+          full: `${keyframes}.button.gradient {
+  background: ${formattedGradient};
+  color: ${bestTextColors[0]?.color || "#ffffff"};
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;${animProps}
+}
 
-  // Tailwind CSS code
+.button.gradient:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}`,
+        };
+
+      case "badge":
+        return {
+          simple: `display: inline-block;
+background: ${formattedGradient};
+color: ${bestTextColors[0]?.color || "#ffffff"};
+padding: 0.25rem 0.75rem;
+border-radius: 9999px;
+font-size: 0.875rem;
+font-weight: 500;${animProps}`,
+          full: `${keyframes}.gradient-badge {
+  display: inline-block;
+  background: ${formattedGradient};
+  color: ${bestTextColors[0]?.color || "#ffffff"};
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;${animProps}
+}`,
+        };
+
+      case "text":
+        return {
+          simple: `background: ${formattedGradient};
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;${animProps}`,
+          full: `${keyframes}.gradient-text {
+  background: ${formattedGradient};
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;${animProps}
+}`,
+        };
+
+      case "background":
+      default:
+        return {
+          simple: selectedAnimation
+            ? `background: ${formattedGradient};\n${selectedAnimation.property}`
+            : `background: ${formattedGradient};`,
+          full: selectedAnimation
+            ? `/* Gradient with Animation */\n${selectedAnimation.keyframes}\n\n.gradient-bg {\n  background: ${formattedGradient};\n  ${selectedAnimation.property}\n}`
+            : `background: ${formattedGradient};`,
+        };
+    }
+  };
+
+  const { simple: cssCode, full: fullCSSCode } = generateCSSCode();
+
+  // Tailwind CSS code - context-aware based on preview mode
   const tailwindCode = (() => {
+    const textColor = bestTextColors[0]?.color || "#ffffff";
+    const textColorClass =
+      textColor === "#ffffff"
+        ? "text-white"
+        : textColor === "#000000"
+          ? "text-black"
+          : `text-[${textColor}]`;
+
+    // Build gradient classes
+    let gradientClasses: string;
     if (gradientDef.type === "linear" && formattedColors.length === 2) {
-      // Simple two-color linear gradient
       const from = formattedColors[0]?.replace("#", "") ?? "";
       const to = formattedColors[1]?.replace("#", "") ?? "";
-      return `<div class="bg-gradient-to-br from-[#${from}] to-[#${to}]">
-  <!-- Your content -->
-</div>`;
+      gradientClasses = `bg-gradient-to-br from-[#${from}] to-[#${to}]`;
     } else {
-      // Complex gradient - use arbitrary value
       const encodedColors = formattedColors.join(",").replace(/#/g, "%23");
       const gradientType =
         gradientDef.type === "radial"
@@ -245,12 +330,28 @@ export function GradientDetail({
           : gradientDef.type === "conic"
             ? `conic-gradient(from_${gradientDef.angle}deg_at_center,${encodedColors})`
             : `linear-gradient(${gradientDef.angle}deg,${encodedColors})`;
-      return `<div class="bg-[${gradientType}]">
-  <!-- Your content -->
-</div>
+      gradientClasses = `bg-[${gradientType}]`;
+    }
 
-<!-- Or use inline style for better readability: -->
-<div style="background: ${formattedGradient}">
+    switch (previewMode) {
+      case "button":
+        return `<button class="${gradientClasses} ${textColorClass} px-6 py-3 rounded-lg font-semibold border-0 cursor-pointer hover:opacity-90 transition-opacity">
+  Click me
+</button>`;
+
+      case "badge":
+        return `<span class="${gradientClasses} ${textColorClass} inline-block px-3 py-1 rounded-full text-sm font-medium">
+  New
+</span>`;
+
+      case "text":
+        return `<h1 class="${gradientClasses} bg-clip-text text-transparent font-bold text-4xl">
+  Gradient Text
+</h1>`;
+
+      case "background":
+      default:
+        return `<div class="${gradientClasses}">
   <!-- Your content -->
 </div>`;
     }
@@ -526,17 +627,22 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
             </div>
           </DialogHeader>
 
-          {/* Use Cases - Each with fullscreen option */}
+          {/* Use Cases - Each selectable with fullscreen option */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {/* Background */}
             <button
-              className="rounded-lg p-3 flex flex-col items-center justify-center min-h-[70px] cursor-pointer hover:scale-[1.02] transition-transform relative group/preview"
+              className={cn(
+                "rounded-lg p-3 flex flex-col items-center justify-center min-h-[70px] cursor-pointer hover:scale-[1.02] transition-all relative group/preview",
+                previewMode === "background"
+                  ? "ring-2 ring-white ring-offset-2 ring-offset-neutral-900"
+                  : "ring-1 ring-transparent hover:ring-white/30",
+              )}
               style={{
                 background: displayGradient,
                 ...getAnimationStyle(selectedAnimation),
               }}
-              onClick={() => handleFullscreenPreview("background")}
-              aria-label="Preview gradient as background in fullscreen"
+              onClick={() => onPreviewModeChange("background")}
+              aria-label="Select background display mode"
             >
               <span
                 className="text-xs font-medium drop-shadow"
@@ -544,17 +650,31 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               >
                 Background
               </span>
-              <Maximize2
-                className="w-3 h-3 absolute top-1.5 right-1.5 opacity-0 group-hover/preview:opacity-70 transition-opacity"
-                style={{ color: bestTextColors[0]?.color || "#fff" }}
-              />
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleFullscreenPreview("background");
+                }}
+                className="absolute top-1.5 right-1.5 p-1 rounded opacity-0 group-hover/preview:opacity-100 hover:bg-black/30 transition-all"
+                aria-label="View background in fullscreen"
+              >
+                <Maximize2
+                  className="w-3 h-3"
+                  style={{ color: bestTextColors[0]?.color || "#fff" }}
+                />
+              </button>
             </button>
 
             {/* Button */}
             <button
-              className="flex items-center justify-center bg-neutral-800 rounded-lg p-2 cursor-pointer hover:scale-[1.02] transition-transform relative group/preview"
-              onClick={() => handleFullscreenPreview("button")}
-              aria-label="Preview gradient as button in fullscreen"
+              className={cn(
+                "flex items-center justify-center bg-neutral-800 rounded-lg p-2 cursor-pointer hover:scale-[1.02] transition-all relative group/preview",
+                previewMode === "button"
+                  ? "ring-2 ring-white ring-offset-2 ring-offset-neutral-900"
+                  : "ring-1 ring-transparent hover:ring-white/30",
+              )}
+              onClick={() => onPreviewModeChange("button")}
+              aria-label="Select button display mode"
             >
               <span
                 className="px-3 py-1.5 rounded text-xs font-medium pointer-events-none"
@@ -566,14 +686,28 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               >
                 Button
               </span>
-              <Maximize2 className="w-3 h-3 absolute top-1.5 right-1.5 opacity-0 group-hover/preview:opacity-70 transition-opacity text-neutral-400" />
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleFullscreenPreview("button");
+                }}
+                className="absolute top-1.5 right-1.5 p-1 rounded opacity-0 group-hover/preview:opacity-100 hover:bg-white/10 transition-all"
+                aria-label="View button in fullscreen"
+              >
+                <Maximize2 className="w-3 h-3 text-neutral-400" />
+              </button>
             </button>
 
             {/* Badge */}
             <button
-              className="flex items-center justify-center bg-neutral-800 rounded-lg p-2 cursor-pointer hover:scale-[1.02] transition-transform relative group/preview"
-              onClick={() => handleFullscreenPreview("badge")}
-              aria-label="Preview gradient as badge in fullscreen"
+              className={cn(
+                "flex items-center justify-center bg-neutral-800 rounded-lg p-2 cursor-pointer hover:scale-[1.02] transition-all relative group/preview",
+                previewMode === "badge"
+                  ? "ring-2 ring-white ring-offset-2 ring-offset-neutral-900"
+                  : "ring-1 ring-transparent hover:ring-white/30",
+              )}
+              onClick={() => onPreviewModeChange("badge")}
+              aria-label="Select badge display mode"
             >
               <span
                 className="px-2 py-0.5 rounded-full text-[10px] font-medium pointer-events-none"
@@ -585,14 +719,28 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               >
                 Badge
               </span>
-              <Maximize2 className="w-3 h-3 absolute top-1.5 right-1.5 opacity-0 group-hover/preview:opacity-70 transition-opacity text-neutral-400" />
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleFullscreenPreview("badge");
+                }}
+                className="absolute top-1.5 right-1.5 p-1 rounded opacity-0 group-hover/preview:opacity-100 hover:bg-white/10 transition-all"
+                aria-label="View badge in fullscreen"
+              >
+                <Maximize2 className="w-3 h-3 text-neutral-400" />
+              </button>
             </button>
 
             {/* Text */}
             <button
-              className="flex items-center justify-center bg-neutral-800 rounded-lg p-2 cursor-pointer hover:scale-[1.02] transition-transform relative group/preview"
-              onClick={() => handleFullscreenPreview("text")}
-              aria-label="Preview gradient as text in fullscreen"
+              className={cn(
+                "flex items-center justify-center bg-neutral-800 rounded-lg p-2 cursor-pointer hover:scale-[1.02] transition-all relative group/preview",
+                previewMode === "text"
+                  ? "ring-2 ring-white ring-offset-2 ring-offset-neutral-900"
+                  : "ring-1 ring-transparent hover:ring-white/30",
+              )}
+              onClick={() => onPreviewModeChange("text")}
+              aria-label="Select text display mode"
             >
               <span
                 className="text-lg font-bold bg-clip-text text-transparent pointer-events-none"
@@ -603,7 +751,16 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               >
                 Text
               </span>
-              <Maximize2 className="w-3 h-3 absolute top-1.5 right-1.5 opacity-0 group-hover/preview:opacity-70 transition-opacity text-neutral-400" />
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleFullscreenPreview("text");
+                }}
+                className="absolute top-1.5 right-1.5 p-1 rounded opacity-0 group-hover/preview:opacity-100 hover:bg-white/10 transition-all"
+                aria-label="View text in fullscreen"
+              >
+                <Maximize2 className="w-3 h-3 text-neutral-400" />
+              </button>
             </button>
           </div>
 
