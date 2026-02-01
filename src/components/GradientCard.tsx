@@ -255,8 +255,22 @@ export const GradientCard = memo(function GradientCard({
 
       {/* Card Content - with shimmer overlay (shimmer limited to this area) */}
       <div className="p-4 relative card-shimmer card-shimmer-content rounded-b-xl">
-        <div className="mb-2">
+        {/* Title row with tags on right */}
+        <div className="flex items-start justify-between gap-2 mb-2">
           <h3 className="text-white font-medium">{gradient.name}</h3>
+          {/* Tags - right-aligned, wrap if needed */}
+          <div className="flex gap-1 flex-wrap justify-end flex-shrink-0">
+            {gradient.tags.slice(0, 3).map((tag) => (
+              <Badge
+                key={tag}
+                variant="outline"
+                className="text-[10px] gap-0.5 px-1.5 py-0"
+              >
+                <Tag className="w-2.5 h-2.5" />
+                {tag}
+              </Badge>
+            ))}
+          </div>
         </div>
 
         <p className="text-sm text-neutral-400 mb-3 line-clamp-2">
@@ -264,7 +278,7 @@ export const GradientCard = memo(function GradientCard({
         </p>
 
         {/* Color Swatches - clickable to copy */}
-        <div className="flex gap-2 mb-3">
+        <div className="flex gap-2">
           {gradient.colors.slice(0, 3).map((color, i) => (
             <button
               key={i}
@@ -280,16 +294,6 @@ export const GradientCard = memo(function GradientCard({
                 {convertColor(color, colorFormat)}
               </span>
             </button>
-          ))}
-        </div>
-
-        {/* Tags */}
-        <div className="flex gap-1.5 flex-wrap">
-          {gradient.tags.slice(0, 3).map((tag) => (
-            <Badge key={tag} variant="outline" className="text-xs gap-1">
-              <Tag className="w-3 h-3" />
-              {tag}
-            </Badge>
           ))}
         </div>
       </div>
@@ -309,9 +313,14 @@ export function SkeletonCard() {
 
       {/* Card Content Skeleton */}
       <div className="p-4">
-        {/* Title */}
-        <div className="mb-2">
+        {/* Title row with tags */}
+        <div className="flex items-start justify-between gap-2 mb-2">
           <div className="h-5 w-24 rounded loading-shimmer" />
+          <div className="flex gap-1">
+            {[0, 1].map((i) => (
+              <div key={i} className="h-4 w-10 rounded-full loading-shimmer" />
+            ))}
+          </div>
         </div>
 
         {/* Description */}
@@ -321,19 +330,12 @@ export function SkeletonCard() {
         </div>
 
         {/* Color Swatches */}
-        <div className="flex gap-2 mb-3">
+        <div className="flex gap-2">
           {[0, 1, 2].map((i) => (
             <div key={i} className="flex items-center gap-1.5 flex-1">
               <div className="w-5 h-5 rounded-md loading-shimmer" />
               <div className="h-3 flex-1 rounded loading-shimmer" />
             </div>
-          ))}
-        </div>
-
-        {/* Tags */}
-        <div className="flex gap-1.5">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="h-5 w-12 rounded-full loading-shimmer" />
           ))}
         </div>
       </div>
