@@ -70,10 +70,10 @@ export function useAppState() {
           urlState.selectedAnimationId ?? prev.selectedAnimationId,
         view: urlState.selectedGradient ? "detail" : "gallery",
       }));
-      // Reset flag after a tick
+      // Reset flag after URL debounce completes (must be longer than URL_DEBOUNCE_MS)
       setTimeout(() => {
         isPopstateHandling.current = false;
-      }, 0);
+      }, URL_DEBOUNCE_MS + 50);
     };
 
     window.addEventListener("popstate", handlePopstate);

@@ -494,7 +494,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
       {/* Main dialog */}
       <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
         <DialogContent
-          className="max-w-2xl p-3 sm:p-4 gap-2 sm:gap-3"
+          className="max-w-2xl p-4 pb-8 sm:p-4 sm:pb-4 gap-3 sm:gap-3"
           hideCloseButton
           skipAnimation={skipAnimation}
         >
@@ -988,9 +988,9 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
 
           {/* Code Export */}
           <div className="border-t border-neutral-800 pt-3">
-            {/* Tab Buttons + Copy + Color Format on same row */}
-            <div className="flex items-center justify-between gap-2 mb-2">
-              <div className="flex gap-1 overflow-x-auto">
+            {/* Tab Buttons + Copy + Color Format */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+              <div className="flex gap-1 overflow-x-auto pb-1 -mb-1">
                 {(["css", "tailwind", "swift", "kotlin", "ai"] as const).map(
                   (tab) => (
                     <button
@@ -1011,7 +1011,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                             ? "SwiftUI"
                             : tab === "kotlin"
                               ? "Kotlin"
-                              : "AI Agent"}
+                              : "AI Asst"}
                     </button>
                   ),
                 )}

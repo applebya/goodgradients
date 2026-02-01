@@ -56,8 +56,56 @@ export function Header({
   const isMobile = useIsMobile();
 
   // Count active filters for mobile badge
-  const activeFilterCount = colors.length + tags.length;
+  const activeFilterCount =
+    colors.length + tags.length + (showFavoritesOnly ? 1 : 0);
 
+  if (isMobile) {
+    // Mobile: Single sticky header with filters left, logo center
+    return (
+      <header className="sticky top-0 z-20 bg-neutral-950/95 backdrop-blur-sm border-b border-neutral-800">
+        <div className="max-w-7xl mx-auto px-4 py-2">
+          <div className="flex items-center justify-between">
+            {/* Left: Filter sheet trigger */}
+            <div className="w-10">
+              <MobileFilterSheet
+                colors={colors}
+                tags={tags}
+                gradientType={gradientType}
+                previewMode={previewMode}
+                colorFormat={colorFormat}
+                selectedAnimationId={selectedAnimationId}
+                animationSpeed={animationSpeed}
+                showFavoritesOnly={showFavoritesOnly}
+                onToggleColor={onToggleColor}
+                onToggleTag={onToggleTag}
+                onGradientTypeChange={onGradientTypeChange}
+                onPreviewModeChange={onPreviewModeChange}
+                onColorFormatChange={onColorFormatChange}
+                onAnimationChange={onAnimationChange}
+                onAnimationSpeedChange={onAnimationSpeedChange}
+                onToggleFavorites={onToggleFavorites}
+                onClearFilters={onClearFilters}
+                activeFilterCount={activeFilterCount}
+              />
+            </div>
+
+            {/* Center: Logo */}
+            <a
+              href="/"
+              className="absolute left-1/2 -translate-x-1/2 hover:opacity-80 transition-opacity"
+            >
+              <AnimatedLogo selectedAnimationId={selectedAnimationId} />
+            </a>
+
+            {/* Right: Spacer for balance */}
+            <div className="w-10" />
+          </div>
+        </div>
+      </header>
+    );
+  }
+
+  // Desktop: Two-row layout (logo scrolls, filters sticky)
   return (
     <>
       {/* Top bar: Logo - scrolls with page */}
@@ -75,41 +123,27 @@ export function Header({
       {/* Filter bar - sticky */}
       <header className="sticky top-0 z-20 bg-neutral-950/95 backdrop-blur-sm border-b border-neutral-800">
         <div className="max-w-7xl mx-auto px-4 py-2">
-          {/* Mobile: Filter sheet trigger */}
-          {isMobile ? (
-            <MobileFilterSheet
-              colors={colors}
-              tags={tags}
-              gradientType={gradientType}
-              onToggleColor={onToggleColor}
-              onToggleTag={onToggleTag}
-              onGradientTypeChange={onGradientTypeChange}
-              onClearFilters={onClearFilters}
-              activeFilterCount={activeFilterCount}
-            />
-          ) : (
-            <FilterBar
-              colors={colors}
-              tags={tags}
-              gradientType={gradientType}
-              previewMode={previewMode}
-              colorFormat={colorFormat}
-              selectedAnimationId={selectedAnimationId}
-              animationSpeed={animationSpeed}
-              showFavoritesOnly={showFavoritesOnly}
-              onColorsChange={onColorsChange}
-              onToggleColor={onToggleColor}
-              onToggleTag={onToggleTag}
-              onGradientTypeChange={onGradientTypeChange}
-              onPreviewModeChange={onPreviewModeChange}
-              onColorFormatChange={onColorFormatChange}
-              onAnimationChange={onAnimationChange}
-              onAnimationSpeedChange={onAnimationSpeedChange}
-              onToggleFavorites={onToggleFavorites}
-              onClearFilters={onClearFilters}
-              hasActiveFilters={hasActiveFilters}
-            />
-          )}
+          <FilterBar
+            colors={colors}
+            tags={tags}
+            gradientType={gradientType}
+            previewMode={previewMode}
+            colorFormat={colorFormat}
+            selectedAnimationId={selectedAnimationId}
+            animationSpeed={animationSpeed}
+            showFavoritesOnly={showFavoritesOnly}
+            onColorsChange={onColorsChange}
+            onToggleColor={onToggleColor}
+            onToggleTag={onToggleTag}
+            onGradientTypeChange={onGradientTypeChange}
+            onPreviewModeChange={onPreviewModeChange}
+            onColorFormatChange={onColorFormatChange}
+            onAnimationChange={onAnimationChange}
+            onAnimationSpeedChange={onAnimationSpeedChange}
+            onToggleFavorites={onToggleFavorites}
+            onClearFilters={onClearFilters}
+            hasActiveFilters={hasActiveFilters}
+          />
         </div>
       </header>
     </>
