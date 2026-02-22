@@ -136,6 +136,19 @@
   }
 }
 
+/* Light mode card shadow - subtle elevation in light theme */
+.light .gradient-card {
+  box-shadow:
+    0 1px 3px rgb(0 0 0 / 0.08),
+    0 1px 2px rgb(0 0 0 / 0.06);
+}
+
+.light .gradient-card:hover {
+  box-shadow:
+    0 4px 6px rgb(0 0 0 / 0.07),
+    0 2px 4px rgb(0 0 0 / 0.06);
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;

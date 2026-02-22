@@ -1,20 +1,18 @@
 import { memo, useCallback, useMemo, useState } from "react";
 import { toast } from "./Toast";
-import { Copy, Check, Tag } from "./icons";
+import { Copy, Check } from "./icons";
 import { HeartButton } from "./HeartButton";
 import { applyAnimationSpeed } from "./AnimationSpeedSlider";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
 import { transformGradient } from "@/lib/gradient";
-import { convertColor } from "@/lib/color-format";
 import { getAnimationById } from "@/data/animations";
 import { getGradientAverageColor, getBestTextColor } from "@/lib/contrast";
 import type {
   GradientPreset,
   UIPreviewMode,
   GradientTypeFilter,
-  ColorFormat,
 } from "@/types";
 
 // Preload the GradientDetail chunk on hover for instant modal opening
@@ -29,7 +27,6 @@ interface GradientCardProps {
   gradient: GradientPreset;
   gradientType: GradientTypeFilter;
   previewMode: UIPreviewMode;
-  colorFormat: ColorFormat;
   selectedAnimationId: string | null;
   animationSpeed: number;
   isFavorite: boolean;
@@ -41,7 +38,6 @@ export const GradientCard = memo(function GradientCard({
   gradient,
   gradientType,
   previewMode,
-  colorFormat,
   selectedAnimationId,
   animationSpeed,
   isFavorite,
@@ -100,16 +96,6 @@ export const GradientCard = memo(function GradientCard({
       onSelect(gradient);
     }
   };
-
-  const handleCopyColor = useCallback(
-    (e: React.MouseEvent, color: string) => {
-      e.stopPropagation();
-      const formattedColor = convertColor(color, colorFormat);
-      navigator.clipboard.writeText(formattedColor);
-      toast.success("Copied to clipboard");
-    },
-    [colorFormat],
-  );
 
   // Calculate best text color for contrast
   const textColor = useMemo(() => {
@@ -202,20 +188,20 @@ export const GradientCard = memo(function GradientCard({
       tabIndex={0}
       aria-label={`${gradient.name} gradient - ${gradient.description}`}
       className={cn(
-        "group bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden",
-        "hover:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors cursor-pointer",
+        "group gradient-card bg-card/50 border border-border rounded-xl overflow-hidden",
+        "hover:border-border/80 focus:outline-none focus:ring-2 focus:ring-ring/50 transition-colors cursor-pointer",
       )}
       onClick={() => onSelect(gradient)}
       onKeyDown={handleKeyDown}
       onMouseEnter={preloadGradientDetail}
       onFocus={preloadGradientDetail}
     >
-      {/* Gradient Preview */}
+      {/* Gradient Preview - landscape 16:9 aspect ratio */}
       <div
-        className="relative aspect-video"
+        className="relative aspect-[16/9]"
         style={{
           background:
-            previewMode === "background" ? displayGradient : "#171717",
+            previewMode === "background" ? displayGradient : "hsl(var(--card))",
           ...(previewMode === "background" ? animationStyle : {}),
         }}
       >
@@ -253,48 +239,18 @@ export const GradientCard = memo(function GradientCard({
         </div>
       </div>
 
-      {/* Card Content - with shimmer overlay (shimmer limited to this area) */}
-      <div className="p-4 relative card-shimmer card-shimmer-content rounded-b-xl">
-        {/* Title row with tags on right */}
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="text-white font-medium">{gradient.name}</h3>
-          {/* Tags - right-aligned, wrap if needed */}
-          <div className="flex gap-1 flex-wrap justify-end flex-shrink-0">
-            {gradient.tags.slice(0, 3).map((tag) => (
-              <Badge
-                key={tag}
-                variant="outline"
-                className="text-[10px] gap-0.5 px-1.5 py-0"
-              >
-                <Tag className="w-2.5 h-2.5" />
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        </div>
-
-        <p className="text-sm text-neutral-400 mb-3 line-clamp-2">
-          {gradient.description}
-        </p>
-
-        {/* Color Swatches - clickable to copy */}
-        <div className="flex gap-2">
-          {gradient.colors.slice(0, 3).map((color, i) => (
-            <button
-              key={i}
-              onClick={(e) => handleCopyColor(e, color)}
-              className="flex items-center gap-1.5 flex-1 min-w-0 group/color hover:bg-white/5 rounded-md p-1 -m-1 transition-colors"
-              title={`Copy ${convertColor(color, colorFormat)}`}
-            >
-              <div
-                className="w-5 h-5 rounded-md border border-white/20 flex-shrink-0 group-hover/color:border-white/40 transition-colors"
-                style={{ background: color }}
-              />
-              <span className="text-xs text-neutral-400 font-mono truncate group-hover/color:text-neutral-300 transition-colors">
-                {convertColor(color, colorFormat)}
-              </span>
-            </button>
-          ))}
+      {/* Card Content - minimal: name + category badge, single row */}
+      <div className="px-4 py-3 relative card-shimmer card-shimmer-content rounded-b-xl">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="text-card-foreground font-medium text-sm truncate">
+            {gradient.name}
+          </h3>
+          <Badge
+            variant="outline"
+            className="text-[10px] px-1.5 py-0 flex-shrink-0 text-muted-foreground border-border"
+          >
+            {gradient.category}
+          </Badge>
         </div>
       </div>
     </article>
@@ -306,37 +262,16 @@ export function SkeletonCard() {
   return (
     <div
       data-testid="skeleton-card"
-      className="bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden"
+      className="bg-card/50 border border-border rounded-xl overflow-hidden"
     >
       {/* Gradient Preview Skeleton */}
-      <div className="aspect-video loading-shimmer" />
+      <div className="aspect-[16/9] loading-shimmer" />
 
-      {/* Card Content Skeleton */}
-      <div className="p-4">
-        {/* Title row with tags */}
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <div className="h-5 w-24 rounded loading-shimmer" />
-          <div className="flex gap-1">
-            {[0, 1].map((i) => (
-              <div key={i} className="h-4 w-10 rounded-full loading-shimmer" />
-            ))}
-          </div>
-        </div>
-
-        {/* Description */}
-        <div className="space-y-1.5 mb-3">
-          <div className="h-3.5 w-full rounded loading-shimmer" />
-          <div className="h-3.5 w-3/4 rounded loading-shimmer" />
-        </div>
-
-        {/* Color Swatches */}
-        <div className="flex gap-2">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="flex items-center gap-1.5 flex-1">
-              <div className="w-5 h-5 rounded-md loading-shimmer" />
-              <div className="h-3 flex-1 rounded loading-shimmer" />
-            </div>
-          ))}
+      {/* Card Content Skeleton - single row: name + badge */}
+      <div className="px-4 py-3">
+        <div className="flex items-center justify-between gap-2">
+          <div className="h-4 w-28 rounded loading-shimmer" />
+          <div className="h-4 w-14 rounded-full loading-shimmer" />
         </div>
       </div>
     </div>

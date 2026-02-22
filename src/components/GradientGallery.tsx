@@ -141,7 +141,6 @@ export function GradientGallery({
   tags,
   gradientType,
   previewMode,
-  colorFormat,
   selectedAnimationId,
   animationSpeed,
   favorites,
@@ -163,6 +162,8 @@ export function GradientGallery({
     return () => cancelAnimationFrame(frame);
   }, []);
 
+  // colorFormat was removed from GradientCard (hex codes no longer shown on cards)
+  // It's still passed here for API compatibility but not forwarded to cards
   const filteredGradients = useMemo(() => {
     let result: GradientPreset[] = gradients;
 
@@ -277,7 +278,6 @@ export function GradientGallery({
                 gradient={gradient}
                 gradientType={gradientType}
                 previewMode={previewMode}
-                colorFormat={colorFormat}
                 selectedAnimationId={selectedAnimationId}
                 animationSpeed={animationSpeed}
                 isFavorite={encoded ? isFavorite(encoded) : false}
@@ -337,7 +337,6 @@ export function GradientGallery({
                         gradient={gradient}
                         gradientType={gradientType}
                         previewMode={previewMode}
-                        colorFormat={colorFormat}
                         selectedAnimationId={selectedAnimationId}
                         animationSpeed={animationSpeed}
                         isFavorite={encoded ? isFavorite(encoded) : false}
