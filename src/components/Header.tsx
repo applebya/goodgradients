@@ -62,7 +62,7 @@ export function Header({
   if (isMobile) {
     // Mobile: Single sticky header with filters left, logo center
     return (
-      <header className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border">
+      <header className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border/50">
         <div className="max-w-[1400px] mx-auto px-6 py-3">
           <div className="flex items-center justify-between">
             {/* Left: Filter sheet trigger */}
@@ -121,7 +121,7 @@ export function Header({
       </div>
 
       {/* Filter bar - sticky */}
-      <header className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border">
+      <header className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border/50">
         <div className="max-w-[1400px] mx-auto px-6 py-2">
           <FilterBar
             colors={colors}

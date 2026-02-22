@@ -4,7 +4,7 @@ import { useIsMobile } from "@/hooks/useMediaQuery";
 export function Footer() {
   const isMobile = useIsMobile();
   return (
-    <footer className="border-t border-border py-10 mt-8">
+    <footer className="border-t border-border/50 py-8 mt-8">
       <div className="max-w-[1400px] mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand - hidden on mobile since logo is in sticky header */}
@@ -13,7 +13,7 @@ export function Footer() {
               <div className="mb-2">
                 <AnimatedLogo selectedAnimationId={null} />
               </div>
-              <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
+              <p className="text-xs text-muted-foreground max-w-md leading-relaxed">
                 500+ designer-curated gradients to make your UI stand out. Add
                 eye-catching animations, export to CSS, Tailwind, SwiftUI,
                 Kotlin, CSV, or AI-ready descriptions. Build memorable brands
@@ -24,10 +24,10 @@ export function Footer() {
 
           {/* Resources */}
           <div>
-            <h4 className="text-foreground font-medium text-sm mb-3">
+            <h4 className="text-muted-foreground font-medium text-xs tracking-wide uppercase mb-3">
               Good Resources
             </h4>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-2 text-xs">
               <li>
                 <a
                   href="https://developer.mozilla.org/en-US/docs/Web/CSS/gradient"
@@ -73,10 +73,10 @@ export function Footer() {
 
           {/* Legal & Project */}
           <div>
-            <h4 className="text-foreground font-medium text-sm mb-3">
+            <h4 className="text-muted-foreground font-medium text-xs tracking-wide uppercase mb-3">
               Project
             </h4>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-2 text-xs">
               <li>
                 <a
                   href="https://github.com/applebya/goodgradients"
@@ -100,7 +100,7 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="pt-6 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="pt-6 border-t border-border/50 flex flex-col sm:flex-row justify-between items-center gap-4">
           {/* SEO keyword tags */}
           {isMobile ? (
             <div

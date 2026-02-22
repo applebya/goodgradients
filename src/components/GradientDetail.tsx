@@ -599,14 +599,14 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
       {/* Main dialog */}
       <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
         <DialogContent
-          className="max-w-2xl p-4 pb-8 sm:p-4 sm:pb-4 gap-3 sm:gap-3"
+          className="max-w-2xl p-5 pb-8 sm:p-6 sm:pb-6 gap-4 sm:gap-4 rounded-2xl"
           hideCloseButton
           skipAnimation={skipAnimation}
         >
           {/* Header */}
-          <DialogHeader className="pb-2">
+          <DialogHeader className="pb-1">
             <div className="flex items-center justify-between">
-              <DialogTitle className="flex items-center gap-2 text-base">
+              <DialogTitle className="flex items-center gap-2 text-xl font-semibold tracking-tight">
                 {gradientName ?? "Custom Gradient"}
               </DialogTitle>
               <div className="flex items-center gap-1">
@@ -621,7 +621,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                 <Button
                   size="icon-sm"
                   variant="ghost"
-                  className="h-8 w-8 text-neutral-400 hover:text-white"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
                   onClick={onClose}
                   aria-label="Close"
                 >
@@ -770,7 +770,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
 
           {/* Colors Section */}
           <div className="space-y-3">
-            <span className="text-sm text-neutral-400 font-medium">
+            <span className="text-xs font-medium tracking-wide uppercase text-muted-foreground">
               {spelling.Colors}
             </span>
 
@@ -996,7 +996,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
             <div className="flex items-center justify-between">
               <button
                 onClick={() => setShowSettings(!showSettings)}
-                className="flex-1 flex items-center gap-2 py-2 text-sm text-neutral-400 hover:text-white transition-colors"
+                className="flex-1 flex items-center gap-2 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ChevronDown
                   className={cn(
@@ -1087,7 +1087,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
           <div>
             <button
               onClick={() => setShowAnimation(!showAnimation)}
-              className="w-full flex items-center gap-2 py-2 text-sm text-neutral-400 hover:text-white transition-colors"
+              className="w-full flex items-center gap-2 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               <ChevronDown
                 className={cn(
@@ -1189,7 +1189,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
           </div>
 
           {/* Code Export */}
-          <div className="border-t border-neutral-800 pt-3">
+          <div className="border-t border-border pt-3">
             {/* Tab Buttons + Copy + Color Format */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
               <div className="flex gap-1 overflow-x-auto pb-1 -mb-1">

@@ -188,8 +188,8 @@ export const GradientCard = memo(function GradientCard({
       tabIndex={0}
       aria-label={`${gradient.name} gradient - ${gradient.description}`}
       className={cn(
-        "group gradient-card bg-card/50 border border-border rounded-xl overflow-hidden",
-        "hover:border-border/80 focus:outline-none focus:ring-2 focus:ring-ring/50 transition-colors cursor-pointer",
+        "group gradient-card bg-card/50 border border-border/50 rounded-xl overflow-hidden will-change-transform",
+        "hover:scale-[1.02] hover:shadow-lg hover:border-border/80 focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all duration-200 cursor-pointer",
       )}
       onClick={() => onSelect(gradient)}
       onKeyDown={handleKeyDown}
@@ -242,12 +242,12 @@ export const GradientCard = memo(function GradientCard({
       {/* Card Content - minimal: name + category badge, single row */}
       <div className="px-4 py-3 relative card-shimmer card-shimmer-content rounded-b-xl">
         <div className="flex items-center justify-between gap-2">
-          <h3 className="text-card-foreground font-medium text-sm truncate">
+          <h3 className="text-card-foreground font-semibold tracking-tight text-sm truncate">
             {gradient.name}
           </h3>
           <Badge
             variant="outline"
-            className="text-[10px] px-1.5 py-0 flex-shrink-0 text-muted-foreground border-border"
+            className="text-[10px] px-1.5 py-0 flex-shrink-0 font-medium tracking-wide uppercase text-muted-foreground border-border/50"
           >
             {gradient.category}
           </Badge>
