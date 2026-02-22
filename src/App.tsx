@@ -173,7 +173,7 @@ export default function App() {
         hasActiveFilters={actions.hasActiveFilters()}
       />
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-[1400px] mx-auto px-6 py-12">
         <ErrorBoundary>
           <GradientGallery
             category={state.category}

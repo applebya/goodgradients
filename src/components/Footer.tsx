@@ -4,8 +4,8 @@ import { useIsMobile } from "@/hooks/useMediaQuery";
 export function Footer() {
   const isMobile = useIsMobile();
   return (
-    <footer className="border-t border-neutral-800 py-8 mt-4">
-      <div className="max-w-7xl mx-auto px-4">
+    <footer className="border-t border-border py-10 mt-8">
+      <div className="max-w-[1400px] mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand - hidden on mobile since logo is in sticky header */}
           {!isMobile && (
@@ -13,7 +13,7 @@ export function Footer() {
               <div className="mb-2">
                 <AnimatedLogo selectedAnimationId={null} />
               </div>
-              <p className="text-sm text-neutral-400 max-w-md leading-relaxed">
+              <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
                 500+ designer-curated gradients to make your UI stand out. Add
                 eye-catching animations, export to CSS, Tailwind, SwiftUI,
                 Kotlin, CSV, or AI-ready descriptions. Build memorable brands
@@ -24,7 +24,7 @@ export function Footer() {
 
           {/* Resources */}
           <div>
-            <h4 className="text-neutral-300 font-medium text-sm mb-3">
+            <h4 className="text-foreground font-medium text-sm mb-3">
               Good Resources
             </h4>
             <ul className="space-y-2 text-sm">
@@ -33,7 +33,7 @@ export function Footer() {
                   href="https://developer.mozilla.org/en-US/docs/Web/CSS/gradient"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-neutral-400 hover:text-white transition-colors"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   MDN CSS Gradients
                 </a>
@@ -43,7 +43,7 @@ export function Footer() {
                   href="https://cssgradient.io/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-neutral-400 hover:text-white transition-colors"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   CSS Gradient Generator
                 </a>
@@ -53,7 +53,7 @@ export function Footer() {
                   href="https://uigradients.com/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-neutral-400 hover:text-white transition-colors"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   uiGradients
                 </a>
@@ -63,7 +63,7 @@ export function Footer() {
                   href="https://webgradients.com/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-neutral-400 hover:text-white transition-colors"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   WebGradients
                 </a>
@@ -73,7 +73,7 @@ export function Footer() {
 
           {/* Legal & Project */}
           <div>
-            <h4 className="text-neutral-300 font-medium text-sm mb-3">
+            <h4 className="text-foreground font-medium text-sm mb-3">
               Project
             </h4>
             <ul className="space-y-2 text-sm">
@@ -82,7 +82,7 @@ export function Footer() {
                   href="https://github.com/applebya/goodgradients"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-neutral-400 hover:text-white transition-colors"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   GitHub Repository
                 </a>
@@ -90,7 +90,7 @@ export function Footer() {
               <li>
                 <a
                   href="/privacy"
-                  className="text-neutral-400 hover:text-white transition-colors"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Privacy Policy
                 </a>
@@ -100,11 +100,11 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="pt-6 border-t border-neutral-800 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="pt-6 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
           {/* SEO keyword tags */}
           {isMobile ? (
             <div
-              className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-neutral-500"
+              className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-muted-foreground"
               aria-label="Features"
             >
               <span>CSS Gradients</span>
@@ -114,7 +114,7 @@ export function Footer() {
             </div>
           ) : (
             <div
-              className="flex flex-wrap justify-start gap-x-3 gap-y-1 text-xs text-neutral-500"
+              className="flex flex-wrap justify-start gap-x-3 gap-y-1 text-xs text-muted-foreground"
               aria-label="Features"
             >
               <span>CSS Gradients</span>
@@ -128,12 +128,12 @@ export function Footer() {
           )}
 
           {/* Attribution */}
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-muted-foreground">
             <a
               href="https://github.com/applebya/goodgradients"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-neutral-400 hover:text-white transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors"
             >
               An open source project
             </a>{" "}
@@ -142,7 +142,7 @@ export function Footer() {
               href="https://github.com/applebya"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-neutral-400 hover:text-white transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors"
             >
               Andrew Appleby
             </a>

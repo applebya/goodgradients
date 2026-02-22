@@ -88,7 +88,7 @@ export function FilterBar({
     <div className="flex items-center justify-between gap-4">
       {/* Left: Filters */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs text-neutral-500 font-medium uppercase tracking-wider">
+        <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
           Filter
         </span>
         {/* Colors Multi-Select Popover */}
@@ -96,14 +96,14 @@ export function FilterBar({
           <PopoverTrigger asChild>
             <button
               className={cn(
-                "flex h-7 items-center justify-between gap-1.5 rounded-md border border-neutral-700 bg-neutral-900 px-2.5 py-1.5 text-xs text-white",
-                "hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600",
-                colors.length > 0 && "border-white/30",
+                "flex h-7 items-center justify-between gap-1.5 rounded-md border border-border bg-card px-2.5 py-1.5 text-xs text-foreground",
+                "hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring",
+                colors.length > 0 && "border-ring/50",
               )}
               aria-label="Filter by colors"
             >
               {colors.length === 0 ? (
-                <span className="text-neutral-400">Any Colors</span>
+                <span className="text-muted-foreground">Any Colors</span>
               ) : (
                 <div className="flex items-center gap-1.5">
                   <div className="flex -space-x-1">
@@ -112,7 +112,7 @@ export function FilterBar({
                       return (
                         <div
                           key={color}
-                          className="w-3.5 h-3.5 rounded-full border border-neutral-800"
+                          className="w-3.5 h-3.5 rounded-full border border-border"
                           style={{ background: opt?.previewGradient }}
                         />
                       );
@@ -125,7 +125,7 @@ export function FilterBar({
                   </span>
                 </div>
               )}
-              <ChevronDown className="h-3 w-3 text-neutral-500" />
+              <ChevronDown className="h-3 w-3 text-muted-foreground" />
             </button>
           </PopoverTrigger>
           <PopoverContent className="p-2" align="start">
@@ -136,17 +136,17 @@ export function FilterBar({
                   onClick={() => onToggleColor(opt.value)}
                   className={cn(
                     "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm whitespace-nowrap",
-                    "hover:bg-neutral-800 transition-colors",
-                    colors.includes(opt.value) && "bg-neutral-800",
+                    "hover:bg-muted transition-colors",
+                    colors.includes(opt.value) && "bg-muted",
                   )}
                 >
                   <div
-                    className="w-4 h-4 rounded border border-white/20 shrink-0"
+                    className="w-4 h-4 rounded border border-border shrink-0"
                     style={{ background: opt.previewGradient }}
                   />
                   <span className="text-left">{opt.label}</span>
                   {colors.includes(opt.value) && (
-                    <Check className="h-4 w-4 text-white shrink-0" />
+                    <Check className="h-4 w-4 text-foreground shrink-0" />
                   )}
                 </button>
               ))}
@@ -159,21 +159,21 @@ export function FilterBar({
           <PopoverTrigger asChild>
             <button
               className={cn(
-                "flex h-7 items-center justify-between gap-1.5 rounded-md border border-neutral-700 bg-neutral-900 px-2.5 py-1.5 text-xs text-white",
-                "hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600",
-                tags.length > 0 && "border-white/30",
+                "flex h-7 items-center justify-between gap-1.5 rounded-md border border-border bg-card px-2.5 py-1.5 text-xs text-foreground",
+                "hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring",
+                tags.length > 0 && "border-ring/50",
               )}
               aria-label="Filter by tags"
             >
-              <Tag className="h-3 w-3 text-neutral-500" />
+              <Tag className="h-3 w-3 text-muted-foreground" />
               {tags.length === 0 ? (
-                <span className="text-neutral-400">Tags</span>
+                <span className="text-muted-foreground">Tags</span>
               ) : tags.length <= 2 ? (
                 <span>{tags.join(", ")}</span>
               ) : (
                 <span>{tags.length} tags</span>
               )}
-              <ChevronDown className="h-3 w-3 text-neutral-500" />
+              <ChevronDown className="h-3 w-3 text-muted-foreground" />
             </button>
           </PopoverTrigger>
           <PopoverContent
@@ -187,13 +187,13 @@ export function FilterBar({
                   onClick={() => onToggleTag(tag)}
                   className={cn(
                     "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm whitespace-nowrap",
-                    "hover:bg-neutral-800 transition-colors",
-                    tags.includes(tag) && "bg-neutral-800",
+                    "hover:bg-muted transition-colors",
+                    tags.includes(tag) && "bg-muted",
                   )}
                 >
                   <span className="text-left capitalize">{tag}</span>
                   {tags.includes(tag) && (
-                    <Check className="h-4 w-4 text-white shrink-0" />
+                    <Check className="h-4 w-4 text-foreground shrink-0" />
                   )}
                 </button>
               ))}
@@ -205,9 +205,11 @@ export function FilterBar({
         <button
           onClick={onToggleFavorites}
           className={cn(
-            "flex h-7 items-center gap-1.5 rounded-md border border-neutral-700 bg-neutral-900 px-2.5 py-1.5 text-xs",
-            "hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600 transition-colors",
-            showFavoritesOnly ? "border-red-500/50 text-red-400" : "text-white",
+            "flex h-7 items-center gap-1.5 rounded-md border border-border bg-card px-2.5 py-1.5 text-xs",
+            "hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring transition-colors",
+            showFavoritesOnly
+              ? "border-red-500/50 text-red-400"
+              : "text-foreground",
           )}
           aria-label={
             showFavoritesOnly ? "Show all gradients" : "Show favorites only"
@@ -217,7 +219,7 @@ export function FilterBar({
           <Heart
             className={cn(
               "h-3 w-3",
-              showFavoritesOnly ? "fill-current" : "text-neutral-500",
+              showFavoritesOnly ? "fill-current" : "text-muted-foreground",
             )}
           />
           <span>{showFavoritesOnly ? "Favorites" : "Favorites"}</span>
@@ -227,7 +229,7 @@ export function FilterBar({
         {hasActiveFilters && (
           <button
             onClick={onClearFilters}
-            className="flex h-7 items-center gap-1 rounded-md px-2 text-xs text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors focus:outline-none focus:ring-2 focus:ring-neutral-600"
+            className="flex h-7 items-center gap-1 rounded-md px-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
             aria-label="Clear all filters"
           >
             <X className="h-3 w-3" />
@@ -238,22 +240,22 @@ export function FilterBar({
 
       {/* Right: Global Controls */}
       <div className="flex items-center gap-1.5">
-        <span className="text-xs text-neutral-500 font-medium uppercase tracking-wider">
+        <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
           Display
         </span>
         {/* Preview Mode Popover */}
         <Popover>
           <PopoverTrigger asChild>
             <button
-              className="flex h-7 items-center justify-between gap-1.5 rounded-md border border-neutral-700 bg-neutral-900 px-2.5 py-1.5 text-xs text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600"
+              className="flex h-7 items-center justify-between gap-1.5 rounded-md border border-border bg-card px-2.5 py-1.5 text-xs text-foreground hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring"
               aria-label="Preview mode"
             >
-              <Layout className="h-3 w-3 text-neutral-500" />
+              <Layout className="h-3 w-3 text-muted-foreground" />
               <span>
                 {PREVIEW_MODES.find((m) => m.value === previewMode)?.label ??
                   "Background UI"}
               </span>
-              <ChevronDown className="h-3 w-3 text-neutral-500" />
+              <ChevronDown className="h-3 w-3 text-muted-foreground" />
             </button>
           </PopoverTrigger>
           <PopoverContent className="p-2" align="end">
@@ -264,13 +266,13 @@ export function FilterBar({
                     onClick={() => onPreviewModeChange(opt.value)}
                     className={cn(
                       "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm whitespace-nowrap",
-                      "hover:bg-neutral-800 transition-colors",
-                      previewMode === opt.value && "bg-neutral-800",
+                      "hover:bg-muted transition-colors",
+                      previewMode === opt.value && "bg-muted",
                     )}
                   >
                     <span className="text-left">{opt.label}</span>
                     {previewMode === opt.value && (
-                      <Check className="h-4 w-4 text-white shrink-0" />
+                      <Check className="h-4 w-4 text-foreground shrink-0" />
                     )}
                   </button>
                 </PopoverClose>
@@ -283,15 +285,15 @@ export function FilterBar({
         <Popover>
           <PopoverTrigger asChild>
             <button
-              className="flex h-7 items-center justify-between gap-1.5 rounded-md border border-neutral-700 bg-neutral-900 px-2.5 py-1.5 text-xs text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600"
+              className="flex h-7 items-center justify-between gap-1.5 rounded-md border border-border bg-card px-2.5 py-1.5 text-xs text-foreground hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring"
               aria-label="Gradient type"
             >
-              <Blend className="h-3 w-3 text-neutral-500" />
+              <Blend className="h-3 w-3 text-muted-foreground" />
               <span>
                 {GRADIENT_TYPES.find((t) => t.value === gradientType)?.label ??
                   "Linear"}
               </span>
-              <ChevronDown className="h-3 w-3 text-neutral-500" />
+              <ChevronDown className="h-3 w-3 text-muted-foreground" />
             </button>
           </PopoverTrigger>
           <PopoverContent className="p-2" align="end">
@@ -302,13 +304,13 @@ export function FilterBar({
                     onClick={() => onGradientTypeChange(opt.value)}
                     className={cn(
                       "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm whitespace-nowrap",
-                      "hover:bg-neutral-800 transition-colors",
-                      gradientType === opt.value && "bg-neutral-800",
+                      "hover:bg-muted transition-colors",
+                      gradientType === opt.value && "bg-muted",
                     )}
                   >
                     <span className="text-left">{opt.label}</span>
                     {gradientType === opt.value && (
-                      <Check className="h-4 w-4 text-white shrink-0" />
+                      <Check className="h-4 w-4 text-foreground shrink-0" />
                     )}
                   </button>
                 </PopoverClose>
@@ -321,15 +323,15 @@ export function FilterBar({
         <Popover>
           <PopoverTrigger asChild>
             <button
-              className="flex h-7 items-center justify-between gap-1.5 rounded-md border border-neutral-700 bg-neutral-900 px-2.5 py-1.5 text-xs text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-600"
+              className="flex h-7 items-center justify-between gap-1.5 rounded-md border border-border bg-card px-2.5 py-1.5 text-xs text-foreground hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring"
               aria-label={`${spelling.Color} format`}
             >
-              <Palette className="h-3 w-3 text-neutral-500" />
+              <Palette className="h-3 w-3 text-muted-foreground" />
               <span>
                 {COLOR_FORMAT_OPTIONS.find((f) => f.value === colorFormat)
                   ?.label ?? "HEX"}
               </span>
-              <ChevronDown className="h-3 w-3 text-neutral-500" />
+              <ChevronDown className="h-3 w-3 text-muted-foreground" />
             </button>
           </PopoverTrigger>
           <PopoverContent className="p-2" align="end">
@@ -340,13 +342,13 @@ export function FilterBar({
                     onClick={() => onColorFormatChange(opt.value)}
                     className={cn(
                       "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm whitespace-nowrap",
-                      "hover:bg-neutral-800 transition-colors",
-                      colorFormat === opt.value && "bg-neutral-800",
+                      "hover:bg-muted transition-colors",
+                      colorFormat === opt.value && "bg-muted",
                     )}
                   >
                     <span className="text-left">{opt.label}</span>
                     {colorFormat === opt.value && (
-                      <Check className="h-4 w-4 text-white shrink-0" />
+                      <Check className="h-4 w-4 text-foreground shrink-0" />
                     )}
                   </button>
                 </PopoverClose>

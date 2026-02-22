@@ -212,7 +212,7 @@ export function GradientGallery({
   // Window virtualizer for large lists
   const virtualizer = useWindowVirtualizer({
     count: rowCount,
-    estimateSize: useCallback(() => 220, []), // Row height estimate
+    estimateSize: useCallback(() => 240, []), // Row height estimate: landscape card (~16:9 swatch + 48px content + 24px gap)
     overscan: 5,
     scrollMargin: listRef.current?.offsetTop ?? 0,
     enabled: useVirtualization,
@@ -227,7 +227,7 @@ export function GradientGallery({
           <div className="h-8 w-64 rounded loading-shimmer mb-2" />
           <div className="h-4 w-32 rounded loading-shimmer" />
         </header>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {Array.from({ length: skeletonCount }).map((_, i) => (
             <SkeletonCard key={i} />
           ))}
@@ -269,7 +269,7 @@ export function GradientGallery({
   if (!useVirtualization) {
     return (
       <section aria-label="Gradient gallery">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredGradients.map((gradient) => {
             const encoded = getEncodedGradient(gradient);
             return (
@@ -328,7 +328,7 @@ export function GradientGallery({
                   transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
                 }}
               >
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-6">
                   {rowGradients.map((gradient) => {
                     const encoded = getEncodedGradient(gradient);
                     return (

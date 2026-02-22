@@ -124,7 +124,7 @@ function FilterSection({
 }) {
   return (
     <div className="space-y-2">
-      <h3 className="text-xs font-medium text-neutral-400 uppercase tracking-wider">
+      <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
         {title}
       </h3>
       {children}
@@ -151,8 +151,8 @@ function OptionPill({
       className={cn(
         "flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors",
         selected
-          ? "bg-white text-black font-medium"
-          : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700",
+          ? "bg-foreground text-background font-medium"
+          : "bg-muted text-muted-foreground hover:bg-muted/80",
       )}
     >
       {children}
@@ -217,8 +217,8 @@ export function MobileFilterSheet({
                   className={cn(
                     "flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors",
                     colors.includes(opt.value)
-                      ? "bg-white text-black font-medium"
-                      : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700",
+                      ? "bg-foreground text-background font-medium"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80",
                   )}
                 >
                   <div
@@ -256,7 +256,7 @@ export function MobileFilterSheet({
                 "flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors w-full justify-center",
                 showFavoritesOnly
                   ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                  : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700",
+                  : "bg-muted text-muted-foreground hover:bg-muted/80",
               )}
               aria-pressed={showFavoritesOnly}
             >
@@ -331,8 +331,8 @@ export function MobileFilterSheet({
                     className={cn(
                       "rounded-lg border overflow-hidden transition-all",
                       isSelected
-                        ? "border-white ring-2 ring-white/20"
-                        : "border-neutral-700 hover:border-neutral-500",
+                        ? "border-foreground ring-2 ring-foreground/20"
+                        : "border-border hover:border-ring",
                     )}
                   >
                     <div
@@ -342,8 +342,8 @@ export function MobileFilterSheet({
                         ...styleWithSpeed,
                       }}
                     />
-                    <div className="p-1.5 bg-neutral-900">
-                      <p className="text-[10px] text-white font-medium truncate">
+                    <div className="p-1.5 bg-card">
+                      <p className="text-[10px] text-card-foreground font-medium truncate">
                         {anim.name}
                       </p>
                     </div>
@@ -353,7 +353,7 @@ export function MobileFilterSheet({
             </div>
             {/* Speed slider - only show when animation is selected */}
             {selectedAnimationId && (
-              <div className="mt-3 pt-3 border-t border-neutral-800">
+              <div className="mt-3 pt-3 border-t border-border">
                 <AnimationSpeedSlider
                   speed={animationSpeed}
                   onChange={onAnimationSpeedChange}
@@ -374,8 +374,8 @@ export function MobileFilterSheet({
                   className={cn(
                     "flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors capitalize",
                     tags.includes(tag)
-                      ? "bg-white text-black font-medium"
-                      : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700",
+                      ? "bg-foreground text-background font-medium"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80",
                   )}
                 >
                   {tag}
