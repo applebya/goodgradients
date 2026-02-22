@@ -110,7 +110,7 @@ export function Header({
     <>
       {/* Top bar: Logo - scrolls with page */}
       <div className="bg-neutral-950">
-        <div className="max-w-7xl mx-auto px-4 py-2">
+        <div className="max-w-7xl mx-auto px-4 pt-2 pb-1">
           <a
             href="/"
             className="inline-flex items-center hover:opacity-80 transition-opacity"
@@ -122,7 +122,7 @@ export function Header({
 
       {/* Filter bar - sticky */}
       <header className="sticky top-0 z-20 bg-neutral-950/95 backdrop-blur-sm border-b border-neutral-800">
-        <div className="max-w-7xl mx-auto px-4 py-2">
+        <div className="max-w-7xl mx-auto px-4 py-1.5">
           <FilterBar
             colors={colors}
             tags={tags}
