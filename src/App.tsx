@@ -5,6 +5,7 @@ import { Footer } from "./components/Footer";
 import { GradientGallery } from "./components/GradientGallery";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { GitHubCorner } from "./components/GitHubCorner";
+import { ThemeToggle } from "./components/ThemeToggle";
 import { SplashScreen } from "./components/SplashScreen";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { PrivacyPolicy } from "./components/PrivacyPolicy";
@@ -138,7 +139,7 @@ export default function App() {
     : null;
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-white">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Global animation keyframes - inject once to avoid interruption on re-renders */}
       <AnimationStyles />
       {showSplash && (
@@ -197,6 +198,7 @@ export default function App() {
 
       <ScrollToTop />
       <GitHubCorner />
+      <ThemeToggle />
 
       {/* Gradient Detail Modal - lazy loaded */}
       {selectedGradientDef && (
