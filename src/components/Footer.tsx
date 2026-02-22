@@ -129,14 +129,13 @@ export function Footer() {
 
           {/* Attribution */}
           <p className="text-xs text-neutral-500">
-            An{" "}
             <a
               href="https://github.com/applebya/goodgradients"
               target="_blank"
               rel="noopener noreferrer"
               className="text-neutral-400 hover:text-white transition-colors"
             >
-              open source project
+              An open source project
             </a>{" "}
             by{" "}
             <a
