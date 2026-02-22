@@ -151,13 +151,24 @@
       }
     </script>
 
-    <!-- Google Fonts - Molle for branding -->
+    <!-- Google Fonts - Inter (UI) + Molle (branding) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Molle:ital@1&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Molle:ital@1&display=swap"
+      as="style"
+      onload="
+        this.onload = null;
+        this.rel = 'stylesheet';
+      "
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Molle:ital@1&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
 
     <!-- SPA redirect handler for GitHub Pages -->
     <script type="text/javascript">

@@ -11,6 +11,8 @@
   --color-card-foreground: hsl(var(--card-foreground));
   --color-border: hsl(var(--border));
   --color-ring: hsl(var(--ring));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
 
   /* Border radius */
   --radius-lg: var(--radius);
@@ -76,6 +78,9 @@
     --border: 0 0% 15%;
     --ring: 0 0% 30%;
     --radius: 0.5rem;
+    /* Brand accent - soft violet, not vibrant */
+    --accent: 250 30% 60%;
+    --accent-foreground: 0 0% 100%;
   }
 
   /* Light theme — applied via .light class on document.documentElement */
@@ -88,6 +93,9 @@
     --muted-foreground: 0 0% 45%;
     --border: 0 0% 88%;
     --ring: 0 0% 65%;
+    /* Brand accent - slightly richer for contrast on white */
+    --accent: 250 40% 50%;
+    --accent-foreground: 0 0% 100%;
   }
 
   * {
@@ -107,11 +115,32 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
+    font-family:
+      "Inter",
+      system-ui,
+      -apple-system,
+      sans-serif;
+    font-size: 16px;
+    text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     transition:
       background-color 200ms ease,
       color 200ms ease;
+  }
+
+  /* Typography hierarchy */
+  h1,
+  h2,
+  h3 {
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+
+  /* Focus ring using accent color */
+  :focus-visible {
+    outline: 2px solid hsl(var(--accent));
+    outline-offset: 2px;
   }
 
   /* Prevent Radix Dialog from causing layout shift by overriding its scroll lock compensation */
