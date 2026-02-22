@@ -57,25 +57,25 @@
 
 ## Traceability
 
-| Requirement | Phase | Status  |
-| ----------- | ----- | ------- |
-| THEME-01    | —     | Pending |
-| GRAD-01     | —     | Pending |
-| GRAD-02     | —     | Pending |
-| GRAD-03     | —     | Pending |
-| MOTN-01     | —     | Pending |
-| MOTN-02     | —     | Pending |
-| MOTN-03     | —     | Pending |
-| DSGN-01     | —     | Pending |
-| DSGN-02     | —     | Pending |
+| Requirement | Phase   | Status  |
+| ----------- | ------- | ------- |
+| THEME-01    | Phase 1 | Pending |
+| DSGN-01     | Phase 1 | Pending |
+| DSGN-02     | Phase 1 | Pending |
+| GRAD-01     | Phase 2 | Pending |
+| GRAD-02     | Phase 2 | Pending |
+| GRAD-03     | Phase 2 | Pending |
+| MOTN-01     | Phase 3 | Pending |
+| MOTN-02     | Phase 3 | Pending |
+| MOTN-03     | Phase 3 | Pending |
 
 **Coverage:**
 
 - v1 requirements: 9 total
-- Mapped to phases: 0
-- Unmapped: 9
+- Mapped to phases: 9
+- Unmapped: 0
 
 ---
 
 _Requirements defined: 2026-02-22_
-_Last updated: 2026-02-22 after initial definition_
+_Last updated: 2026-02-22 after roadmap creation_
