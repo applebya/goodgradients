@@ -34,7 +34,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 Plans:
 
-- [ ] 01-01-PLAN.md — Light/dark theme system with floating UI toggle (THEME-01)
+- [x] 01-01-PLAN.md — Light/dark theme system with floating UI toggle (THEME-01)
 - [ ] 01-02-PLAN.md — Layout and spacing audit: landscape cards, 4-col grid, breathing room (DSGN-01)
 - [ ] 01-03-PLAN.md — Brand identity pass: Inter typography, accent colors, premium polish (DSGN-02)
 
@@ -81,6 +81,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase                  | Plans Complete | Status      | Completed |
 | ---------------------- | -------------- | ----------- | --------- |
-| 1. Design Foundation   | 0/3            | Not started | -         |
+| 1. Design Foundation   | 1/3            | In progress | -         |
 | 2. Gradient Collection | 0/3            | Not started | -         |
 | 3. Motion & Delight    | 0/3            | Not started | -         |

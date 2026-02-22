@@ -10,30 +10,30 @@ See: .planning/PROJECT.md (updated 2026-02-21)
 ## Current Position
 
 Phase: 1 of 3 (Design Foundation)
-Plan: 0 of 3 in current phase
-Status: Ready to plan
-Last activity: 2026-02-22 — Roadmap created, phases derived from 9 v1 requirements
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-02-22 — Completed 01-01-PLAN.md (theme infrastructure)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 11%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 0
-- Average duration: —
-- Total execution time: —
+- Total plans completed: 1
+- Average duration: 3 min
+- Total execution time: 3 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 | ----- | ----- | ----- | -------- |
-| -     | -     | -     | -        |
+| 01    | 1     | 3 min | 3 min    |
 
 **Recent Trend:**
 
-- Last 5 plans: —
-- Trend: —
+- Last 5 plans: 3 min (01-01)
+- Trend: Baseline established
 
 _Updated after each plan completion_
 
@@ -47,17 +47,20 @@ Recent decisions affecting current work:
 - Dark mode default — current aesthetic is dark, most dev tools are dark-first
 - Static chunked JSON over backend — keeps hosting free, GitHub Pages compatible
 - Algorithmic generation over scraping — own the content, control quality
+- **Theme system pattern (01-01):** Dark as default via `:root` CSS variables, light mode adds `.light` class; no separate `.dark` class needed
+- **Theme hook ownership (01-01):** `useTheme()` lives in ThemeToggle, not App root, due to early conditional return in App for privacy routing
+- **Anti-flash pattern (01-01):** Inline `<script>` in `<head>` reads localStorage before CSS loads to prevent FOUC on light mode users
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
-None yet.
+None.
 
 ## Session Continuity
 
-Last session: 2026-02-22
-Stopped at: Roadmap created. Ready to plan Phase 1 (Design Foundation).
+Last session: 2026-02-22T09:45:49Z
+Stopped at: Completed 01-01-PLAN.md (theme infrastructure + floating toggle)
 Resume file: None
