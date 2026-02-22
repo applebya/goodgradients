@@ -29,13 +29,14 @@ Decimal phases appear between their surrounding integers in numeric order.
 1. User can switch between light and dark mode via a visible UI control, and dark is the default
 2. The UI has visual rhythm — breathing room between elements, clear hierarchy, no cramped sections
 3. The overall aesthetic reads as premium and distinctive (Linear/Vercel clean), not generic shadcn template
-   **Plans**: TBD
+
+**Plans:** 3 plans
 
 Plans:
 
-- [ ] 01-01: Light/dark theme system with UI toggle (THEME-01)
-- [ ] 01-02: Layout and spacing audit — visual rhythm and breathing room (DSGN-01)
-- [ ] 01-03: Brand identity pass — typography, colors, card design, premium aesthetic (DSGN-02)
+- [ ] 01-01-PLAN.md — Light/dark theme system with floating UI toggle (THEME-01)
+- [ ] 01-02-PLAN.md — Layout and spacing audit: landscape cards, 4-col grid, breathing room (DSGN-01)
+- [ ] 01-03-PLAN.md — Brand identity pass: Inter typography, accent colors, premium polish (DSGN-02)
 
 ### Phase 2: Gradient Collection
 
