@@ -16,6 +16,10 @@ export default defineConfig({
     }),
     VitePWA({
       registerType: 'autoUpdate',
+      /* Inline the registration snippet instead of emitting registerSW.js.
+         As a separate file it was a render-blocking request for ~300 ms to do
+         nothing but call navigator.serviceWorker.register. */
+      injectRegister: 'inline',
       includeAssets: ['icon-192.svg', 'icon-512.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'Good Gradients',
@@ -41,15 +45,21 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        /* Fonts are deliberately excluded from the precache. Each is declared
+           with a unicode-range, so the browser downloads only the subset it
+           needs; the glob pulled every one of them regardless. They are picked
+           up by the runtime cache below on first real use instead. */
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            /* Self-hosted fonts, cached on first use. The google-fonts rule
+               that used to live here went out with the CDN. */
+            urlPattern: ({ request }) => request.destination === 'font',
             handler: 'CacheFirst',
             options: {
-              cacheName: 'google-fonts-cache',
+              cacheName: 'font-cache',
               expiration: {
-                maxEntries: 10,
+                maxEntries: 12,
                 maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
               },
               cacheableResponse: {
@@ -71,6 +81,11 @@ export default defineConfig({
   build: {
     target: 'esnext',
     outDir: 'dist',
+    /* Lighthouse best-practices wants a source map for the first-party
+       bundle, and finds it via the //# sourceMappingURL comment — so this has
+       to be `true`, not `hidden`. Browsers only fetch a .map with devtools
+       open, so a real visitor pays for the comment and nothing else. */
+    sourcemap: true,
   },
   server: {
     port: 3000,
