@@ -5,8 +5,9 @@ Measured **2026-09-13**, before any Lighthouse-100 mission work.
 ## Method
 
 Lighthouse 13.4.1, **mobile preset, default simulated throttling**. Run under
-Node 26 — `chrome-launcher` cannot hand Lighthouse a websocket endpoint under
-bun 1.3.5.
+Node 26, after a one-off `chrome-launcher` failure under bun that did not
+reproduce on retest. Either runtime works; the runtime does not change what
+Lighthouse reports.
 
 Two baselines are recorded, because the deployed site and the local branch
 were not the same code. `origin/main` (what visitors see) was 16 commits

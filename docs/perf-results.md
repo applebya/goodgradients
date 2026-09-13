@@ -14,7 +14,8 @@ Mission: Lighthouse 100. Worked 2026-09-13. Baseline in
 
 Lighthouse 13.4.1, mobile preset, default simulated throttling, against
 `http://localhost:4173` (`vite preview`). Five runs, median reported. Run
-under Node 26 — `chrome-launcher` fails under bun 1.3.5.
+under Node 26, after a one-off `chrome-launcher` failure under bun that did
+not reproduce on retest — either runtime works.
 
 Before: `f3a951d` (redesign, unmodified). After: this branch.
 
@@ -106,6 +107,11 @@ travel to any repo using it:
   animations forever, and `animation.finished` never resolves for those, so
   awaiting the whole set hung the audit indefinitely. It now filters to
   finite animations and time-boxes both waits.
+
+Note that the second bug was introduced by the first fix, not inherited: the
+upstream copy in `appleby-web-services-ltd` has no settle step, so it has
+neither the phantom-contrast problem's cure nor this hang. A repo adopting
+the settle step needs the infinite-animation guard with it.
 
 ## Costs accepted
 
