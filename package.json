@@ -12,9 +12,14 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "lint": "eslint .",
-    "deploy": "npm run build && gh-pages -d dist"
+    "deploy": "npm run build && gh-pages -d dist",
+    "perf": "bun run tools/measure-perf.ts",
+    "a11y": "bun run tools/audit-a11y.ts",
+    "verify": "bun run test && bun run build && bun run tools/verify.ts"
   },
   "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource/molle": "^5.3.0",
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-label": "^2.1.2",
     "@radix-ui/react-popover": "^1.1.15",
@@ -24,10 +29,10 @@
     "@radix-ui/react-tooltip": "^1.1.8",
     "@tanstack/react-virtual": "^3.13.18",
     "clsx": "^2.1.1",
+    "posthog-js": "^1.244.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "tailwind-merge": "^3.4.0",
-    "posthog-js": "^1.244.0"
+    "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
