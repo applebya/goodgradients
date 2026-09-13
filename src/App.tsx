@@ -148,7 +148,7 @@ export default function App() {
             markSplashSeen();
             setShowSplash(false);
           }}
-          minDuration={2000}
+          minDuration={1200}
         />
       )}
       <Header
