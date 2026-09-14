@@ -162,6 +162,8 @@ export default function App() {
         showFavoritesOnly={state.category === "Favorites"}
         onColorsChange={actions.setColors}
         onToggleColor={actions.toggleColor}
+        searchQuery={state.searchQuery}
+        onSearchChange={actions.setSearchQuery}
         onToggleTag={actions.toggleTag}
         onGradientTypeChange={actions.setGradientType}
         onPreviewModeChange={actions.setPreviewMode}
@@ -172,6 +174,14 @@ export default function App() {
         onClearFilters={actions.clearFilters}
         hasActiveFilters={actions.hasActiveFilters()}
       />
+
+      {/*
+        The document's only h1. The wordmark cannot be it: the header renders
+        at two breakpoints, so marking it up as a heading produces two. The
+        splash screen used to carry an h1 and then unmounted, leaving the page
+        with no level-one heading and its first heading at level 2.
+      */}
+      <h1 className="sr-only">GoodGradients</h1>
 
       <main className="max-w-[1400px] mx-auto px-6 py-12">
         <ErrorBoundary>

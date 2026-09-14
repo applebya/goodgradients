@@ -242,9 +242,9 @@ export const GradientCard = memo(function GradientCard({
       {/* Card Content - minimal: name + category badge, single row */}
       <div className="px-4 py-3 relative card-shimmer card-shimmer-content rounded-b-xl">
         <div className="flex items-center justify-between gap-2">
-          <h3 className="text-card-foreground font-semibold tracking-tight text-sm truncate">
+          <h2 className="text-card-foreground font-semibold tracking-tight text-sm truncate">
             {gradient.name}
-          </h3>
+          </h2>
           <Badge
             variant="outline"
             className="text-[10px] px-1.5 py-0 flex-shrink-0 font-medium tracking-wide uppercase text-muted-foreground border-border/50"

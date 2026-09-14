@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import {
   X,
   ChevronDown,
@@ -28,6 +29,8 @@ import type {
 } from "@/types";
 
 interface FilterBarProps {
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
   colors: WizardColor[];
   tags: string[];
   gradientType: GradientTypeFilter;
@@ -64,6 +67,8 @@ const PREVIEW_MODES: { value: UIPreviewMode; label: string }[] = [
 ];
 
 export function FilterBar({
+  searchQuery,
+  onSearchChange,
   colors,
   tags,
   gradientType,
@@ -84,6 +89,31 @@ export function FilterBar({
   hasActiveFilters,
 }: FilterBarProps) {
   const spelling = useColorSpelling();
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  /*
+    "/" jumps to search, the convention the gallery has always advertised.
+    Ignored while the caret is already in a field, so typing a slash into a
+    search or a colour value does not get stolen.
+  */
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
+      const el = document.activeElement;
+      const tag = el?.tagName;
+      if (
+        tag === "INPUT" ||
+        tag === "TEXTAREA" ||
+        (el as HTMLElement | null)?.isContentEditable
+      )
+        return;
+      e.preventDefault();
+      searchRef.current?.focus();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
+
   return (
     <div className="flex items-center justify-between gap-4">
       {/* Left: Filters */}
@@ -91,6 +121,15 @@ export function FilterBar({
         <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
           Filter
         </span>
+        <input
+          ref={searchRef}
+          type="search"
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+          placeholder="Search..."
+          aria-label="Search gradients"
+          className="h-7 w-36 rounded-md border border-border bg-card px-2.5 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        />
         {/* Colors Multi-Select Popover */}
         <Popover>
           <PopoverTrigger asChild>

@@ -24,9 +24,9 @@ export function Footer() {
 
           {/* Resources */}
           <div>
-            <h4 className="text-muted-foreground font-medium text-xs tracking-wide uppercase mb-3">
+            <h3 className="text-muted-foreground font-medium text-xs tracking-wide uppercase mb-3">
               Good Resources
-            </h4>
+            </h3>
             <ul className="space-y-2 text-xs">
               <li>
                 <a
@@ -73,9 +73,9 @@ export function Footer() {
 
           {/* Legal & Project */}
           <div>
-            <h4 className="text-muted-foreground font-medium text-xs tracking-wide uppercase mb-3">
+            <h3 className="text-muted-foreground font-medium text-xs tracking-wide uppercase mb-3">
               Project
-            </h4>
+            </h3>
             <ul className="space-y-2 text-xs">
               <li>
                 <a
