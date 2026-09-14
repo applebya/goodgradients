@@ -3,12 +3,10 @@
 Mission: Lighthouse 100. Worked 2026-09-13. Baseline in
 [`perf-baseline.md`](./perf-baseline.md).
 
-> **Not deployed.** This branch sits on top of the paused redesign
-> (`f3a951d`, "human-verify" checkpoint), so shipping it would also ship 16
-> unreviewed commits. Every number below is **local preview**, not the
-> deployed origin, and is therefore not directly comparable to the mission's
-> deployed figures. Re-measure against `goodgradients.com` once the redesign
-> is reviewed and this lands on main.
+**Deployed 2026-09-13** at `81c83d7`, together with the 16 redesign commits
+it was built on. Deployed figures are in "Deployed result" below; the local
+before/after that follows is kept because it isolates what the perf work
+itself did, separately from the redesign.
 
 ## Method
 
@@ -19,7 +17,36 @@ not reproduce on retest — either runtime works.
 
 Before: `f3a951d` (redesign, unmodified). After: this branch.
 
-## Scores
+## Deployed result
+
+Measured against `https://goodgradients.com`, Lighthouse mobile preset,
+**fresh Chrome profile per run**, five runs.
+
+| Category       | Before (deployed) | After (deployed) |
+| -------------- | ----------------- | ---------------- |
+| Performance    | 74–92, unstable   | **98**           |
+| Accessibility  | 95                | **100**          |
+| Best practices | 100               | **100**          |
+| SEO            | 100               | **100**          |
+
+After samples: 88 / 99 / 98 / 98 / 99. The 88 is the cold first run; every
+subsequent run sits at 98–99.
+
+**The instability is gone, and that matters as much as the median.** Before
+this shipped, repeated measurement of the unchanged live site returned 74 or
+92 with nothing between — two sessions measuring it got 87 and 74 as
+"the" figure. The page is now tight. The likely causes were the two things
+this work removed: a PostHog session recorder loading eagerly, and a
+render-blocking font chain across two third-party origins, both of which can
+cliff-edge on timing.
+
+Accessibility 95 → 100 is the **redesign's** doing, not this work's.
+
+## Local before/after (isolates the perf work)
+
+Measured against `vite preview`, so not comparable to the deployed numbers
+above — but before and after were measured identically, so the delta is the
+perf work alone, with the redesign held constant.
 
 | Category       | Before | After   |
 | -------------- | ------ | ------- |
@@ -120,10 +147,18 @@ the settle step needs the infinite-animation guard with it.
   session replay is actually wanted, re-enable `disable_session_recording`
   and expect to give back most of the TBT win.
 
-## Next steps
+## Outstanding
 
-1. Review the paused redesign (`f3a951d`).
-2. Merge this branch, deploy, and **re-measure against the deployed origin** —
-   every figure here is local.
-3. Tell the Corp Site session to refresh `lighthouse.json`; the goodgradients
-   row is measured from the old deployed build.
+- **The E2E suite is red, and was before this work.** 11 of 50 tests fail
+  identically on the previously deployed commit, on the redesign, and on this
+  branch — so nothing here caused them. They assert UI that no longer exists:
+  a `"GG"` monogram (now the Molle wordmark), a `"Click to preview
+  fullscreen"` affordance, and a search input. `e2e/` was last touched
+  2026-01-31 and `src/` has moved on for seven months. Deploy does not gate
+  on them (`deploy` needs only `build`), which is how main has been shipping
+  red. Rewriting them needs a decision about intended UI, so it was left
+  alone rather than guessed at.
+- `bun run lint` was not added to `verify` and has not been audited here.
+- Performance stops at 98 on FCP (1.8 s, scoring 89). The entry chunk is
+  482 KB and nothing paints until it executes; code-splitting the gallery is
+  the next real lever.
