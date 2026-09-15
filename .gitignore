@@ -23,3 +23,6 @@ playwright/.cache/
 .env
 .env.local
 .env.*.local
+
+# Supabase CLI scratch state: local link info, not source.
+supabase/.temp/

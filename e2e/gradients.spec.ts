@@ -1,4 +1,4 @@
-import { test, expect, Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
 test.describe("GoodGradients - Gallery", () => {
   test.beforeEach(async ({ page }) => {

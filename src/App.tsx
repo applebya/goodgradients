@@ -61,13 +61,25 @@ function markSplashSeen(): void {
   }
 }
 
+/*
+  Routing sits in its own component so that the early return happens somewhere
+  with no hooks in it. Previously App returned <PrivacyPolicy /> before calling
+  any of its twelve hooks, which means the hook count differed between paths.
+  It has never crashed only because the path is read from location at render
+  and cannot change without a full reload; the first piece of client-side
+  navigation would have white-screened the app with "rendered fewer hooks than
+  expected". Keeping the conditional above the hooks removes the trap rather
+  than relying on that.
+*/
 export default function App() {
-  // Simple path-based routing for static pages
   const path = window.location.pathname;
   if (path === "/privacy" || path === "/privacy.html") {
     return <PrivacyPolicy />;
   }
+  return <Gallery />;
+}
 
+function Gallery() {
   const [showSplash, setShowSplash] = useState(shouldShowSplash);
   const { state, favorites, actions } = useAppState();
 
