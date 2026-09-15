@@ -1,4 +1,11 @@
-import { useMemo, useRef, useEffect, useState, useCallback } from "react";
+import {
+  useMemo,
+  useRef,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useCallback,
+} from "react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { GradientCard, SkeletonCard } from "./GradientCard";
 import { Button } from "./ui/button";
@@ -150,6 +157,22 @@ export function GradientGallery({
   onClearFilters,
 }: GradientGalleryProps) {
   const listRef = useRef<HTMLDivElement>(null);
+  /*
+    The virtualizer needs the list's distance from the top of the document to
+    convert window scroll into list coordinates. Reading listRef during render
+    gave it 0 on the first pass, because the node does not exist yet, so every
+    virtual row was positioned against the wrong origin until some later
+    render happened to correct it. Measuring in a layout effect and holding it
+    in state means the value is real before it is ever used, and it is
+    remeasured when the window resizes, which is when it actually changes.
+  */
+  const [scrollMargin, setScrollMargin] = useState(0);
+  useLayoutEffect(() => {
+    const measure = () => setScrollMargin(listRef.current?.offsetTop ?? 0);
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
   const columns = useColumnCount();
   const [isHydrated, setIsHydrated] = useState(false);
 
@@ -214,7 +237,7 @@ export function GradientGallery({
     count: rowCount,
     estimateSize: useCallback(() => 240, []), // Row height estimate: landscape card (~16:9 swatch + 48px content + 24px gap)
     overscan: 5,
-    scrollMargin: listRef.current?.offsetTop ?? 0,
+    scrollMargin,
     enabled: useVirtualization,
   });
 

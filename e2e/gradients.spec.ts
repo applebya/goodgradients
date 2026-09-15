@@ -606,3 +606,64 @@ test.describe("GoodGradients - Filter Bar", () => {
     await expect(clearButton).not.toBeVisible();
   });
 });
+
+/*
+  The gallery virtualizes above 100 results and ships 560, so this is the
+  default path, not an edge case. It had no coverage at all, which is why the
+  refs-during-render warning in its config sat untouched: there was no way to
+  change scroll behaviour and know whether anything broke.
+*/
+test.describe("GoodGradients - Virtualized gallery", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+    await page.waitForSelector('[data-testid="gradient-card"]', {
+      timeout: 15000,
+    });
+  });
+
+  test("renders cards without a gap above the first one", async ({ page }) => {
+    await page.waitForTimeout(600);
+    const gap = await page.evaluate(() => {
+      const cards = [...document.querySelectorAll('[data-testid="gradient-card"]')];
+      if (!cards.length) return null;
+      const tops = cards.map((c) => c.getBoundingClientRect().top);
+      return Math.min(...tops);
+    });
+    expect(gap).not.toBeNull();
+    /* A wrong scrollMargin offsets every virtual row, which shows up as the
+       first card sitting far below where the list starts. */
+    const viewport = page.viewportSize()?.height ?? 720;
+    expect(gap!).toBeLessThan(viewport);
+  });
+
+  test("keeps rendering cards while scrolling deep into the list", async ({
+    page,
+  }) => {
+    const seen = new Set<string>();
+    for (const y of [0, 2000, 6000, 12000]) {
+      await page.evaluate((to) => window.scrollTo(0, to), y);
+      await page.waitForTimeout(700);
+      const names = await page.evaluate(() =>
+        [...document.querySelectorAll('[data-testid="gradient-card"] h2')].map(
+          (h) => (h.textContent || "").trim(),
+        ),
+      );
+      expect(names.length).toBeGreaterThan(0);
+      names.forEach((n) => seen.add(n));
+    }
+    /* Virtualization should have recycled through far more than one screenful
+       by 12000px; if scroll offsets are wrong it tends to show the same rows. */
+    expect(seen.size).toBeGreaterThan(30);
+  });
+
+  test("recovers the full list after clearing a filter", async ({ page }) => {
+    const all = await page.locator('[data-testid="gradient-card"]').count();
+    await page.getByRole("searchbox", { name: "Search gradients" }).fill("coral");
+    await page.waitForTimeout(600);
+    const filtered = await page.locator('[data-testid="gradient-card"]').count();
+    expect(filtered).toBeLessThan(all);
+    await page.getByRole("searchbox", { name: "Search gradients" }).fill("");
+    await page.waitForTimeout(700);
+    expect(await page.locator('[data-testid="gradient-card"]').count()).toBe(all);
+  });
+});
