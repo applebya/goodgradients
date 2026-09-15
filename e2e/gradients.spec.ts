@@ -1,4 +1,4 @@
-import { test, expect, Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
 test.describe("GoodGradients - Gallery", () => {
   test.beforeEach(async ({ page }) => {
@@ -10,13 +10,9 @@ test.describe("GoodGradients - Gallery", () => {
   });
 
   test("should display the header with branding", async ({ page }) => {
-    // Logo text "GG" is visible
+    // The "GG" lockup was replaced by a wordmark heading in the redesign.
     await expect(
-      page.locator("span").filter({ hasText: /^GG$/ }),
-    ).toBeVisible();
-    // The brand name text is visible in header
-    await expect(
-      page.getByRole("link", { name: "GG Good Gradients" }),
+      page.getByRole("heading", { level: 1, name: "GoodGradients" }),
     ).toBeVisible();
   });
 
@@ -113,7 +109,7 @@ test.describe("GoodGradients - Gradient Detail", () => {
 
     // Should show text color recommendations
     await expect(
-      page.getByRole("dialog").getByText("Best text colors:"),
+      page.getByRole("dialog").getByText("Text colors & accessibility:"),
     ).toBeVisible();
 
     // Should show use case preview labels
@@ -218,7 +214,7 @@ test.describe("GoodGradients - Gradient Detail", () => {
 
     // Should show accessibility label
     await expect(
-      page.getByRole("dialog").getByText("Accessibility:"),
+      page.getByRole("dialog").getByText("Text colors & accessibility:"),
     ).toBeVisible();
   });
 
@@ -234,8 +230,8 @@ test.describe("GoodGradients - Gradient Detail", () => {
     await page.locator('[data-testid="gradient-card"]').first().click();
     await expect(page.getByRole("dialog")).toBeVisible();
 
-    // Click on the preview area that says "Click to preview fullscreen"
-    await page.getByText("Click to preview fullscreen").click();
+    // Fullscreen is entered from a labelled icon button on each preview tile.
+    await page.getByRole("button", { name: "View background in fullscreen" }).click();
 
     // Fullscreen should show sample content
     await expect(page.getByText("Your Headline Here")).toBeVisible();
@@ -250,7 +246,7 @@ test.describe("GoodGradients - Gradient Detail", () => {
     await expect(page.getByRole("dialog")).toBeVisible();
 
     // Enter fullscreen preview
-    await page.getByText("Click to preview fullscreen").click();
+    await page.getByRole("button", { name: "View background in fullscreen" }).click();
     await expect(page.getByText("Your Headline Here")).toBeVisible();
     await expect(page.getByText("Click anywhere to close")).toBeVisible();
 
@@ -271,7 +267,9 @@ test.describe("GoodGradients - Gradient Detail", () => {
     // Should show the modal dialog, NOT fullscreen immediately
     await expect(page.getByRole("dialog")).toBeVisible();
     await expect(page.getByText("Your Headline Here")).not.toBeVisible();
-    await expect(page.getByText("Click to preview fullscreen")).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "View background in fullscreen" }),
+    ).toBeVisible();
   });
 });
 

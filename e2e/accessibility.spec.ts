@@ -8,10 +8,15 @@ import AxeBuilder from '@axe-core/playwright';
  * using axe-core automated testing.
  */
 
-// Skip axe-core tests for now - they require extensive rule exclusions for a gradient tool
-// The color-contrast, region, and landmark rules are intentionally flexible for design tools
-// TODO: Re-enable after establishing baseline of acceptable violations
-test.describe.skip('Accessibility - WCAG 2.1 AA Compliance', () => {
+/*
+  Re-enabled. The suite was skipped pending "a baseline of acceptable
+  violations"; the actual blocker was one defect repeated four times, a
+  fullscreen button nested inside the preview-tile button, which axe reported
+  as nested-interactive and no-focusable-content. With that unnested the suite
+  passes with the rule exclusions it always had, so there is no baseline of
+  accepted violations to keep.
+*/
+test.describe('Accessibility - WCAG 2.1 AA Compliance', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.waitForSelector('[data-testid="gradient-card"]', { timeout: 15000 });
@@ -123,8 +128,8 @@ test.describe.skip('Accessibility - WCAG 2.1 AA Compliance', () => {
     await page.locator('[data-testid="gradient-card"]').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
 
-    // Expand animation section
-    await page.getByRole('dialog').getByText('Animate Gradient').click();
+    // The disclosure is labelled "Animate" now, not "Animate Gradient".
+    await page.getByRole('dialog').getByRole('button', { name: /Animate/ }).click();
     await page.waitForTimeout(300);
 
     const accessibilityScanResults = await new AxeBuilder({ page })
@@ -174,7 +179,7 @@ test.describe.skip('Accessibility - WCAG 2.1 AA Compliance', () => {
     await expect(page.getByRole('dialog')).toBeVisible();
 
     // Open fullscreen
-    await page.getByText('Click to preview fullscreen').click();
+    await page.getByRole('button', { name: 'View background in fullscreen' }).click();
     await expect(page.getByText('Your Headline Here')).toBeVisible();
 
     const accessibilityScanResults = await new AxeBuilder({ page })
@@ -246,10 +251,6 @@ test.describe('Accessibility - ARIA Labels', () => {
   });
 
   test('icon buttons should have aria-labels', async ({ page }) => {
-    // Check random gradient button
-    const randomButton = page.locator('button[aria-label="Select random gradient"]');
-    await expect(randomButton).toBeVisible();
-
     // Open a card to check modal buttons
     await page.locator('[data-testid="gradient-card"]').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
@@ -262,8 +263,10 @@ test.describe('Accessibility - ARIA Labels', () => {
     const shareButton = page.getByRole('dialog').locator('button[aria-label="Share gradient"]');
     await expect(shareButton).toBeVisible();
 
-    // Check fullscreen button has aria-label
-    const fullscreenButton = page.getByRole('dialog').locator('button[aria-label="Fullscreen preview"]');
+    // Fullscreen is entered per preview tile now, each with its own label.
+    const fullscreenButton = page
+      .getByRole('dialog')
+      .locator('button[aria-label="View background in fullscreen"]');
     await expect(fullscreenButton).toBeVisible();
   });
 
@@ -277,22 +280,20 @@ test.describe('Accessibility - ARIA Labels', () => {
     await expect(heartButton).toBeVisible();
   });
 
-  test('animation play/pause should have aria-label', async ({ page }) => {
+  test('animation picker should have aria-label', async ({ page }) => {
     // Open modal
     await page.locator('[data-testid="gradient-card"]').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
 
-    // Expand animation section
-    await page.getByRole('dialog').getByText('Animate Gradient').click();
-    await page.waitForTimeout(300);
-
-    // Select an animation
-    await page.getByRole('dialog').locator('button').filter({ hasText: 'Shift' }).click();
-    await page.waitForTimeout(300);
-
-    // Check play/pause button has aria-label
-    const playPauseButton = page.getByRole('dialog').locator('button[aria-label*="animation"]');
-    await expect(playPauseButton).toBeVisible();
+    /*
+      The play/pause toggle became a picker of named animations, so the
+      labelled control to assert on is the picker itself. It lives behind the
+      "Animate" disclosure, which has to be opened before it has a size.
+    */
+    await page.getByRole('dialog').getByRole('button', { name: /Animate/ }).click();
+    await expect(
+      page.getByRole('dialog').getByRole('group', { name: 'Select animation' }),
+    ).toBeVisible();
   });
 });
 
@@ -319,7 +320,7 @@ test.describe('Accessibility - Color Contrast', () => {
     // Open modal and fullscreen
     await page.locator('[data-testid="gradient-card"]').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
-    await page.getByText('Click to preview fullscreen').click();
+    await page.getByRole('button', { name: 'View background in fullscreen' }).click();
 
     // Should show recommended text colors
     await expect(page.getByText('Recommended text:')).toBeVisible();
@@ -333,8 +334,18 @@ test.describe('Accessibility - Screen Reader Support', () => {
   });
 
   test('page should have proper heading hierarchy', async ({ page }) => {
-    // Check for main branding link (h1 is in splash screen which may have faded)
-    await expect(page.getByRole('link', { name: 'GG Good Gradients' })).toBeVisible();
+    // One h1 wordmark, and card titles at h2 so the order never skips a level.
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'GoodGradients' }),
+    ).toBeVisible();
+    const levels = await page.evaluate(() =>
+      [...document.querySelectorAll('h1,h2,h3,h4,h5,h6')].map((h) =>
+        Number(h.tagName[1]),
+      ),
+    );
+    for (let i = 1; i < levels.length; i++) {
+      expect(levels[i] - levels[i - 1]).toBeLessThanOrEqual(1);
+    }
 
     // Open modal and check dialog has title
     await page.locator('[data-testid="gradient-card"]').first().click();

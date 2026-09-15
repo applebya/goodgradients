@@ -61,13 +61,25 @@ function markSplashSeen(): void {
   }
 }
 
+/*
+  Routing sits in its own component so that the early return happens somewhere
+  with no hooks in it. Previously App returned <PrivacyPolicy /> before calling
+  any of its twelve hooks, which means the hook count differed between paths.
+  It has never crashed only because the path is read from location at render
+  and cannot change without a full reload; the first piece of client-side
+  navigation would have white-screened the app with "rendered fewer hooks than
+  expected". Keeping the conditional above the hooks removes the trap rather
+  than relying on that.
+*/
 export default function App() {
-  // Simple path-based routing for static pages
   const path = window.location.pathname;
   if (path === "/privacy" || path === "/privacy.html") {
     return <PrivacyPolicy />;
   }
+  return <Gallery />;
+}
 
+function Gallery() {
   const [showSplash, setShowSplash] = useState(shouldShowSplash);
   const { state, favorites, actions } = useAppState();
 
@@ -162,6 +174,8 @@ export default function App() {
         showFavoritesOnly={state.category === "Favorites"}
         onColorsChange={actions.setColors}
         onToggleColor={actions.toggleColor}
+        searchQuery={state.searchQuery}
+        onSearchChange={actions.setSearchQuery}
         onToggleTag={actions.toggleTag}
         onGradientTypeChange={actions.setGradientType}
         onPreviewModeChange={actions.setPreviewMode}
@@ -172,6 +186,14 @@ export default function App() {
         onClearFilters={actions.clearFilters}
         hasActiveFilters={actions.hasActiveFilters()}
       />
+
+      {/*
+        The document's only h1. The wordmark cannot be it: the header renders
+        at two breakpoints, so marking it up as a heading produces two. The
+        splash screen used to carry an h1 and then unmounted, leaving the page
+        with no level-one heading and its first heading at level 2.
+      */}
+      <h1 className="sr-only">GoodGradients</h1>
 
       <main className="max-w-[1400px] mx-auto px-6 py-12">
         <ErrorBoundary>

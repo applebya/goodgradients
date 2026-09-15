@@ -634,26 +634,28 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
           {/* Use Cases - Each selectable with fullscreen option */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {/* Background */}
-            <button
-              className={cn(
-                "rounded-lg p-3 flex flex-col items-center justify-center min-h-[70px] cursor-pointer hover:scale-[1.02] transition-all relative group/preview",
-                previewMode === "background"
-                  ? "ring-2 ring-white ring-offset-2 ring-offset-neutral-900"
-                  : "ring-1 ring-transparent hover:ring-white/30",
-              )}
-              style={{
-                background: displayGradient,
-                ...getAnimationStyle(selectedAnimation),
-              }}
-              onClick={() => onPreviewModeChange("background")}
-              aria-label="Select background display mode"
-            >
-              <span
-                className="text-xs font-medium drop-shadow"
-                style={{ color: activeTextColor }}
+            <div className="relative group/preview">
+              <button
+                className={cn(
+                  "w-full h-full rounded-lg p-3 flex flex-col items-center justify-center min-h-[70px] cursor-pointer hover:scale-[1.02] transition-all relative group/preview",
+                  previewMode === "background"
+                    ? "ring-2 ring-white ring-offset-2 ring-offset-neutral-900"
+                    : "ring-1 ring-transparent hover:ring-white/30",
+                )}
+                style={{
+                  background: displayGradient,
+                  ...getAnimationStyle(selectedAnimation),
+                }}
+                onClick={() => onPreviewModeChange("background")}
+                aria-label="Select background display mode"
               >
-                Background
-              </span>
+                <span
+                  className="text-xs font-medium drop-shadow"
+                  style={{ color: activeTextColor }}
+                >
+                  Background
+                </span>
+              </button>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -667,29 +669,31 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
                   style={{ color: activeTextColor }}
                 />
               </button>
-            </button>
+            </div>
 
             {/* Button */}
-            <button
-              className={cn(
-                "flex items-center justify-center bg-neutral-800 rounded-lg p-2 cursor-pointer hover:scale-[1.02] transition-all relative group/preview",
-                previewMode === "button"
-                  ? "ring-2 ring-white ring-offset-2 ring-offset-neutral-900"
-                  : "ring-1 ring-transparent hover:ring-white/30",
-              )}
-              onClick={() => onPreviewModeChange("button")}
-              aria-label="Select button display mode"
-            >
-              <span
-                className="px-3 py-1.5 rounded text-xs font-medium pointer-events-none"
-                style={{
-                  background: displayGradient,
-                  color: activeTextColor,
-                  ...getAnimationStyle(selectedAnimation),
-                }}
+            <div className="relative group/preview">
+              <button
+                className={cn(
+                  "w-full h-full flex items-center justify-center bg-neutral-800 rounded-lg p-2 cursor-pointer hover:scale-[1.02] transition-all relative group/preview",
+                  previewMode === "button"
+                    ? "ring-2 ring-white ring-offset-2 ring-offset-neutral-900"
+                    : "ring-1 ring-transparent hover:ring-white/30",
+                )}
+                onClick={() => onPreviewModeChange("button")}
+                aria-label="Select button display mode"
               >
-                Button
-              </span>
+                <span
+                  className="px-3 py-1.5 rounded text-xs font-medium pointer-events-none"
+                  style={{
+                    background: displayGradient,
+                    color: activeTextColor,
+                    ...getAnimationStyle(selectedAnimation),
+                  }}
+                >
+                  Button
+                </span>
+              </button>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -700,29 +704,31 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               >
                 <Maximize2 className="w-3 h-3 text-neutral-400" />
               </button>
-            </button>
+            </div>
 
             {/* Badge */}
-            <button
-              className={cn(
-                "flex items-center justify-center bg-neutral-800 rounded-lg p-2 cursor-pointer hover:scale-[1.02] transition-all relative group/preview",
-                previewMode === "badge"
-                  ? "ring-2 ring-white ring-offset-2 ring-offset-neutral-900"
-                  : "ring-1 ring-transparent hover:ring-white/30",
-              )}
-              onClick={() => onPreviewModeChange("badge")}
-              aria-label="Select badge display mode"
-            >
-              <span
-                className="px-2 py-0.5 rounded-full text-[10px] font-medium pointer-events-none"
-                style={{
-                  background: displayGradient,
-                  color: activeTextColor,
-                  ...getAnimationStyle(selectedAnimation),
-                }}
+            <div className="relative group/preview">
+              <button
+                className={cn(
+                  "w-full h-full flex items-center justify-center bg-neutral-800 rounded-lg p-2 cursor-pointer hover:scale-[1.02] transition-all relative group/preview",
+                  previewMode === "badge"
+                    ? "ring-2 ring-white ring-offset-2 ring-offset-neutral-900"
+                    : "ring-1 ring-transparent hover:ring-white/30",
+                )}
+                onClick={() => onPreviewModeChange("badge")}
+                aria-label="Select badge display mode"
               >
-                Badge
-              </span>
+                <span
+                  className="px-2 py-0.5 rounded-full text-[10px] font-medium pointer-events-none"
+                  style={{
+                    background: displayGradient,
+                    color: activeTextColor,
+                    ...getAnimationStyle(selectedAnimation),
+                  }}
+                >
+                  Badge
+                </span>
+              </button>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -733,28 +739,30 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               >
                 <Maximize2 className="w-3 h-3 text-neutral-400" />
               </button>
-            </button>
+            </div>
 
             {/* Text */}
-            <button
-              className={cn(
-                "flex items-center justify-center bg-neutral-800 rounded-lg p-2 cursor-pointer hover:scale-[1.02] transition-all relative group/preview",
-                previewMode === "text"
-                  ? "ring-2 ring-white ring-offset-2 ring-offset-neutral-900"
-                  : "ring-1 ring-transparent hover:ring-white/30",
-              )}
-              onClick={() => onPreviewModeChange("text")}
-              aria-label="Select text display mode"
-            >
-              <span
-                className="text-lg font-bold bg-clip-text text-transparent pointer-events-none"
-                style={{
-                  backgroundImage: displayGradient,
-                  ...getAnimationStyle(selectedAnimation),
-                }}
+            <div className="relative group/preview">
+              <button
+                className={cn(
+                  "w-full h-full flex items-center justify-center bg-neutral-800 rounded-lg p-2 cursor-pointer hover:scale-[1.02] transition-all relative group/preview",
+                  previewMode === "text"
+                    ? "ring-2 ring-white ring-offset-2 ring-offset-neutral-900"
+                    : "ring-1 ring-transparent hover:ring-white/30",
+                )}
+                onClick={() => onPreviewModeChange("text")}
+                aria-label="Select text display mode"
               >
-                Text
-              </span>
+                <span
+                  className="text-lg font-bold bg-clip-text text-transparent pointer-events-none"
+                  style={{
+                    backgroundImage: displayGradient,
+                    ...getAnimationStyle(selectedAnimation),
+                  }}
+                >
+                  Text
+                </span>
+              </button>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -765,7 +773,7 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               >
                 <Maximize2 className="w-3 h-3 text-neutral-400" />
               </button>
-            </button>
+            </div>
           </div>
 
           {/* Colors Section */}
@@ -1119,7 +1127,11 @@ ${selectedAnimation ? `Animation: ${selectedAnimation.name} - ${selectedAnimatio
               <div className="overflow-hidden">
                 <div className="space-y-3 pb-2">
                   {/* Animation options with B&W preview for clarity */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <div
+                    role="group"
+                    aria-label="Select animation"
+                    className="grid grid-cols-2 sm:grid-cols-3 gap-2"
+                  >
                     {animations.map((anim) => {
                       const isSelected =
                         anim.id === "none"

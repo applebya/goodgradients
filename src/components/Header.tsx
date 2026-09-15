@@ -10,6 +10,8 @@ import type {
 } from "@/types";
 
 interface HeaderProps {
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
   // Filters
   colors: WizardColor[];
   tags: string[];
@@ -33,6 +35,8 @@ interface HeaderProps {
 }
 
 export function Header({
+  searchQuery,
+  onSearchChange,
   colors,
   tags,
   gradientType,
@@ -124,6 +128,8 @@ export function Header({
       <header className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border/50">
         <div className="max-w-[1400px] mx-auto px-6 py-2">
           <FilterBar
+            searchQuery={searchQuery}
+            onSearchChange={onSearchChange}
             colors={colors}
             tags={tags}
             gradientType={gradientType}
