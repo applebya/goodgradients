@@ -15,7 +15,12 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Deploy waits on the suite. Previously test carried continue-on-error and
+  # nothing depended on it, so a failing suite could neither block a release
+  # nor even show red: that is the mechanism that let it stay broken for
+  # months while main kept shipping.
   build:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -71,9 +76,11 @@ jobs:
       - name: Install Playwright browsers
         run: bunx playwright install --with-deps
 
-      - name: Run Playwright tests
+      - name: Unit tests
+        run: bun run test
+
+      - name: End-to-end tests
         run: bunx playwright test
-        continue-on-error: true  # Don't block deployment on test failures
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
